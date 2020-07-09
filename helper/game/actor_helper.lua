@@ -273,3 +273,8 @@ function ActorHelper:clearAllBadBuff (objid)
     return Actor:clearAllBadBuff(objid)
   end, nil, onceFailMessage, finillyFailMessage)
 end
+
+-- 是否在空中（无用）
+function ActorHelper:isInAir (objid)
+  return Actor:isInAir(objid) == ErrorCode.OK
+end

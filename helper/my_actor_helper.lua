@@ -492,3 +492,18 @@ function MyActorHelper:cancelSealActor (objid)
     ActorHelper:stopBodyEffectById(objid, MyConstant.BODY_EFFECT.LIGHT47)
   end
 end
+
+-- 生物是否在空气中
+function MyActorHelper:isInAir (objid)
+  local pos = self:getMyPosition(objid)
+  if (not(BlockHelper:isAirBlock(pos.x, pos.y, pos.z))) then -- 生物位置不是空气
+    return false
+  else
+    pos.y = pos.y - 1
+    if (BlockHelper:isAirBlock(pos.x, pos.y, pos.z)) then -- 生物下方位置是空气
+      return true
+    else
+      return false
+    end
+  end
+end

@@ -40,7 +40,7 @@ function MyPlayerHelper:initPlayer (objid)
     if (not(GameDataHelper:updateStoryData())) then -- 刚开始游戏
       MyTimeHelper:setHour(MyConstant.INIT_HOUR)
       player:setPosition(-24, 34.5, 6)
-      PlayerHelper:rotateCamera(objid, ActorHelper.FACE_YAW.WEST, 0)
+      PlayerHelper:rotateCamera(objid, ActorHelper.FACE_YAW.EAST, 0)
     end
   else
     player:setPosition(hostPlayer:getPosition())

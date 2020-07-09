@@ -56,7 +56,6 @@ end
 
 -- 进入潜行
 function MyItem:useItem2 (objid)
-  LogHelper:debug('useItem2')
   -- body
 end
 

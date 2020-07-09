@@ -348,6 +348,11 @@ function MyTimeHelper:delFnContinueRuns (t)
   self.fnContinueRuns[t] = nil
 end
 
+-- 是否持续执行
+function MyTimeHelper:isFnContinueRuns (t)
+  return type(self.fnContinueRuns[t]) ~= 'nil'
+end
+
 -- 运行方法，然后删除
 function MyTimeHelper:runFnContinueRuns ()
   for k, v in pairs(self.fnContinueRuns) do

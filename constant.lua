@@ -1,6 +1,8 @@
 -- 常量
 MyConstant = {
   INIT_HOUR = 7, -- 初始时间
+  FLY_SPEED = 0.0785, -- 飞行速度
+  FLY_ADVANCE_SPEED = 0.05, -- 飞行前进速度
   PROJECTILE_HURT = 6, -- 通用投掷物固定伤害
   
   -- 人物ID
@@ -16,6 +18,10 @@ MyConstant = {
     LOG_PAPER_ID = 4106, -- 江湖日志ID
     TOKEN_ID = 4111, -- 风颖城通行令牌ID
     APPLE_ID = 4125, -- 苹果
+    GAME_DATA_MAIN_INDEX_ID = 4098, -- 主线剧情序号
+    GAME_DATA_MAIN_PROGRESS_ID = 4099, -- 主线剧情进度数据
+    GAME_DATA_LEVEL_ID = 4100, -- 人物等级数据
+    GAME_DATA_EXP_ID = 4101, -- 人物经验数据
   },
   WEAPON = {
     ARROW_ID = 4130, -- 箭矢ID
@@ -56,4 +62,4 @@ MyWeaponAttr = {
 }
 
 -- 武器id
-MyWeaponAttr.woodSword.levelIds = { 4097 } -- 御剑
+MyWeaponAttr.controlSword.levelIds = { 4097 } -- 御剑

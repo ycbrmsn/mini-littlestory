@@ -250,3 +250,35 @@ end
 function MyPlayer:ableUseSkill (skillname)
   return self.attr:ableUseSkill(skillname)
 end
+
+-- 获取御剑状态
+function MyPlayer:getState ()
+  return self.attr.state
+end
+
+-- 设置御剑状态
+function MyPlayer:setState (state)
+  self.attr.state = state
+end
+
+function MyPlayer:isFlying ()
+  local flyType = self.objid .. 'fly'
+  return MyTimeHelper:isFnContinueRuns(flyType), flyType
+end
+
+function MyPlayer:isFlyingAdvance ()
+  local flyAdvanceType = self.objid .. 'flyAdvance'
+  return MyTimeHelper:isFnContinueRuns(flyAdvanceType), flyAdvanceType
+end
+
+function MyPlayer:flyStatic ()
+  self.action:flyStatic()
+end
+
+function MyPlayer:flyAdvance ()
+  self.action:flyAdvance()
+end
+
+function MyPlayer:stopFly (isRegular)
+  self.action:stopFly(isRegular)
+end
