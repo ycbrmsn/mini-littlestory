@@ -59,6 +59,11 @@ function ActorHelper:setEnableBeAttackedState (objid, switch)
   return self:setActionAttrState(objid, CREATUREATTR.ENABLE_BEATTACKED, switch)
 end
 
+-- 设置免疫跌落伤害
+function ActorHelper:setImmuneFall (objid, isadd)
+  return ActorHelper:setImmuneType(objid, HURTTYPE.FALL, isadd)
+end
+
 -- 封装原始接口
 
 -- 向目标位置移动
@@ -277,4 +282,13 @@ end
 -- 是否在空中（无用）
 function ActorHelper:isInAir (objid)
   return Actor:isInAir(objid) == ErrorCode.OK
+end
+
+-- 设置免疫伤害类型
+function ActorHelper:setImmuneType (objid, immunetype, isadd)
+  local onceFailMessage = '设置免疫伤害类型一次'
+  local finillyFailMessage = StringHelper:concat('设置免疫伤害类型失败，参数：objid=', objid)
+  return CommonHelper:callIsSuccessMethod(function (p)
+    return Actor:setImmuneType(objid, immunetype, isadd)
+  end, nil, onceFailMessage, finillyFailMessage)
 end

@@ -6,7 +6,7 @@ MyConstant = {
   PROJECTILE_HURT = 6, -- 通用投掷物固定伤害
   
   -- 人物ID
-
+  FLY_SWORD_ID = 2, -- 御剑
 
   -- 怪物ID
 

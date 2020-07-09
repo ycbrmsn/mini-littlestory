@@ -9,7 +9,8 @@ MyPlayerAttr = {
   attack = 0, -- 手持武器攻击
   defense = 0, -- 手持武器防御
   strength = 100, -- 体力，用于使枪消耗
-  state = 0 -- 御剑状态（-1：御剑失控；0：可御剑；1：御剑静止；2：御剑前行）
+  state = 0, -- 御剑状态（-1：御剑失控；0：可御剑；1：御剑静止；2：御剑前行）
+  flySwordId = nil -- 御剑id
 }
 
 function MyPlayerAttr:new (player)

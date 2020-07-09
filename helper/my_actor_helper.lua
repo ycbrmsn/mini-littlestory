@@ -507,3 +507,12 @@ function MyActorHelper:isInAir (objid)
     end
   end
 end
+
+-- 前后左右中下六个位置如果有一个位置不是空气方块，那么就是靠近了方块
+function MyActorHelper:isApproachBlock (objid)
+  local pos = self:getMyPosition(objid)
+  return (MyBlockHelper:isAirBlock(pos) and MyBlockHelper:isAirBlock(pos, -1)
+      and MyBlockHelper:isAirBlock(pos, 1) and MyBlockHelper:isAirBlock(pos, 0, -1)
+      and MyBlockHelper:isAirBlock(pos, 0, 0, -1) and MyBlockHelper:isAirBlock(pos, 0, 0, 1))
+    == false
+end

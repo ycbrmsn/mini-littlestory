@@ -41,15 +41,12 @@ function MyPlayerHelper:initPlayer (objid)
       MyTimeHelper:setHour(MyConstant.INIT_HOUR)
       player:setPosition(-24, 34.5, 6)
       PlayerHelper:rotateCamera(objid, ActorHelper.FACE_YAW.EAST, 0)
+      BackpackHelper:addItem(objid, MyWeaponAttr.controlSword.levelIds[1], 1)
     end
   else
     player:setPosition(hostPlayer:getPosition())
   end
   GameDataHelper:updatePlayerData(player)
-  -- 检测玩家是否有江湖日志，如果没有则放进背包
-  if (not(logPaper:hasItem(objid))) then
-    logPaper:newItem(objid, 1, true)
-  end
   MyStoryHelper:recover(player) -- 恢复剧情
 end
 
@@ -217,4 +214,23 @@ function MyPlayerHelper:runPlayers ()
       v.action:execute()
     end)
   end
+end
+
+-- 玩家移动一格
+function MyPlayerHelper:playerMoveOneBlockSize (objid)
+  MyActorHelper:resumeClickActor(objid)
+  if (MyActorHelper:isApproachBlock(objid)) then
+    local player = self:getPlayer(objid)
+    player:stopFly(true)
+  end
+end
+
+-- 骑乘
+function MyPlayerHelper:playerMountActor (objid, toobjid)
+  LogHelper:debug('骑乘')
+end
+
+-- 取消骑乘
+function MyPlayerHelper:playerDismountActor (objid, toobjid)
+  LogHelper:debug('取消骑乘')
 end

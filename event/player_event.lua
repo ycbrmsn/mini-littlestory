@@ -130,7 +130,21 @@ end
 local playerMoveOneBlockSize = function (event)
   local objid = event['eventobjid']
   LogHelper:call(function ()
-    MyActorHelper:resumeClickActor(objid)
+    MyPlayerHelper:playerMoveOneBlockSize(objid)
+  end)
+end
+
+-- eventobjid, toobjid
+local playerMountActor = function (event)
+  LogHelper:call(function ()
+    MyPlayerHelper:playerMountActor(event.eventobjid, event.toobjid)
+  end)
+end
+
+-- eventobjid, toobjid
+local playerDismountActor = function (event)
+  LogHelper:call(function ()
+    MyPlayerHelper:playerDismountActor(event.eventobjid, event.toobjid)
   end)
 end
 
@@ -148,5 +162,7 @@ ScriptSupportEvent:registerEvent([=[Player.SelectShortcut]=], playerSelectShortc
 ScriptSupportEvent:registerEvent([=[Player.ShortcutChange]=], playerShortcutChange) -- 快捷栏变化
 ScriptSupportEvent:registerEvent([=[Player.MotionStateChange]=], playerMotionStateChange) -- 运动状态改变
 ScriptSupportEvent:registerEvent([=[Player.MoveOneBlockSize]=], playerMoveOneBlockSize) -- 移动一格
+ScriptSupportEvent:registerEvent([=[Player.MountActor]=], playerMountActor) -- 骑乘坐骑
+ScriptSupportEvent:registerEvent([=[Player.DismountActor]=], playerDismountActor) -- 取消骑乘坐骑
 
 -- ScriptSupportEvent:registerEvent([=[Player.ChangeAttr]=], playerChangeAttr) -- 属性变化

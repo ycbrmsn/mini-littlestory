@@ -55,16 +55,25 @@ function MyPlayerAction:execute ()
 end
 
 function MyPlayerAction:flyStatic ()
+  local pos = self.myActor:getMyPosition()
   if (not(MyActorHelper:isInAir(self.myActor.objid))) then -- 不在空中
-    local pos = self.myActor:getMyPosition()
     pos.y = pos.y + 2
     self.myActor:setMyPosition(pos)
+  end
+  if (not(self.myActor.flySwordId)) then
+    -- self.myActor.flySwordId = WorldHelper:spawnCreature(pos.x, pos.y, pos.z, MyConstant.FLY_SWORD_ID, 1)[1]
+    self.myActor.flySwordId = WorldHelper:spawnProjectileByPos(self.myActor.objid, 4103, pos, pos, 0)
+    -- MyActorHelper:closeAI(self.myActor.flySwordId)
+    ActorHelper:setImmuneFall(self.myActor.flySwordId, true) -- 免疫跌落
   end
   local isFlying, flyType = self.myActor:isFlying()
   local isFlyingAdvance, flyAdvanceType = self.myActor:isFlyingAdvance()
   if (not(isFlying)) then -- 如果没有飞，则飞起来
     MyTimeHelper:callFnContinueRuns(function ()
       ActorHelper:appendSpeed(self.myActor.objid, 0, MyConstant.FLY_SPEED, 0)
+      local p = self.myActor:getMyPosition()
+      MyActorHelper:setPosition(self.myActor.flySwordId, p.x, p.y, p.z)
+      ActorHelper:setFaceYaw(self.myActor.flySwordId, ActorHelper:getFaceYaw(self.myActor.objid))
     end, -1, flyType)
   end
   if (isFlyingAdvance) then -- 如果在向前飞，则停止
@@ -101,10 +110,15 @@ function MyPlayerAction:stopFly (isRegular)
   end
   if (state == 1) then -- 静止
     MyTimeHelper:delFnContinueRuns(self.myActor.objid .. 'fly')
-    self.myActor:setState(newState)
   elseif (state == 2) then -- 前行
     MyTimeHelper:delFnContinueRuns(self.myActor.objid .. 'fly')
     MyTimeHelper:delFnContinueRuns(self.myActor.objid .. 'flyAdvance')
-    self.myActor:setState(newState)
   end
+  self.myActor:setState(newState)
+  ActorHelper:killSelf(self.myActor.flySwordId)
+  self.myActor.flySwordId = nil
+  ActorHelper:setImmuneFall(self.myActor.objid, true) -- 免疫跌落
+  MyTimeHelper:callFnFastRuns(function ()
+    ActorHelper:setImmuneFall(self.myActor.objid, false) -- 取消免疫跌落
+  end, 1)
 end

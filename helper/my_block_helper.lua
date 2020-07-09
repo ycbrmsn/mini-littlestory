@@ -152,3 +152,9 @@ function MyBlockHelper:blockDigEnd (objid, blockid, x, y, z)
     MyPlayerHelper:showToast(objid, '门', disableMsg)
   end
 end
+
+-- 是否是空气方块
+function MyBlockHelper:isAirBlock (pos, dx, dy, dz)
+  dx, dy, dz = dx or 0, dy or 0, dz or 0
+  return BlockHelper:isAirBlock(pos.x + dx, pos.y + dy, pos.z + dz)
+end
