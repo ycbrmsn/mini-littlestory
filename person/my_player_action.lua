@@ -60,11 +60,11 @@ function MyPlayerAction:flyStatic ()
     pos.y = pos.y + 2
     self.myActor:setMyPosition(pos)
   end
+  ActorHelper:setFaceYaw(self.myActor.objid, ActorHelper:getFaceYaw(self.myActor.objid))
   if (not(self.myActor.flySwordId)) then
-    -- self.myActor.flySwordId = WorldHelper:spawnCreature(pos.x, pos.y, pos.z, MyConstant.FLY_SWORD_ID, 1)[1]
-    self.myActor.flySwordId = WorldHelper:spawnProjectileByPos(self.myActor.objid, 4103, pos, pos, 0)
-    -- MyActorHelper:closeAI(self.myActor.flySwordId)
-    ActorHelper:setImmuneFall(self.myActor.flySwordId, true) -- 免疫跌落
+    self.myActor.flySwordId = WorldHelper:spawnCreature(pos.x, pos.y, pos.z, MyConstant.FLY_SWORD_ID, 1)[1]
+    MyActorHelper:closeAI(self.myActor.flySwordId)
+    ActorHelper:setEnableBeAttackedState(self.myActor.flySwordId, false) -- 不可被攻击
   end
   local isFlying, flyType = self.myActor:isFlying()
   local isFlyingAdvance, flyAdvanceType = self.myActor:isFlyingAdvance()
@@ -72,7 +72,7 @@ function MyPlayerAction:flyStatic ()
     MyTimeHelper:callFnContinueRuns(function ()
       ActorHelper:appendSpeed(self.myActor.objid, 0, MyConstant.FLY_SPEED, 0)
       local p = self.myActor:getMyPosition()
-      MyActorHelper:setPosition(self.myActor.flySwordId, p.x, p.y, p.z)
+      MyActorHelper:setPosition(self.myActor.flySwordId, p.x, p.y - 0.1, p.z)
       ActorHelper:setFaceYaw(self.myActor.flySwordId, ActorHelper:getFaceYaw(self.myActor.objid))
     end, -1, flyType)
   end
@@ -101,12 +101,12 @@ end
 
 function MyPlayerAction:stopFly (isRegular)
   local state = self.myActor:getState()
-  if (state == -1 or state == 0) then -- 未飞行
+  if (state == 0) then -- 未飞行
     return
   end
-  local newState = -1
-  if (isRegular) then
-    newState = 0
+  if (not(isRegular)) then -- 失控
+    MyItemHelper:recordUseSkill(self.myActor.objid, MyWeaponAttr.controlSword.levelIds[1], 
+      MyWeaponAttr.controlSword.cd)
   end
   if (state == 1) then -- 静止
     MyTimeHelper:delFnContinueRuns(self.myActor.objid .. 'fly')
@@ -114,11 +114,11 @@ function MyPlayerAction:stopFly (isRegular)
     MyTimeHelper:delFnContinueRuns(self.myActor.objid .. 'fly')
     MyTimeHelper:delFnContinueRuns(self.myActor.objid .. 'flyAdvance')
   end
-  self.myActor:setState(newState)
+  self.myActor:setState(0)
   ActorHelper:killSelf(self.myActor.flySwordId)
   self.myActor.flySwordId = nil
-  ActorHelper:setImmuneFall(self.myActor.objid, true) -- 免疫跌落
-  MyTimeHelper:callFnFastRuns(function ()
-    ActorHelper:setImmuneFall(self.myActor.objid, false) -- 取消免疫跌落
-  end, 1)
+  -- ActorHelper:setImmuneFall(self.myActor.objid, true) -- 免疫跌落
+  -- MyTimeHelper:callFnFastRuns(function ()
+  --   ActorHelper:setImmuneFall(self.myActor.objid, false) -- 取消免疫跌落
+  -- end, 1)
 end

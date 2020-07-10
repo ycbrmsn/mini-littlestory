@@ -6,10 +6,12 @@ ControlSword = MyWeapon:new(MyWeaponAttr.controlSword)
 function ControlSword:useItem (objid)
   local player = MyPlayerHelper:getPlayer(objid)
   local state = player:getState()
-  if (state == -1) then -- 御剑失控
+  local ableUseSkill = MyItemHelper:ableUseSkill(objid, self.id, self.cd)
+  if (not(ableUseSkill)) then
     ChatHelper:sendSystemMsg('御剑失控，短时间内无法再次御剑', objid)
     return
-  elseif (state == 0) then -- 可御剑，则御剑
+  end
+  if (state == 0) then -- 可御剑，则御剑
     player:flyStatic()
   elseif (state == 1) then -- 御剑静止，则前行
     player:flyAdvance()

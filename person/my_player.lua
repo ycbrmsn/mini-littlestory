@@ -205,6 +205,9 @@ function MyPlayer:changeHold (itemid)
       FallStarBow:cancelSkill(self.objid)
       return
     end
+    if (self:isFlying()) then -- 如果在飞行，则退出飞行状态
+      self:stopFly(true)
+    end
   end
 end
 

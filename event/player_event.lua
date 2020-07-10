@@ -88,12 +88,8 @@ end
 
 -- eventobjid, toobjid
 local playerBeHurt = function (event)
-  local objid = event['eventobjid']
   LogHelper:call(function ()
-    local hp = PlayerHelper:getHp(objid)
-    if (hp == 1) then
-      MyStoryHelper:playerBadHurt(objid)
-    end
+    MyPlayerHelper:playerBeHurt(event.eventobjid, event.toobjid)
   end)
 end
 

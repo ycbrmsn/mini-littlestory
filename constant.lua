@@ -56,10 +56,11 @@ MyWeaponAttr = {
   controlSword = { -- 御剑
     attack = 10,
     defense = 5,
+    cd = 15,
     addAttPerLevel = 1,
     addDefPerLevel = 2
   }
 }
 
 -- 武器id
-MyWeaponAttr.controlSword.levelIds = { 4097 } -- 御剑
+MyWeaponAttr.controlSword.levelIds = { 4105 } -- 御剑

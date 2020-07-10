@@ -225,6 +225,14 @@ function MyPlayerHelper:playerMoveOneBlockSize (objid)
   end
 end
 
+-- 玩家受到伤害
+function MyPlayerHelper:playerBeHurt (objid, toobjid)
+  local player = self:getPlayer(objid)
+  if (player:isFlying()) then
+    player:stopFly()
+  end
+end
+
 -- 骑乘
 function MyPlayerHelper:playerMountActor (objid, toobjid)
   LogHelper:debug('骑乘')
