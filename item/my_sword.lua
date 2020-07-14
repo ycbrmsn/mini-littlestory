@@ -3,7 +3,7 @@
 -- 御剑
 ControlSword = MyWeapon:new(MyWeaponAttr.controlSword)
 
-function ControlSword:useItem (objid)
+function ControlSword:useItem1 (objid)
   local player = MyPlayerHelper:getPlayer(objid)
   local state = player:getState()
   local ableUseSkill = MyItemHelper:ableUseSkill(objid, self.id, self.cd)

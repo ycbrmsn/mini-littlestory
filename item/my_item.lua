@@ -111,6 +111,16 @@ function MyWeapon:putDown (objid)
   player:changeAttr(-self.attack, -self.defense)
 end
 
+function MyWeapon:useItem (objid)
+  if (self.skillname) then
+    local player = MyPlayerHelper:getPlayer(objid)
+    if (not(player:ableUseSkill(self.skillname))) then
+      return
+    end
+  end
+  self:useItem1(objid)
+end
+
 -- 减少体力
 function MyWeapon:reduceStrength (objid)
   local player = MyPlayerHelper:getPlayer(objid)

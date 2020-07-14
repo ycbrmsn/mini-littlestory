@@ -26,6 +26,7 @@ MyConstant = {
   WEAPON = {
     ARROW_ID = 4130, -- 箭矢ID
     QUIVER_ID = 4133, -- 箭袋ID
+    TEN_THOUSAND_SWORD_ID = 4103, -- 万剑诀飞剑
     COMMON_PROJECTILE_ID = 4159 -- 通用投掷物ID
   },
   BODY_EFFECT = {
@@ -57,6 +58,7 @@ MyWeaponAttr = {
     attack = 10,
     defense = 5,
     cd = 15,
+    skillname = '御剑飞行',
     addAttPerLevel = 1,
     addDefPerLevel = 2
   }

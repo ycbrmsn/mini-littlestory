@@ -26,6 +26,7 @@ local clickBlock = function (event)
   LogHelper:call(function ()
     local myPosition = MyPosition:new(event)
     MyBlockHelper:check(myPosition, objid)
+    MyActorHelper:tenThousandsSwordcraft(objid)
   end)
 end
 

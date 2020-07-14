@@ -421,6 +421,7 @@ function MyActorHelper:appendSpeed (objid, speed, srcPos, dstPos)
   dstPos = dstPos or MyActorHelper:getMyPosition(objid)
   local speedVector3 = MathHelper:getSpeedVector3(srcPos, dstPos, speed)
   ActorHelper:appendSpeed(objid, speedVector3.x, speedVector3.y, speedVector3.z)
+  return speedVector3
 end
 
 -- 囚禁actor，用于慑魂枪效果
@@ -515,4 +516,83 @@ function MyActorHelper:isApproachBlock (objid)
       and MyBlockHelper:isAirBlock(pos, 1) and MyBlockHelper:isAirBlock(pos, 0, -1)
       and MyBlockHelper:isAirBlock(pos, 0, 0, -1) and MyBlockHelper:isAirBlock(pos, 0, 0, 1))
     == false
+end
+
+-- 万剑诀
+function MyActorHelper:tenThousandsSwordcraft (objid)
+  local pos = self:getDistancePosition(objid, 2)
+  pos.y = pos.y + 1
+  local dstPos = self:getDistancePosition(objid, 6)
+  local projectileid = WorldHelper:spawnProjectileByDirPos(objid, 
+    MyConstant.WEAPON.TEN_THOUSAND_SWORD_ID, pos, MyVector3:new(0, 1, 0), 0)
+  ActorHelper:setFacePitch(projectileid, -135)
+  ActorHelper:setFaceYaw(projectileid, ActorHelper:getFaceYaw(objid) + 90)
+  -- local projectileid = WorldHelper:spawnProjectileByPos(objid, 
+  --   MyConstant.WEAPON.TEN_THOUSAND_SWORD_ID, pos, MyPosition:new(pos.x, pos.y + 1, pos.z), 0)
+  local t = 'ten' .. projectileid
+  MyTimeHelper:callFnContinueRuns(function ()
+    local facePitch = ActorHelper:getFacePitch(projectileid)
+    if (not(facePitch)) then
+      MyTimeHelper:delFnContinueRuns(t)
+    else
+      -- LogHelper:debug(ActorHelper:getFacePitch(projectileid))
+      if (facePitch >= 270) then
+        ActorHelper:appendSpeed(projectileid, 0, 1, 0)
+        MyTimeHelper:delFnContinueRuns(t)
+        MyTimeHelper:callFnFastRuns(function ()
+          WorldHelper:despawnActor(projectileid)
+          self:tenThousandsSwordcraft2(objid, dstPos)
+        end, 1)
+      else
+        ActorHelper:turnFacePitch(projectileid, 45)
+      end
+      -- local pos = self:getDistancePosition(objid, 2)
+      -- pos.y = pos.y + 1
+      -- self:setPosition(projectileid, pos)
+    end
+  end, -1, t)
+end
+
+function MyActorHelper:tenThousandsSwordcraft2 (objid, dstPos, size)
+  size = size or 3
+  local y = dstPos.y + 20
+  local arr, projectiles = {}, {}
+  for i = dstPos.x - size, dstPos.x + size do
+    for ii = dstPos.z - size, dstPos.z + size do
+      table.insert(arr, MyPosition:new(i, y, ii))
+    end
+  end
+  self:tenThousandsSwordcraft3(objid, arr, projectiles)
+  local dim = MyPosition:new(5, 10, 5)
+  MyTimeHelper:callFnContinueRuns(function ()
+    for i, v in ipairs(projectiles) do
+      if (v[1]) then
+        local pos = self:getMyPosition(v[2])
+        if (pos) then
+          local objids = MyAreaHelper:getAllCreaturesArroundPos(pos, dim)
+          if (objids and #objids > 0) then
+            ActorHelper:appendSpeed(v[2], -v[3].x, -v[3].y, -v[3].z)
+            local speedVector3 = MyActorHelper:appendSpeed(v[2], 1, pos, self:getMyPosition(objids[1]))
+            v[3] = speedVector3
+          end
+        else
+          v[1] = false
+        end
+      end
+    end
+  end, 5)
+end
+
+function MyActorHelper:tenThousandsSwordcraft3 (objid, arr, projectiles)
+  if (#arr > 0) then
+    local index = math.random(1, #arr)
+    local speedVector3 = MyVector3:new(0, -1, 0)
+    local projectileid = WorldHelper:spawnProjectileByDirPos(objid, 
+      MyConstant.WEAPON.TEN_THOUSAND_SWORD_ID, arr[index], speedVector3, 100)
+    table.insert(projectiles, { true, projectileid, speedVector3 })
+    table.remove(arr, index)
+    MyTimeHelper:callFnFastRuns(function ()
+      self:tenThousandsSwordcraft3(objid, arr, projectiles)
+    end, 0.1)
+  end
 end

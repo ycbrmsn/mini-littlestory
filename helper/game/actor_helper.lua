@@ -207,6 +207,15 @@ function ActorHelper:getFacePitch (objid)
   end, nil, onceFailMessage, finillyFailMessage)
 end
 
+-- 转动actor仰望偏移角度
+function ActorHelper:turnFacePitch (objid, offset)
+  local onceFailMessage = '转动actor仰望偏移角度失败一次'
+  local finillyFailMessage = StringHelper:concat('转动actor仰望偏移角度失败，参数：objid=', objid, ', pitch=', pitch)
+  return CommonHelper:callIsSuccessMethod(function (p)
+    return Actor:turnFacePitch(objid, offset)
+  end, nil, onceFailMessage, finillyFailMessage)
+end
+
 -- 获取眼睛高度
 function ActorHelper:getEyeHeight (objid)
   local onceFailMessage = '获取眼睛高度失败一次'

@@ -97,3 +97,9 @@ function MyAreaHelper:getAllPlayersArroundPos (pos, dim)
   local posBeg, posEnd = MathHelper:getRectRange(pos, dim)
   return AreaHelper:getAllPlayersInAreaRange(posBeg, posEnd)
 end
+
+-- 位置附近的所有生物
+function MyAreaHelper:getAllCreaturesArroundPos (pos, dim)
+  local posBeg, posEnd = MathHelper:getRectRange(pos, dim)
+  return AreaHelper:getAllCreaturesInAreaRange(posBeg, posEnd)
+end
