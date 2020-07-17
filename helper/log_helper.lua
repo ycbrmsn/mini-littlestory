@@ -12,6 +12,7 @@ function LogHelper:debug (...)
       message = message .. StringHelper:toString(arg)
     end
     ChatHelper:sendSystemMsg('debug: ' .. message)
+    print('debug: ' .. message)
   end
 end
 
@@ -24,6 +25,7 @@ function LogHelper:info (...)
       message = message .. StringHelper:toString(arg)
     end
     ChatHelper:sendSystemMsg('info: ' .. message)
+    print('info: ' .. message)
   end
 end
 
@@ -35,6 +37,7 @@ function LogHelper:error (...)
     message = message .. StringHelper:toString(arg)
   end
   ChatHelper:sendSystemMsg('error: ' .. message)
+  print('error: ' .. message)
 end
 
 function LogHelper:call (f, p)

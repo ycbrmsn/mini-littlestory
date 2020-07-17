@@ -26,7 +26,6 @@ local clickBlock = function (event)
   LogHelper:call(function ()
     local myPosition = MyPosition:new(event)
     MyBlockHelper:check(myPosition, objid)
-    MyActorHelper:tenThousandsSwordcraft(objid)
   end)
 end
 
@@ -67,6 +66,7 @@ local playerAttackHit = function (event)
   local objid = event['eventobjid']
   local toobjid = event['toobjid']
   LogHelper:call(function ()
+    -- LogHelper:debug('攻击命中')
     MyPlayerHelper:playerAttackHit(objid, toobjid)
   end)
 end
@@ -76,6 +76,7 @@ local playerDamageActor = function (event)
   local objid = event['eventobjid']
   local toobjid = event['toobjid']
   LogHelper:call(function ()
+    -- LogHelper:debug('造成伤害')
     MyPlayerHelper:playerDamageActor(objid, toobjid)
   end)
 end

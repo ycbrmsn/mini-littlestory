@@ -1,6 +1,7 @@
 -- 我的玩家工具类
 MyPlayerHelper = {
-  players = {}
+  players = {},
+  defeatActors = {} -- 击败的生物
 }
 
 function MyPlayerHelper:addPlayer (objid)
@@ -31,12 +32,24 @@ function MyPlayerHelper:getHostPlayer ()
   return self:getAllPlayers()[1]
 end
 
+-- 记录死亡生物，5秒后清除数据
+function MyPlayerHelper:recordDefeatActor (objid)
+  self.defeatActors[objid] = true
+  MyTimeHelper:callFnAfterSecond(function ()
+    self.defeatActors[objid] = nil
+  end, 5)
+end
+
+function MyPlayerHelper:getDefeatActor (objid)
+  return self.defeatActors[objid]
+end
+
 function MyPlayerHelper:initPlayer (objid)
   PlayerHelper:setPlayerEnableBeKilled(objid, false)
   local player = self:addPlayer(objid)
   local hostPlayer = self:getHostPlayer()
   if (player == hostPlayer) then
-    logPaper = LogPaper:new()
+    -- logPaper = LogPaper:new()
     if (not(GameDataHelper:updateStoryData())) then -- 刚开始游戏
       MyTimeHelper:setHour(MyConstant.INIT_HOUR)
       player:setPosition(-24, 34.5, 6)
@@ -77,6 +90,11 @@ end
 
 -- 玩家击败生物
 function MyPlayerHelper:playerDefeatActor (playerid, objid)
+  if (self:getDefeatActor(objid)) then -- 该生物已死亡
+    return
+  else
+    self:recordDefeatActor(objid)
+  end
   local exp = MonsterHelper:getExp(playerid, objid)
   local player = self:getPlayer(playerid)
   player:gainExp(exp)

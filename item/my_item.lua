@@ -118,6 +118,14 @@ function MyWeapon:useItem (objid)
       return
     end
   end
+  if (self.cd) then
+    local ableUseSkill = MyItemHelper:ableUseSkill(objid, self.id, self.cd)
+    if (not(ableUseSkill)) then
+      self.cdReason = self.cdReason or '技能冷却中'
+      ChatHelper:sendSystemMsg(self.cdReason, objid)
+      return
+    end
+  end
   self:useItem1(objid)
 end
 

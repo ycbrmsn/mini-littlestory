@@ -518,7 +518,7 @@ function MyActorHelper:isApproachBlock (objid)
     == false
 end
 
--- 万剑诀
+-- 万剑诀 起势
 function MyActorHelper:tenThousandsSwordcraft (objid)
   local pos = self:getDistancePosition(objid, 2)
   pos.y = pos.y + 1
@@ -553,6 +553,7 @@ function MyActorHelper:tenThousandsSwordcraft (objid)
   end, -1, t)
 end
 
+-- 万剑诀 落势
 function MyActorHelper:tenThousandsSwordcraft2 (objid, dstPos, size)
   size = size or 3
   local y = dstPos.y + 20
@@ -569,7 +570,11 @@ function MyActorHelper:tenThousandsSwordcraft2 (objid, dstPos, size)
       if (v[1]) then
         local pos = self:getMyPosition(v[2])
         if (pos) then
-          local objids = MyAreaHelper:getAllCreaturesArroundPos(pos, dim)
+          -- local objids = MyAreaHelper:getAllCreaturesArroundPos(pos, dim)
+          local objids = MyAreaHelper:getAllCreaturesArroundPos(pos, dim, objid)
+          if (not(objids) or #objids == 0) then
+            objids = MyAreaHelper:getAllPlayersArroundPos(pos, dim, objid)
+          end
           if (objids and #objids > 0) then
             ActorHelper:appendSpeed(v[2], -v[3].x, -v[3].y, -v[3].z)
             local speedVector3 = MyActorHelper:appendSpeed(v[2], 1, pos, self:getMyPosition(objids[1]))
@@ -591,6 +596,8 @@ function MyActorHelper:tenThousandsSwordcraft3 (objid, arr, projectiles)
       MyConstant.WEAPON.TEN_THOUSAND_SWORD_ID, arr[index], speedVector3, 100)
     table.insert(projectiles, { true, projectileid, speedVector3 })
     table.remove(arr, index)
+    MyItemHelper:recordProjectile(projectileid, objid, 
+      MyItemHelper:getItem(MyWeaponAttr.tenThousandsSword.levelIds[1]), {})
     MyTimeHelper:callFnFastRuns(function ()
       self:tenThousandsSwordcraft3(objid, arr, projectiles)
     end, 0.1)

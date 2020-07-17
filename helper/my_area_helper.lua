@@ -93,13 +93,41 @@ function MyAreaHelper:creatureEnterArea (objid)
 end
 
 -- 位置附近的所有玩家
-function MyAreaHelper:getAllPlayersArroundPos (pos, dim)
+function MyAreaHelper:getAllPlayersArroundPos (pos, dim, objid, isTheSame)
   local posBeg, posEnd = MathHelper:getRectRange(pos, dim)
-  return AreaHelper:getAllPlayersInAreaRange(posBeg, posEnd)
+  local objids = AreaHelper:getAllPlayersInAreaRange(posBeg, posEnd)
+  return self:getTeamObjs(objids, objid, isTheSame, true)
 end
 
 -- 位置附近的所有生物
-function MyAreaHelper:getAllCreaturesArroundPos (pos, dim)
+function MyAreaHelper:getAllCreaturesArroundPos (pos, dim, objid, isTheSame)
   local posBeg, posEnd = MathHelper:getRectRange(pos, dim)
-  return AreaHelper:getAllCreaturesInAreaRange(posBeg, posEnd)
+  local objids = AreaHelper:getAllCreaturesInAreaRange(posBeg, posEnd)
+  return self:getTeamObjs(objids, objid, isTheSame, false)
+end
+
+function MyAreaHelper:getTeamObjs (objids, objid, isTheSame, isPlayer)
+  if (objids and objid) then
+    local arr, tid = {}
+    local teamid
+    if (ActorHelper:isPlayer(objid)) then
+      teamid = PlayerHelper:getTeam(objid)
+    else
+      teamid = CreatureHelper:getTeam(objid)
+    end
+    for i, v in ipairs(objids) do
+      if (isPlayer) then
+        tid = PlayerHelper:getTeam(v)
+      else
+        tid = CreatureHelper:getTeam(v)
+      end
+      if ((isTheSame and teamid == tid) or -- 同队
+        (not(isTheSame) and teamid ~= tid)) then -- 不同队
+        table.insert(arr, v)
+      end
+    end
+    return arr
+  else
+    return objids
+  end
 end

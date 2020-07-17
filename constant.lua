@@ -14,20 +14,13 @@ MyConstant = {
 
   -- 道具ID
   ITEM = {
-    COIN_ID = 4101, -- 铜板ID
-    LOG_PAPER_ID = 4106, -- 江湖日志ID
-    TOKEN_ID = 4111, -- 风颖城通行令牌ID
-    APPLE_ID = 4125, -- 苹果
     GAME_DATA_MAIN_INDEX_ID = 4098, -- 主线剧情序号
     GAME_DATA_MAIN_PROGRESS_ID = 4099, -- 主线剧情进度数据
     GAME_DATA_LEVEL_ID = 4100, -- 人物等级数据
-    GAME_DATA_EXP_ID = 4101, -- 人物经验数据
+    GAME_DATA_EXP_ID = 4101 -- 人物经验数据
   },
   WEAPON = {
-    ARROW_ID = 4130, -- 箭矢ID
-    QUIVER_ID = 4133, -- 箭袋ID
-    TEN_THOUSAND_SWORD_ID = 4103, -- 万剑诀飞剑
-    COMMON_PROJECTILE_ID = 4159 -- 通用投掷物ID
+    TEN_THOUSAND_SWORD_ID = 4107 -- 万剑诀飞剑
   },
   BODY_EFFECT = {
     SMOG1 = 1226, -- 一团小烟雾随即消失
@@ -58,11 +51,23 @@ MyWeaponAttr = {
     attack = 10,
     defense = 5,
     cd = 15,
+    cdReason = '御剑失控，短时间内无法再次御剑',
     skillname = '御剑飞行',
-    addAttPerLevel = 1,
-    addDefPerLevel = 2
+    addAttPerLevel = 4,
+    addDefPerLevel = 4
+  },
+  tenThousandsSword = { -- 万剑
+    attack = 20,
+    defense = 5,
+    cd = 30,
+    cdReason = '万剑诀技能冷却中',
+    skillname = '万剑诀',
+    hurt = 8,
+    addAttPerLevel = 6,
+    addDefPerLevel = 6
   }
 }
 
 -- 武器id
 MyWeaponAttr.controlSword.levelIds = { 4105 } -- 御剑
+MyWeaponAttr.tenThousandsSword.levelIds = { 4106 } -- 万剑

@@ -6,11 +6,6 @@ ControlSword = MyWeapon:new(MyWeaponAttr.controlSword)
 function ControlSword:useItem1 (objid)
   local player = MyPlayerHelper:getPlayer(objid)
   local state = player:getState()
-  local ableUseSkill = MyItemHelper:ableUseSkill(objid, self.id, self.cd)
-  if (not(ableUseSkill)) then
-    ChatHelper:sendSystemMsg('御剑失控，短时间内无法再次御剑', objid)
-    return
-  end
   if (state == 0) then -- 可御剑，则御剑
     player:flyStatic()
   elseif (state == 1) then -- 御剑静止，则前行
@@ -24,4 +19,28 @@ end
 function ControlSword:useItem2 (objid)
   local player = MyPlayerHelper:getPlayer(objid)
   player:stopFly(true)
+end
+
+-- 万剑
+TenThousandsSword = MyWeapon:new(MyWeaponAttr.tenThousandsSword)
+
+function TenThousandsSword:useItem1 (objid)
+  MyActorHelper:tenThousandsSwordcraft(objid)
+  MyItemHelper:recordUseSkill(objid, self.id, self.cd)
+end
+
+-- 投掷物命中
+function TenThousandsSword:projectileHit (projectileInfo, toobjid, blockid, pos)
+  local objid = projectileInfo.objid
+  local player = MyPlayerHelper:getPlayer(objid)
+  if (toobjid > 0) then -- 命中生物（似乎命中同队生物不会进入这里）
+    -- 判断是否是敌对生物
+    if (not(MyActorHelper:isTheSameTeamActor(objid, toobjid))) then -- 敌对生物，则造成伤害
+      local key = MyPlayerHelper:generateDamageKey(objid, toobjid)
+      local isHurt = MyTimeHelper:getFrameInfo(key)
+      if (not(isHurt)) then -- 造成伤害事件没有发生
+        player:damageActor(toobjid, self.hurt)
+      end
+    end
+  end
 end

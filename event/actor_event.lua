@@ -58,6 +58,7 @@ local actorProjectileHit = function (event)
   local projectileid, toobjid, blockid = event.eventobjid, event.toobjid, event.blockid
   local x, y, z = event.x, event.y, event.z
   LogHelper:call(function ()
+    -- LogHelper:debug('投掷物命中')
     MyItemHelper:projectileHit(projectileid, toobjid, blockid, MyPosition:new(x, y, z))
   end)
 end
