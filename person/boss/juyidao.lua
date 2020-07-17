@@ -87,7 +87,7 @@ function Juyidao:checkAreaPlayer ()
           minDisPlayerid = v
           break
         end
-        local player = MyPlayerHelper:getPlayer(v)
+        local player = PlayerHelper:getPlayer(v)
         local distance = MathHelper:getDistance(player:getMyPosition(), self:getMyPosition())
         if (not(minDis) or minDis > distance) then
           minDis = distance
@@ -95,7 +95,7 @@ function Juyidao:checkAreaPlayer ()
         end
       end
       self.targetObjid = minDisPlayerid
-      self.targetPlayer = MyPlayerHelper:getPlayer(self.targetObjid)
+      self.targetPlayer = PlayerHelper:getPlayer(self.targetObjid)
       self:startBattle()
     end
   else -- 身边没有玩家
@@ -292,7 +292,7 @@ function Juyidao:attackHit (toobjid)
   elseif (self.battleType == 3) then
     self.dontDo = true
     self.battleProgress = 3
-    local player = MyPlayerHelper:getPlayer(toobjid)
+    local player = PlayerHelper:getPlayer(toobjid)
     local pos = player:getMyPosition()
     local selfPos = self:getMyPosition()
     selfPos.y = pos.y

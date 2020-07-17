@@ -72,13 +72,13 @@ function MyBlockHelper:check (pos, objid)
     if (candle) then
       local myActor = self:getWhoseCandle(pos)
       if (myActor) then
-        local player = MyPlayerHelper:getPlayer(objid)
+        local player = PlayerHelper:getPlayer(objid)
         myActor:candleEvent(player, candle)
       end
     end
   elseif (MyBed:isBed(blockid)) then
     -- 处理床
-    MyPlayerHelper:showToast(objid, '你无法在别人的床上睡觉')
+    PlayerHelper:showToast(objid, '你无法在别人的床上睡觉')
   end
 end
 
@@ -147,9 +147,9 @@ end
 function MyBlockHelper:blockDigEnd (objid, blockid, x, y, z)
   local disableMsg = '不可被破坏'
   if (blockid == BlockHelper.switchid) then
-    MyPlayerHelper:showToast(objid, '开关', disableMsg)
+    PlayerHelper:showToast(objid, '开关', disableMsg)
   elseif (blockid == BlockHelper.doorid) then
-    MyPlayerHelper:showToast(objid, '门', disableMsg)
+    PlayerHelper:showToast(objid, '门', disableMsg)
   end
 end
 

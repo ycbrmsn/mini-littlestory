@@ -4,7 +4,7 @@
 ControlSword = MyWeapon:new(MyWeaponAttr.controlSword)
 
 function ControlSword:useItem1 (objid)
-  local player = MyPlayerHelper:getPlayer(objid)
+  local player = PlayerHelper:getPlayer(objid)
   local state = player:getState()
   if (state == 0) then -- 可御剑，则御剑
     player:flyStatic()
@@ -17,7 +17,7 @@ end
 
 -- 潜行
 function ControlSword:useItem2 (objid)
-  local player = MyPlayerHelper:getPlayer(objid)
+  local player = PlayerHelper:getPlayer(objid)
   player:stopFly(true)
 end
 
@@ -32,11 +32,11 @@ end
 -- 投掷物命中
 function TenThousandsSword:projectileHit (projectileInfo, toobjid, blockid, pos)
   local objid = projectileInfo.objid
-  local player = MyPlayerHelper:getPlayer(objid)
+  local player = PlayerHelper:getPlayer(objid)
   if (toobjid > 0) then -- 命中生物（似乎命中同队生物不会进入这里）
     -- 判断是否是敌对生物
     if (not(MyActorHelper:isTheSameTeamActor(objid, toobjid))) then -- 敌对生物，则造成伤害
-      local key = MyPlayerHelper:generateDamageKey(objid, toobjid)
+      local key = PlayerHelper:generateDamageKey(objid, toobjid)
       local isHurt = MyTimeHelper:getFrameInfo(key)
       if (not(isHurt)) then -- 造成伤害事件没有发生
         player:damageActor(toobjid, self.hurt)

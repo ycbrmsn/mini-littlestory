@@ -37,7 +37,7 @@ end
 
 -- 计算玩家杀怪获得的经验
 function MonsterHelper:calExp (playerid, expData)
-  local player = MyPlayerHelper:getPlayer(playerid)
+  local player = PlayerHelper:getPlayer(playerid)
   local levelDiffer = player:getLevel() - expData.level
   if (levelDiffer <= -6) then -- 相差6级双倍经验
     return expData.exp * 2

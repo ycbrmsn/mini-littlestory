@@ -102,18 +102,18 @@ function MyWeapon:newLevels ()
 end
 
 function MyWeapon:pickUp (objid)
-  local player = MyPlayerHelper:getPlayer(objid)
+  local player = PlayerHelper:getPlayer(objid)
   player:changeAttr(self.attack, self.defense)
 end
 
 function MyWeapon:putDown (objid)
-  local player = MyPlayerHelper:getPlayer(objid)
+  local player = PlayerHelper:getPlayer(objid)
   player:changeAttr(-self.attack, -self.defense)
 end
 
 function MyWeapon:useItem (objid)
   if (self.skillname) then
-    local player = MyPlayerHelper:getPlayer(objid)
+    local player = PlayerHelper:getPlayer(objid)
     if (not(player:ableUseSkill(self.skillname))) then
       return
     end
@@ -131,7 +131,7 @@ end
 
 -- 减少体力
 function MyWeapon:reduceStrength (objid)
-  local player = MyPlayerHelper:getPlayer(objid)
+  local player = PlayerHelper:getPlayer(objid)
   player:reduceStrength(self.strength)
 end
 

@@ -99,7 +99,7 @@ end
 local playerSelectShortcut = function (event)
   local objid = event['eventobjid']
   LogHelper:call(function ()
-    local player = MyPlayerHelper:getPlayer(objid)
+    local player = PlayerHelper:getPlayer(objid)
     player:holdItem()
   end)
 end
@@ -108,7 +108,7 @@ end
 local playerShortcutChange = function (event)
   local objid = event['eventobjid']
   LogHelper:call(function ()
-    local player = MyPlayerHelper:getPlayer(objid)
+    local player = PlayerHelper:getPlayer(objid)
     player:holdItem()
   end)
 end

@@ -5,8 +5,191 @@ PlayerHelper = {
     CUR_HP = 2,
     MAX_HUNGER = 5,
     CUR_HUNGER = 6
-  }
+  },
+  players = {},
+  defeatActors = {} -- 击败的生物
 }
+
+function PlayerHelper:addPlayer (objid)
+  local player = MyPlayer:new(objid)
+  table.insert(self:getAllPlayers(), player)
+  return player
+end
+
+function PlayerHelper:removePlayer (objid)
+  for i, v in ipairs(self:getAllPlayers()) do
+    if (v.objid == objid) then
+      table.remove(self:getAllPlayers(), i)
+      break
+    end
+  end
+end
+
+function PlayerHelper:getPlayer (objid)
+  for i, v in ipairs(self:getAllPlayers()) do
+    if (v.objid == objid) then
+      return v
+    end
+  end
+  return nil
+end
+
+function PlayerHelper:getHostPlayer ()
+  return self:getAllPlayers()[1]
+end
+
+function PlayerHelper:getAllPlayers ()
+  return self.players
+end
+
+function PlayerHelper:getAllPlayerNames ()
+  local names = {}
+  for i, v in ipairs(self:getAllPlayers()) do
+    table.insert(names, v:getName())
+  end
+  return names
+end
+
+-- 记录死亡生物，5秒后清除数据
+function PlayerHelper:recordDefeatActor (objid)
+  self.defeatActors[objid] = true
+  MyTimeHelper:callFnAfterSecond(function ()
+    self.defeatActors[objid] = nil
+  end, 5)
+end
+
+function PlayerHelper:getDefeatActor (objid)
+  return self.defeatActors[objid]
+end
+
+-- 显示飘窗信息
+function PlayerHelper:showToast (objid, ...)
+  local info = StringHelper:concat(...)
+  MyTimeHelper:callFnInterval(objid, 'toast', function (p)
+    PlayerHelper:notifyGameInfo2Self(objid, info)
+  end, 2)
+end
+
+function PlayerHelper:showActorHp (objid, toobjid)
+  local actorname, hp
+  if (ActorHelper:isPlayer(toobjid)) then -- 生物是玩家
+    local player = PlayerHelper:getPlayer(toobjid)
+    actorname = player:getName()
+    hp = PlayerHelper:getHp(toobjid)
+  else
+    actorname = CreatureHelper:getActorName(toobjid)
+    hp = CreatureHelper:getHp(toobjid)
+  end
+  local t = 'showActorHp' .. toobjid
+  MyTimeHelper:delFnFastRuns(t)
+  MyTimeHelper:callFnFastRuns(function ()
+    if (hp and hp <= 0) then
+      self:showToast(objid, StringHelper:concat(actorname, '已死亡'))
+    else
+      hp = math.ceil(hp)
+      self:showToast(objid, StringHelper:concat(actorname, '剩余生命：', hp))
+    end
+  end, 0.1, t)
+end
+
+-- actor行动
+function PlayerHelper:runPlayers ()
+  for k, v in pairs(self.players) do
+    LogHelper:call(function ()
+      v.action:execute()
+    end)
+  end
+end
+
+function PlayerHelper:generateDamageKey (objid, toobjid)
+  return objid .. 'damage' .. toobjid
+end
+
+function PlayerHelper:everyPlayerDoSomeThing (f, afterSeconds)
+  if (not(f)) then
+    return
+  end
+  if (afterSeconds) then
+    MyTimeHelper:callFnAfterSecond (function ()
+      for i, v in ipairs(self:getAllPlayers()) do
+        f(v)
+      end
+    end, afterSeconds)
+  else
+    for i, v in ipairs(self:getAllPlayers()) do
+      f(v)
+    end
+  end
+end
+
+function PlayerHelper:updateEveryPlayerPositions ()
+  self:everyPlayerDoSomeThing(function (player)
+    player:updatePositions()
+  end)
+end
+
+function PlayerHelper:setEveryPlayerPosition (x, y, z, afterSeconds)
+  self:everyPlayerDoSomeThing(function (player)
+    player:setPosition(x, y, z)
+  end, afterSeconds)
+end
+
+function PlayerHelper:everyPlayerSpeakAfterSecond (second, ...)
+  for i, v in ipairs(self:getAllPlayers()) do
+    v.action:speakAfterSecond(v.objid, second, ...)
+  end
+end
+
+function PlayerHelper:everyPlayerSpeakToAllAfterSecond (second, ...)
+  for i, v in ipairs(self:getAllPlayers()) do
+    v.action:speakToAllAfterSecond(second, ...)
+  end
+end
+
+function PlayerHelper:everyPlayerSpeakInHeartAfterSecond (second, ...)
+  for i, v in ipairs(self:getAllPlayers()) do
+    v.action:speakInHeartAfterSecond(v.objid, second, ...)
+  end
+end
+
+function PlayerHelper:everyPlayerNotify (info, afterSeconds)
+  self:everyPlayerDoSomeThing(function (player)
+    PlayerHelper:notifyGameInfo2Self(player.objid, info)
+  end, afterSeconds)
+end
+
+function PlayerHelper:everyPlayerEnableMove (enable, afterSeconds)
+  self:everyPlayerDoSomeThing(function (player)
+    player:enableMove(enable, true)
+  end, afterSeconds)
+end
+
+function PlayerHelper:everyPlayerRunTo (positions, callback, param, afterSeconds)
+  self:everyPlayerDoSomeThing(function (player)
+    player.action:runTo(positions, callback, param)
+  end, afterSeconds)
+end
+
+function PlayerHelper:everyPlayerAddBuff (buffid, bufflv, customticks, afterSeconds)
+  self:everyPlayerDoSomeThing(function (player)
+    ActorHelper:addBuff(player.objid, buffid, bufflv, customticks)
+  end, afterSeconds)
+end
+
+function PlayerHelper:changeVMode (objid, viewmode, islock)
+  viewmode = viewmode or VIEWPORTTYPE.BACKVIEW
+  if (not(objid)) then
+    self:everyPlayerDoSomeThing(function (p)
+      PlayerHelper:changeViewMode(p.objid, viewmode, islock)
+    end)
+  elseif (type(objid) == 'number') then
+    PlayerHelper:changeViewMode(objid, viewmode, islock)
+  else
+    for i, v in ipairs(objid) do
+      PlayerHelper:changeViewMode(v, viewmode, islock)
+    end
+  end
+end
 
 -- 设置道具不可丢弃
 function PlayerHelper:setItemDisableThrow (objid, itemid)

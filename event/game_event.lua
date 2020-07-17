@@ -5,21 +5,25 @@ local playerEnterGame = function (event)
   local objid = event['eventobjid']
   LogHelper:call(function ()
     MyPlayerHelper:initPlayer(objid)
-    -- MyPlayerHelper:getHostPlayer().action:runTo({ { x = 0, y = 7, z = 70 } })
+    -- PlayerHelper:getHostPlayer().action:runTo({ { x = 0, y = 7, z = 70 } })
   end)
 end
 
 -- eventobjid, toobjid
 local playerLeaveGame = function (event)
   -- 从players中清除数据
-  MyPlayerHelper:removePlayer(event.eventobjid)
+  LogHelper:call(function ()
+    PlayerHelper:removePlayer(event.eventobjid)
+  end)
 end
 
 -- 无参数
 local startGame = function ()
   LogHelper:debug('开始游戏')
-  MyBlockHelper:initBlocks()
-  initDoorAreas()
+  LogHelper:call(function ()
+    MyBlockHelper:initBlocks()
+    -- initDoorAreas()
+  end)
 end
 
 -- 无参数
@@ -66,15 +70,15 @@ local atSecond = function (event)
   local second = event['second']
   LogHelper:call(function ()
     MyTimeHelper:doPerSecond(second)
-    MyPlayerHelper:updateEveryPlayerPositions()
+    PlayerHelper:updateEveryPlayerPositions()
     MyActorHelper:runActors()
-    MyPlayerHelper:runPlayers()
+    PlayerHelper:runPlayers()
 
-    if (second == 1) then
-      initMyActors()
-      MonsterHelper:init()
-      MyAreaHelper:initAreas()
-    end
+    -- if (second == 1) then
+    --   initMyActors()
+    --   MonsterHelper:init()
+    --   MyAreaHelper:initAreas()
+    -- end
 
     -- if (second == 3) then
     --   MyStoryHelper.mainIndex = 2

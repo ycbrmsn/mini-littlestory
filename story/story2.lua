@@ -95,7 +95,7 @@ end
 
 function Story2Helper:recover (player)
   local mainProgress = MyStoryHelper:getMainStoryProgress()
-  local hostPlayer = MyPlayerHelper:getHostPlayer()
+  local hostPlayer = PlayerHelper:getHostPlayer()
   if (mainProgress == 1) then -- 村口集合
     if (player == hostPlayer) then
       story2:goToCollege()

@@ -3,7 +3,7 @@ GameDataHelper = {}
 
 -- 更新剧情数据
 function GameDataHelper:updateStoryData ()
-  local player = MyPlayerHelper:getHostPlayer()
+  local player = PlayerHelper:getHostPlayer()
   local mainIndex = BackpackHelper:getItemNumAndGrid(player.objid, MyConstant.ITEM.GAME_DATA_MAIN_INDEX_ID)
   local mainProgress = BackpackHelper:getItemNumAndGrid(player.objid, MyConstant.ITEM.GAME_DATA_MAIN_PROGRESS_ID)
   if (mainIndex == 0) then -- 游戏刚开始
@@ -35,7 +35,7 @@ end
 
 -- 更新主线剧情序号道具
 function GameDataHelper:updateMainIndex ()
-  local player = MyPlayerHelper:getHostPlayer()
+  local player = PlayerHelper:getHostPlayer()
   local itemid = MyConstant.ITEM.GAME_DATA_MAIN_INDEX_ID
   local gridid = 26
   local num = MyStoryHelper.mainIndex
@@ -44,7 +44,7 @@ end
 
 -- 更新主线剧情进度道具
 function GameDataHelper:updateMainProgress ()
-  local player = MyPlayerHelper:getHostPlayer()
+  local player = PlayerHelper:getHostPlayer()
   local itemid = MyConstant.ITEM.GAME_DATA_MAIN_PROGRESS_ID
   local gridid = 27
   local num = MyStoryHelper.mainProgress
@@ -80,7 +80,7 @@ end
 
 -- 更新游戏数据道具
 function GameDataHelper:updateGameData (player)
-  local hostPlayer = MyPlayerHelper:getHostPlayer()
+  local hostPlayer = PlayerHelper:getHostPlayer()
   if (player == hostPlayer) then
     self:updateMainIndex()
     self:updateMainProgress()

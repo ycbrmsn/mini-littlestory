@@ -134,7 +134,7 @@ function Guard:checkTokenArea (objid, areaid)
   local isEnter = false
   for i, v in ipairs(self.initAreas) do
     if (i < 5 and v.areaid == areaid) then
-      local player = MyPlayerHelper:getPlayer(objid)
+      local player = PlayerHelper:getPlayer(objid)
       if (not(player:takeOutItem(MyConstant.ITEM.TOKEN_ID))) then
         self:speakTo(objid, 0, '出示令牌。强闯者，捕。')
         MyTimeHelper:callFnCanRun(objid, 'checkToken', function ()

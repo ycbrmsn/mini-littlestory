@@ -428,7 +428,7 @@ end
 function MyActorHelper:imprisonActor (objid)
   MyActorHelper:playBodyEffectById(objid, MyConstant.BODY_EFFECT.LIGHT22)
   if (ActorHelper:isPlayer(objid)) then -- 玩家
-    local player = MyPlayerHelper:getPlayer(objid)
+    local player = PlayerHelper:getPlayer(objid)
     player:setImprisoned(true)
   else
     local actor = self:getActorByObjid(objid)
@@ -444,7 +444,7 @@ end
 function MyActorHelper:cancelImprisonActor (objid)
   local canCancel
   if (ActorHelper:isPlayer(objid)) then -- 玩家
-    local player = MyPlayerHelper:getPlayer(objid)
+    local player = PlayerHelper:getPlayer(objid)
     canCancel = player:setImprisoned(false)
   else
     local actor = self:getActorByObjid(objid)
@@ -463,7 +463,7 @@ end
 function MyActorHelper:sealActor (objid)
   MyActorHelper:playBodyEffectById(objid, MyConstant.BODY_EFFECT.LIGHT47)
   if (ActorHelper:isPlayer(objid)) then -- 玩家
-    local player = MyPlayerHelper:getPlayer(objid)
+    local player = PlayerHelper:getPlayer(objid)
     player:setSeal(true)
   else
     local actor = self:getActorByObjid(objid)
@@ -479,7 +479,7 @@ end
 function MyActorHelper:cancelSealActor (objid)
   local canCancel
   if (ActorHelper:isPlayer(objid)) then -- 玩家
-    local player = MyPlayerHelper:getPlayer(objid)
+    local player = PlayerHelper:getPlayer(objid)
     canCancel = player:setSeal(false)
   else
     local actor = self:getActorByObjid(objid)

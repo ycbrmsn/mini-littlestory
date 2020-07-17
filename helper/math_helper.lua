@@ -81,7 +81,7 @@ end
 
 -- 一个生物处于玩家的哪个角度，正前方为0，左负右正，正后方为180
 function MathHelper:getRelativePlayerAngle (objid, toobjid)
-  local player = MyPlayerHelper:getPlayer(objid)
+  local player = PlayerHelper:getPlayer(objid)
   local playerPos = player:getMyPosition()
   local aimPos = MyPosition:new(PlayerHelper:getAimPos(objid))
   local leftPos = player:getDistancePosition(1, -90) -- 左边点

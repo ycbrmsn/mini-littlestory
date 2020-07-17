@@ -27,7 +27,7 @@ function Story1:new ()
 end
 
 function Story1:playerBadHurt (objid)
-  local player = MyPlayerHelper:getPlayer(objid)
+  local player = PlayerHelper:getPlayer(objid)
   local pos
   for i, v in ipairs(miaolan.firstFloorBedPositions) do
     pos = v
@@ -38,7 +38,7 @@ function Story1:playerBadHurt (objid)
   player:setPosition(pos)
   PlayerHelper:rotateCamera(objid, ActorHelper.FACE_YAW.SOUTH, 0)
   player.action:playDown(1)
-  MyPlayerHelper:changeViewMode(objid)
+  PlayerHelper:changeVMode(objid)
   player:thinkTo(objid, 0, '没想到我又受重伤了。')
 end
 

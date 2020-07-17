@@ -53,11 +53,11 @@ function MyAreaHelper:initShowToastAreas ()
 end
 
 function MyAreaHelper:showToastArea (objid, areaid)
-  local player = MyPlayerHelper:getPlayer(objid)
+  local player = PlayerHelper:getPlayer(objid)
   for k, v in pairs(self.showToastAreas) do
     if (k == areaid) then
       if (v[1] == -1 or (player.prevAreaId and player.prevAreaId == v[1])) then
-        MyPlayerHelper:showToast(objid, v[2])
+        PlayerHelper:showToast(objid, v[2])
         if (#v == 3) then -- 生成怪物
           v[3]()
         end
@@ -74,7 +74,7 @@ end
 
 function MyAreaHelper:playerEnterArea (objid, areaid)
   MyStoryHelper:playerEnterArea(objid, areaid)
-  local myPlayer = MyPlayerHelper:getPlayer(objid)
+  local myPlayer = PlayerHelper:getPlayer(objid)
   if (areaid == myPlayer.toAreaId) then -- 玩家自动前往地点
     AreaHelper:destroyArea(areaid)
     -- myPlayer.action:runAction()
