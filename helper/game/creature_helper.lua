@@ -9,6 +9,32 @@ function CreatureHelper:setHp (objid, hp)
   return self:setAttr(objid, CREATUREATTR.CUR_HP, hp)
 end
 
+function CreatureHelper:closeAI (objid)
+  return CreatureHelper:setAIActive(objid, false)
+end
+
+function CreatureHelper:openAI (objid)
+  return CreatureHelper:setAIActive(objid, true)
+end
+
+function CreatureHelper:stopRun (objid)
+  self:closeAI(objid)
+  local pos = ActorHelper:getMyPosition(objid)
+  ActorHelper:tryMoveToPos(objid, pos.x, pos.y, pos.z)
+end
+
+function CreatureHelper:closeDoor (objid, areaid)
+  local doorPos = AreaHelper.allDoorAreas[areaid]
+  if (doorPos) then -- 如果门位置存在，说明这是门区域，则判断该区域内是否还有其他生物
+    local creaturelist = AreaHelper:getAllCreaturesInAreaId(areaid)
+    if (creaturelist and #creaturelist > 0) then -- 如果区域内还有其他生物，则不关门
+      -- do nothing
+    else
+      BlockHelper:closeDoor(doorPos)
+    end
+  end
+end
+
 -- 封装原始接口
 
 -- 设置生物AI是否生效

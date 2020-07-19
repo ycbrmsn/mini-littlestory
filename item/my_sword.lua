@@ -25,7 +25,7 @@ end
 TenThousandsSword = MyWeapon:new(MyWeaponAttr.tenThousandsSword)
 
 function TenThousandsSword:useItem1 (objid)
-  MyActorHelper:tenThousandsSwordcraft(objid)
+  SkillHelper:tenThousandsSwordcraft(objid)
   MyItemHelper:recordUseSkill(objid, self.id, self.cd)
 end
 
@@ -35,7 +35,7 @@ function TenThousandsSword:projectileHit (projectileInfo, toobjid, blockid, pos)
   local player = PlayerHelper:getPlayer(objid)
   if (toobjid > 0) then -- 命中生物（似乎命中同队生物不会进入这里）
     -- 判断是否是敌对生物
-    if (not(MyActorHelper:isTheSameTeamActor(objid, toobjid))) then -- 敌对生物，则造成伤害
+    if (not(ActorHelper:isTheSameTeamActor(objid, toobjid))) then -- 敌对生物，则造成伤害
       local key = PlayerHelper:generateDamageKey(objid, toobjid)
       local isHurt = MyTimeHelper:getFrameInfo(key)
       if (not(isHurt)) then -- 造成伤害事件没有发生

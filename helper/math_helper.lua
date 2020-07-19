@@ -85,7 +85,7 @@ function MathHelper:getRelativePlayerAngle (objid, toobjid)
   local playerPos = player:getMyPosition()
   local aimPos = MyPosition:new(PlayerHelper:getAimPos(objid))
   local leftPos = player:getDistancePosition(1, -90) -- 左边点
-  local pos = MyActorHelper:getMyPosition(toobjid)
+  local pos = ActorHelper:getMyPosition(toobjid)
   local vx, vz = pos.x - playerPos.x, pos.z - playerPos.z
   local angle1 = self:getTwoVector2Angle(aimPos.x - playerPos.x, aimPos.z - playerPos.z, vx, vz) -- 与前方向量夹角
   local angle2 = self:getTwoVector2Angle(leftPos.x - playerPos.x, leftPos.z - playerPos.z, vx, vz) -- 与左方向量夹角

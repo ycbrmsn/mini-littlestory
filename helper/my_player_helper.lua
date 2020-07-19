@@ -1,9 +1,11 @@
 -- 我的玩家工具类
 MyPlayerHelper = {}
 
-function MyPlayerHelper:initPlayer (objid)
+-- 玩家进入游戏
+function MyPlayerHelper:playerEnterGame (objid)
+  PlayerHelper:playerEnterGame(objid)
   PlayerHelper:setPlayerEnableBeKilled(objid, false)
-  local player = PlayerHelper:addPlayer(objid)
+  local player = PlayerHelper:getPlayer(objid)
   local hostPlayer = PlayerHelper:getHostPlayer()
   if (player == hostPlayer) then
     -- logPaper = LogPaper:new()
@@ -20,50 +22,83 @@ function MyPlayerHelper:initPlayer (objid)
   MyStoryHelper:recover(player) -- 恢复剧情
 end
 
+-- 玩家离开游戏
+function MyPlayerHelper:playerLeaveGame (objid)
+  PlayerHelper:playerLeaveGame(objid)
+end
+
+-- 玩家进入区域
+function MyPlayerHelper:playerEnterArea (objid, areaid)
+  PlayerHelper:playerEnterArea(objid, areaid)
+  MyAreaHelper:playerEnterArea(objid, areaid)
+end
+
+-- 玩家离开区域
+function MyPlayerHelper:playerLeaveArea (objid, areaid)
+  PlayerHelper:playerLeaveArea(objid, areaid)
+  MyStoryHelper:playerLeaveArea(objid, areaid)
+end
+
+-- 玩家点击方块
+function MyPlayerHelper:playerClickBlock (objid, blockid, x, y, z)
+  PlayerHelper:playerClickBlock(objid, blockid, x, y, z)
+end
+
+-- 玩家使用道具
+function MyPlayerHelper:playerUseItem (objid, itemid)
+  PlayerHelper:playerUseItem(objid, itemid)
+end
+
+-- 玩家点击生物
+function MyPlayerHelper:playerClickActor (objid, toobjid)
+  PlayerHelper:playerClickActor(objid, toobjid)
+end
+
+-- 玩家获得道具
+function MyPlayerHelper:playerAddItem (objid, itemid, itemnum)
+  PlayerHelper:playerAddItem(objid, itemid, itemnum)
+  MyStoryHelper:playerAddItem(objid, itemid, itemnum)
+end
+
 -- 玩家攻击命中
 function MyPlayerHelper:playerAttackHit (objid, toobjid)
-  local itemid = PlayerHelper:getCurToolID(objid)
-  local item = MyItemHelper:getItem(itemid)
-  if (item) then
-    item:attackHit(objid, toobjid)
-    PlayerHelper:showActorHp(objid, toobjid)
-  end
+  PlayerHelper:playerAttackHit(objid, toobjid)
 end
 
 -- 玩家造成伤害
 function MyPlayerHelper:playerDamageActor (objid, toobjid)
-  local key = PlayerHelper:generateDamageKey(objid, toobjid)
-  MyTimeHelper:setFrameInfo(key, true)
-  PlayerHelper:showActorHp(objid, toobjid)
+  PlayerHelper:playerDamageActor(objid, toobjid)
 end
 
 -- 玩家击败生物
 function MyPlayerHelper:playerDefeatActor (playerid, objid)
-  if (PlayerHelper:getDefeatActor(objid)) then -- 该生物已死亡
-    return
-  else
-    PlayerHelper:recordDefeatActor(objid)
-  end
-  local exp = MonsterHelper:getExp(playerid, objid)
-  local player = PlayerHelper:getPlayer(playerid)
-  player:gainExp(exp)
-end
-
--- 玩家移动一格
-function MyPlayerHelper:playerMoveOneBlockSize (objid)
-  MyActorHelper:resumeClickActor(objid)
-  if (MyActorHelper:isApproachBlock(objid)) then
-    local player = PlayerHelper:getPlayer(objid)
-    player:stopFly(true)
-  end
+  PlayerHelper:playerDefeatActor(playerid, objid)
 end
 
 -- 玩家受到伤害
 function MyPlayerHelper:playerBeHurt (objid, toobjid)
-  local player = PlayerHelper:getPlayer(objid)
-  if (player:isFlying()) then
-    player:stopFly()
-  end
+  PlayerHelper:playerBeHurt(objid, toobjid)
+end
+
+-- 玩家选择快捷栏
+function MyPlayerHelper:playerSelectShortcut (objid)
+  PlayerHelper:playerSelectShortcut(objid)
+end
+
+-- 玩家快捷栏变化
+function MyPlayerHelper:playerShortcutChange (objid)
+  PlayerHelper:playerShortcutChange(objid)
+end
+
+-- 玩家运动状态改变
+function MyPlayerHelper:playerMotionStateChange (objid, playermotion)
+  PlayerHelper:playerMotionStateChange(objid, playermotion)
+end
+
+-- 玩家移动一格
+function MyPlayerHelper:playerMoveOneBlockSize (objid)
+  ActorHelper:resumeClickActor(objid)
+  PlayerHelper:playerMoveOneBlockSize(objid)
 end
 
 -- 骑乘

@@ -7,6 +7,51 @@ AreaHelper = {
   allDoorAreas = {}
 }
 
+function MyAreaHelper:isAirArea (pos)
+  return BlockHelper:isAirBlock(pos.x, pos.y, pos.z) and BlockHelper:isAirBlock(pos.x, pos.y + 1, pos.z)
+end
+
+function MyAreaHelper:removeToArea (myActor)
+  if (myActor and myActor.wants) then
+    local want = myActor.wants[1]
+    if (want.toAreaId) then
+      AreaHelper:destroyArea(want.toAreaId)
+      want.toAreaId = nil
+    end
+  end
+end
+
+function MyAreaHelper:getRandomAirPositionInArea (areaid)
+  local pos = AreaHelper:getRandomPos(areaid)
+  local times = 1
+  while (not(self:isAirArea(pos)) and times < self.maxRandomTimes) do
+    pos = AreaHelper:getRandomPos(areaid)
+    times = times + 1
+  end
+  return pos
+end
+
+-- 显示区域提示，如果需要生成怪物并生成怪物
+function MyAreaHelper:showToastArea (objid, areaid)
+  local player = PlayerHelper:getPlayer(objid)
+  for k, v in pairs(self.showToastAreas) do
+    if (k == areaid) then
+      if (v[1] == -1 or (player.prevAreaId and player.prevAreaId == v[1])) then
+        PlayerHelper:showToast(objid, v[2])
+        if (#v == 3) then -- 生成怪物
+          v[3]()
+        end
+      end
+      player.prevAreaId = areaid
+      return true
+    elseif (v[1] == areaid) then
+      player.prevAreaId = areaid
+      return true
+    end
+  end
+  return false
+end
+
 -- 创建移动点区域
 function AreaHelper:createMovePosArea (pos)
   return self:createAreaRect(pos, self.movePosDim)

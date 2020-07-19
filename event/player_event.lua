@@ -6,7 +6,7 @@ local playerEnterArea = function (event)
   local areaid = event['areaid']
   -- LogHelper:info('玩家进入区域', areaid % 1000)
   LogHelper:call(function ()
-    MyAreaHelper:playerEnterArea(objid, areaid)
+    MyPlayerHelper:playerEnterArea(objid, areaid)
   end)
 end
 
@@ -16,16 +16,14 @@ local playerLeaveArea = function (event)
   local areaid = event['areaid']
   -- LogHelper:debug('玩家离开区域' .. areaid)
   LogHelper:call(function ()
-    MyAreaHelper:playerLeaveArea(objid, areaid)
+    MyPlayerHelper:playerLeaveArea(objid, areaid)
   end)
 end
 
 -- eventobjid, blockid, x, y, z
-local clickBlock = function (event)
-  local objid = event['eventobjid']
+local playerClickBlock = function (event)
   LogHelper:call(function ()
-    local myPosition = MyPosition:new(event)
-    MyBlockHelper:check(myPosition, objid)
+    MyPlayerHelper:playerClickBlock(event.eventobjid, event.blockid, event.x, event.y, event.z)
   end)
 end
 
@@ -34,7 +32,7 @@ local playerUseItem = function (event)
   local objid = event['eventobjid']
   local itemid = event['itemid']
   LogHelper:call(function ()
-    MyItemHelper:useItem(objid, itemid)
+    MyPlayerHelper:playerUseItem(objid, itemid)
   end)
 end
 
@@ -44,7 +42,7 @@ local playerClickActor = function (event)
   local toobjid = event['toobjid']
   -- local actorid = CreatureHelper:getActorID(toobjid)
   LogHelper:call(function ()
-    MyActorHelper:playerClickActor(objid, toobjid)
+    MyPlayerHelper:playerClickActor(objid, toobjid)
   end)
   
 end
@@ -57,7 +55,7 @@ local playerAddItem = function (event)
   local itemnum = event['itemnum']
   -- LogHelper:info(objid, ',', toobjid, ',', itemid, ',', itemnum)
   LogHelper:call(function ()
-    MyStoryHelper:playerAddItem(objid, itemid, itemnum)
+    MyPlayerHelper:playerAddItem(objid, itemid, itemnum)
   end)
 end
 
@@ -99,8 +97,7 @@ end
 local playerSelectShortcut = function (event)
   local objid = event['eventobjid']
   LogHelper:call(function ()
-    local player = PlayerHelper:getPlayer(objid)
-    player:holdItem()
+    MyPlayerHelper:playerSelectShortcut(objid)
   end)
 end
 
@@ -108,8 +105,7 @@ end
 local playerShortcutChange = function (event)
   local objid = event['eventobjid']
   LogHelper:call(function ()
-    local player = PlayerHelper:getPlayer(objid)
-    player:holdItem()
+    MyPlayerHelper:playerShortcutChange(objid)
   end)
 end
 
@@ -118,9 +114,7 @@ local playerMotionStateChange = function (event)
   local objid = event['eventobjid']
   local playermotion = event['playermotion']
   LogHelper:call(function ()
-    if (playermotion == PLAYERMOTION.SNEAK) then -- 潜行
-      MyItemHelper:useItem2(objid)
-    end
+    MyPlayerHelper:playerMotionStateChange(objid, playermotion)
   end)
 end
 
@@ -148,7 +142,7 @@ end
 
 ScriptSupportEvent:registerEvent([=[Player.AreaIn]=], playerEnterArea) -- 玩家进入区域
 ScriptSupportEvent:registerEvent([=[Player.AreaOut]=], playerLeaveArea) -- 玩家离开区域
-ScriptSupportEvent:registerEvent([=[Player.ClickBlock]=], clickBlock) -- 点击方块
+ScriptSupportEvent:registerEvent([=[Player.ClickBlock]=], playerClickBlock) -- 点击方块
 ScriptSupportEvent:registerEvent([=[Player.UseItem]=], playerUseItem) -- 玩家使用物品
 ScriptSupportEvent:registerEvent([=[Player.ClickActor]=], playerClickActor) -- 玩家点击生物
 ScriptSupportEvent:registerEvent([=[Player.AddItem]=], playerAddItem) -- 玩家新增道具

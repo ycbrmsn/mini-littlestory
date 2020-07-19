@@ -93,15 +93,15 @@ function Guard:initCityGuard (index, o, objids)
     dir = 'W'
   else
     for i, v in ipairs(objids) do
-      MyActorHelper:closeAI(v)
+      CreatureHelper:closeAI(v)
       if (i == 1) then
-        MyActorHelper:setPosition(v, self.lordHousePositions[i])
-        MyActorHelper:lookToward(v, 'E')
+        ActorHelper:setMyPosition(v, self.lordHousePositions[i])
+        ActorHelper:lookToward(v, 'E')
       elseif (i == 2) then
-        MyActorHelper:setPosition(v, self.lordHousePositions[i])
-        MyActorHelper:lookToward(v, 'W')
+        ActorHelper:setMyPosition(v, self.lordHousePositions[i])
+        ActorHelper:lookToward(v, 'W')
       else
-        MyActorHelper:setPosition(v, self.lordHousePatrolPositions[i - 2])
+        ActorHelper:setMyPosition(v, self.lordHousePatrolPositions[i - 2])
         local g = MyActor:new(MyConstant.GUARD_ACTOR_ID, v)
         g:wantPatrol('patrol', self.lordHousePatrolPositions, false, i - 2)
         table.insert(self.patrolGuards, g)
@@ -110,9 +110,9 @@ function Guard:initCityGuard (index, o, objids)
   end
   if (index < 5) then
     for i, v in ipairs(objids) do
-      MyActorHelper:closeAI(v)
-      MyActorHelper:setPosition(v, self.initPositions[(index - 1) * 2 + i])
-      MyActorHelper:lookToward(v, dir)
+      CreatureHelper:closeAI(v)
+      ActorHelper:setMyPosition(v, self.initPositions[(index - 1) * 2 + i])
+      ActorHelper:lookToward(v, dir)
     end
   end
   AreaHelper:clearAllWoodenFence(o.areaid)

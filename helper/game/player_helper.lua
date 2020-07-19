@@ -92,6 +92,113 @@ function PlayerHelper:showActorHp (objid, toobjid)
   end, 0.1, t)
 end
 
+-- 玩家进入游戏
+function PlayerHelper:playerEnterGame (objid)
+  self:addPlayer(objid)
+end
+
+-- 玩家离开游戏
+function PlayerHelper:playerLeaveGame (objid)
+  self:removePlayer(objid)
+end
+
+function PlayerHelper:playerEnterArea (objid, areaid)
+  -- body
+end
+
+function PlayerHelper:playerLeaveArea (objid, areaid)
+  -- body
+end
+
+function PlayerHelper:playerClickBlock (objid, blockid, x, y, z)
+  local myPosition = MyPosition:new(x, y, z)
+  MyBlockHelper:check(myPosition, objid)
+end
+
+function PlayerHelper:playerUseItem (objid, itemid)
+  MyItemHelper:useItem(objid, itemid)
+end
+
+-- 玩家点击生物
+function PlayerHelper:playerClickActor (objid, toobjid)
+  local myActor = self:getActor(toobjid)
+  if (myActor) then
+    self:recordClickActor(objid, myActor)
+    if (myActor.wants and myActor.wants[1].style == 'sleeping') then
+      myActor.wants[1].style = 'wake'
+    end
+    myActor:defaultPlayerClickEvent(objid)
+  end
+end
+
+function PlayerHelper:playerAddItem (objid, itemid, itemnum)
+  -- body
+end
+
+-- 玩家攻击命中
+function PlayerHelper:playerAttackHit (objid, toobjid)
+  local itemid = PlayerHelper:getCurToolID(objid)
+  local item = MyItemHelper:getItem(itemid)
+  if (item) then
+    item:attackHit(objid, toobjid)
+    PlayerHelper:showActorHp(objid, toobjid)
+  end
+end
+
+-- 玩家造成伤害
+function PlayerHelper:playerDamageActor (objid, toobjid)
+  local key = PlayerHelper:generateDamageKey(objid, toobjid)
+  MyTimeHelper:setFrameInfo(key, true)
+  PlayerHelper:showActorHp(objid, toobjid)
+end
+
+-- 玩家击败生物
+function PlayerHelper:playerDefeatActor (playerid, objid)
+  if (PlayerHelper:getDefeatActor(objid)) then -- 该生物已死亡
+    return
+  else
+    PlayerHelper:recordDefeatActor(objid)
+  end
+  local exp = MonsterHelper:getExp(playerid, objid)
+  local player = PlayerHelper:getPlayer(playerid)
+  player:gainExp(exp)
+end
+
+-- 玩家移动一格
+function PlayerHelper:playerMoveOneBlockSize (objid)
+  if (ActorHelper:isApproachBlock(objid)) then
+    local player = self:getPlayer(objid)
+    player:stopFly(true)
+  end
+end
+
+-- 玩家受到伤害
+function PlayerHelper:playerBeHurt (objid, toobjid)
+  local player = self:getPlayer(objid)
+  if (player:isFlying()) then
+    player:stopFly()
+  end
+end
+
+-- 玩家选择快捷栏
+function PlayerHelper:playerSelectShortcut (objid)
+  local player = self:getPlayer(objid)
+  player:holdItem()
+end
+
+-- 玩家快捷栏变化
+function PlayerHelper:playerShortcutChange (objid)
+  local player = self:getPlayer(objid)
+  player:holdItem()
+end
+
+-- 玩家运动状态改变
+function PlayerHelper:playerMotionStateChange (objid, playermotion)
+  if (playermotion == PLAYERMOTION.SNEAK) then -- 潜行
+    MyItemHelper:useItem2(objid)
+  end
+end
+
 -- actor行动
 function PlayerHelper:runPlayers ()
   for k, v in pairs(self.players) do

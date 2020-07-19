@@ -150,7 +150,7 @@ function MyActorAction:execute ()
       self.myActor:lookAt(want.toPos)
     elseif (want.style == 'lookingAt') then
       if (self.myActor.wants[2]) then
-        MyActorHelper:handleNextWant(self.myActor)
+        ActorHelper:handleNextWant(self.myActor)
       else -- 没有想法
         -- self.myActor:openAI()
       end

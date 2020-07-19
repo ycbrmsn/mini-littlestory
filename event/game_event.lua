@@ -2,18 +2,16 @@
 
 -- eventobjid, toobjid
 local playerEnterGame = function (event)
-  local objid = event['eventobjid']
   LogHelper:call(function ()
-    MyPlayerHelper:initPlayer(objid)
+    MyPlayerHelper:playerEnterGame(event.eventobjid)
     -- PlayerHelper:getHostPlayer().action:runTo({ { x = 0, y = 7, z = 70 } })
   end)
 end
 
 -- eventobjid, toobjid
 local playerLeaveGame = function (event)
-  -- 从players中清除数据
   LogHelper:call(function ()
-    PlayerHelper:removePlayer(event.eventobjid)
+    MyPlayerHelper:playerLeaveGame (event.eventobjid)
   end)
 end
 
@@ -48,7 +46,7 @@ local atHour = function (event)
   LogHelper:call(function ()
     MyTimeHelper:updateHour(hour)
     MyStoryHelper:run(hour)
-    MyActorHelper:atHour(hour)
+    ActorHelper:atHour(hour)
   end)
 end
 
@@ -71,7 +69,7 @@ local atSecond = function (event)
   LogHelper:call(function ()
     MyTimeHelper:doPerSecond(second)
     PlayerHelper:updateEveryPlayerPositions()
-    MyActorHelper:runActors()
+    ActorHelper:runActors()
     PlayerHelper:runPlayers()
 
     -- if (second == 1) then

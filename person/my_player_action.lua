@@ -56,14 +56,14 @@ end
 
 function MyPlayerAction:flyStatic ()
   local pos = self.myActor:getMyPosition()
-  if (not(MyActorHelper:isInAir(self.myActor.objid))) then -- 不在空中
+  if (not(ActorHelper:isInAir(self.myActor.objid))) then -- 不在空中
     pos.y = pos.y + 2
     self.myActor:setMyPosition(pos)
   end
   ActorHelper:setFaceYaw(self.myActor.objid, ActorHelper:getFaceYaw(self.myActor.objid))
   if (not(self.myActor.flySwordId)) then
     self.myActor.flySwordId = WorldHelper:spawnCreature(pos.x, pos.y, pos.z, MyConstant.FLY_SWORD_ID, 1)[1]
-    MyActorHelper:closeAI(self.myActor.flySwordId)
+    CreatureHelper:closeAI(self.myActor.flySwordId)
     ActorHelper:setEnableBeAttackedState(self.myActor.flySwordId, false) -- 不可被攻击
   end
   local isFlying, flyType = self.myActor:isFlying()
@@ -72,7 +72,7 @@ function MyPlayerAction:flyStatic ()
     MyTimeHelper:callFnContinueRuns(function ()
       ActorHelper:appendSpeed(self.myActor.objid, 0, MyConstant.FLY_SPEED, 0)
       local p = self.myActor:getMyPosition()
-      MyActorHelper:setPosition(self.myActor.flySwordId, p.x, p.y - 0.1, p.z)
+      ActorHelper:setMyPosition(self.myActor.flySwordId, p.x, p.y - 0.1, p.z)
       ActorHelper:setFaceYaw(self.myActor.flySwordId, ActorHelper:getFaceYaw(self.myActor.objid))
     end, -1, flyType)
   end
@@ -92,7 +92,7 @@ function MyPlayerAction:flyAdvance ()
   end
   if (not(isFlyingAdvance)) then -- 如果没有向前飞，则向前飞
     MyTimeHelper:callFnContinueRuns(function ()
-      MyActorHelper:appendSpeed(self.myActor.objid, MyConstant.FLY_ADVANCE_SPEED, 
+      ActorHelper:appendSpeed(self.myActor.objid, MyConstant.FLY_ADVANCE_SPEED, 
         self.myActor:getMyPosition(), self.myActor:getAimPos())
     end, -1, flyAdvanceType)
   end

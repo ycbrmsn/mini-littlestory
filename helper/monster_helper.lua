@@ -129,7 +129,7 @@ function MonsterHelper:imprisonMonster (objid)
   else
     self.forceDoNothingMonsters[objid] = 1
   end
-  MyActorHelper:stopRun(objid)
+  CreatureHelper:stopRun(objid)
 end
 
 -- 取消禁锢怪物，返回true表示已不是囚禁状态
@@ -141,7 +141,7 @@ function MonsterHelper:cancelImprisonMonster (objid)
       return false
     else
       self.forceDoNothingMonsters[objid] = nil
-      MyActorHelper:openAI(objid)
+      CreatureHelper:openAI(objid)
     end
   end
   return true
@@ -193,10 +193,10 @@ end
 -- 怪物行动
 function MonsterHelper:execute ()
   for k, v in pairs(self.monsters) do
-    local pos = MyActorHelper:getMyPosition(k)
+    local pos = ActorHelper:getMyPosition(k)
     if (pos) then -- 怪物有效
       if (type(v) == 'number') then -- 生物objid
-        pos = MyActorHelper:getMyPosition(v)
+        pos = ActorHelper:getMyPosition(v)
       else -- 位置
         pos = v
       end

@@ -85,7 +85,7 @@ end
 function MyBlockHelper:getWhoseCandle (myPosition)
   local index = 1
   -- myPosition = myPosition:floor()
-  for k, v in pairs(MyActorHelper:getAllActors()) do
+  for k, v in pairs(ActorHelper:getAllActors()) do
     if (v.candlePositions and #v.candlePositions > 0) then
       for kk, vv in pairs(v.candlePositions) do
         index = index + 1

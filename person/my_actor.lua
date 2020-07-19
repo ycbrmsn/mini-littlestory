@@ -24,7 +24,7 @@ function MyActor:new (actorid, objid)
   }
   if (objid) then
     o.objid = objid
-    MyActorHelper:addPerson(o) -- 生物加入集合中
+    ActorHelper:addActor(o) -- 生物加入集合中
   end
   setmetatable(o, self)
   self.__index = self
@@ -75,12 +75,12 @@ function MyActor:enableMove (switch)
 end
 
 function MyActor:openAI ()
-  MyActorHelper:openAI(self.objid)
+  CreatureHelper:openAI(self.objid)
   self.isAIOpened = true
 end
 
 function MyActor:closeAI ()
-  MyActorHelper:closeAI(self.objid)
+  CreatureHelper:closeAI(self.objid)
   self.isAIOpened = false
 end
 
@@ -99,15 +99,15 @@ end
 
 -- 设置生物位置
 function MyActor:setPosition (x, y, z)
-  return MyActorHelper:setPosition(self.objid, x, y, z)
+  return ActorHelper:setMyPosition(self.objid, x, y, z)
 end
 
 function MyActor:getDistancePosition (distance, angle)
-  return MyActorHelper:getDistancePosition(self.objid, distance, angle)
+  return ActorHelper:getDistancePosition(self.objid, distance, angle)
 end
 
 function MyActor:setDistancePosition (objid, distance, angle)
-  self:setPosition(MyActorHelper:getDistancePosition(objid, distance, angle))
+  self:setPosition(ActorHelper:getDistancePosition(objid, distance, angle))
 end
 
 function MyActor:getFaceYaw ()
@@ -355,7 +355,7 @@ end
 function MyActor:initActor (initPosition)
   local actorid = CreatureHelper:getActorID(self.objid)
   if (actorid and actorid == self.actorid) then
-    MyActorHelper:addPerson(self) -- 生物加入集合中
+    ActorHelper:addActor(self) -- 生物加入集合中
     -- 加入蜡烛台数据
     if (self.candlePositions and #self.candlePositions > 0) then
       for i, v in ipairs(self.candlePositions) do
@@ -408,7 +408,7 @@ function MyActor:freeForceDoNothing ()
       self.wants[1].times = self.wants[1].times - 1
       return false
     else
-      MyActorHelper:handleNextWant(self)
+      ActorHelper:handleNextWant(self)
     end
   end
   return true
