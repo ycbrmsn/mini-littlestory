@@ -92,7 +92,7 @@ function MyPlayerAction:flyAdvance ()
   end
   if (not(isFlyingAdvance)) then -- 如果没有向前飞，则向前飞
     MyTimeHelper:callFnContinueRuns(function ()
-      ActorHelper:appendSpeed(self.myActor.objid, MyConstant.FLY_ADVANCE_SPEED, 
+      ActorHelper:appendFixedSpeed(self.myActor.objid, MyConstant.FLY_ADVANCE_SPEED, 
         self.myActor:getMyPosition(), self.myActor:getAimPos())
     end, -1, flyAdvanceType)
   end

@@ -130,7 +130,7 @@ function SkillHelper:tenThousandsSwordcraft2 (objid, dstPos, size)
           end
           if (objids and #objids > 0) then
             ActorHelper:appendSpeed(v[2], -v[3].x, -v[3].y, -v[3].z)
-            local speedVector3 = ActorHelper:appendSpeed(v[2], 1, pos, ActorHelper:getMyPosition(objids[1]))
+            local speedVector3 = ActorHelper:appendFixedSpeed(v[2], 1, pos, ActorHelper:getMyPosition(objids[1]))
             v[3] = speedVector3
           end
         else

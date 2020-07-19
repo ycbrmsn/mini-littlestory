@@ -412,7 +412,7 @@ function ActorHelper:getTeamObjs (objids, objid, isTheSame, isPlayer)
 end
 
 -- 给对象增加一个速度 id、速度大小、起始位置、目标位置
-function ActorHelper:appendSpeed (objid, speed, srcPos, dstPos)
+function ActorHelper:appendFixedSpeed (objid, speed, srcPos, dstPos)
   dstPos = dstPos or ActorHelper:getMyPosition(objid)
   local speedVector3 = MathHelper:getSpeedVector3(srcPos, dstPos, speed)
   ActorHelper:appendSpeed(objid, speedVector3.x, speedVector3.y, speedVector3.z)

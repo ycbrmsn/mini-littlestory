@@ -241,7 +241,7 @@ function Juyidao:runCircleAndAttack ()
       local pos = self.targetPlayer:getMyPosition()
       local selfPos = self:getMyPosition()
       pos.y = selfPos.y
-      ActorHelper:appendSpeed(self.objid, 2, pos)
+      ActorHelper:appendFixedSpeed(self.objid, 2, pos)
       MyTimeHelper:callFnFastRuns(function ()
         self:chooseBattleType()
         self.dontDo = true
@@ -288,7 +288,7 @@ function Juyidao:attackHit (toobjid)
   if (self.battleType == 1) then
     self.battleProgress = 2
     self:closeAI()
-    ActorHelper:appendSpeed(toobjid, 1, self:getMyPosition())
+    ActorHelper:appendFixedSpeed(toobjid, 1, self:getMyPosition())
   elseif (self.battleType == 3) then
     self.dontDo = true
     self.battleProgress = 3
@@ -296,7 +296,7 @@ function Juyidao:attackHit (toobjid)
     local pos = player:getMyPosition()
     local selfPos = self:getMyPosition()
     selfPos.y = pos.y
-    ActorHelper:appendSpeed(toobjid, 2, selfPos)
+    ActorHelper:appendFixedSpeed(toobjid, 2, selfPos)
   end
 end
 
