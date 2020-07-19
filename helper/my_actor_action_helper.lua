@@ -182,7 +182,7 @@ function MyActorActionHelper:getFreeInAreaPos (freeInAreaIds)
   else
     return nil
   end
-  return MyAreaHelper:getRandomAirPositionInArea(areaid)
+  return AreaHelper:getRandomAirPositionInArea(areaid)
 end
 
 -- 更新生物行为状态

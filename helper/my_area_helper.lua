@@ -35,7 +35,7 @@ function MyAreaHelper:playerEnterArea (objid, areaid)
     AreaHelper:destroyArea(areaid)
     -- myPlayer.action:runAction()
     myPlayer.action:doNext()
-  elseif (self:showToastArea(objid, areaid)) then -- 显示提示区域检测
+  elseif (AreaHelper:showToastArea(objid, areaid)) then -- 显示提示区域检测
   elseif (guard and guard:checkTokenArea(objid, areaid)) then -- 检查通行令牌
   end
 end

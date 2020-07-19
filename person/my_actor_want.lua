@@ -11,7 +11,7 @@ function MyActorWant:new (myActor)
 end
 
 function MyActorWant:wantMove (think, positions, isNegDir, index, restTime, speed)
-  MyAreaHelper:removeToArea(self.myActor)
+  AreaHelper:removeToArea(self.myActor)
   self.myActor:closeAI()
   self.myActor.think = think
   local want = MyActorActionHelper:getMoveData(think, positions, isNegDir, index, restTime, speed)
@@ -22,7 +22,7 @@ function MyActorWant:wantMove (think, positions, isNegDir, index, restTime, spee
 end
 
 function MyActorWant:wantApproach (think, positions, isNegDir, index, restTime)
-  MyAreaHelper:removeToArea(self.myActor)
+  AreaHelper:removeToArea(self.myActor)
   self.myActor:closeAI()
   self.myActor.think = think
   local want = MyActorActionHelper:getApproachData(think, positions, isNegDir, index, restTime)
@@ -32,7 +32,7 @@ function MyActorWant:wantApproach (think, positions, isNegDir, index, restTime)
 end
 
 function MyActorWant:wantDontMove (think)
-  MyAreaHelper:removeToArea(self.myActor)
+  AreaHelper:removeToArea(self.myActor)
   think = think or 'dontMove'
   self.myActor.think = think
   self.myActor.wants = { MyActorActionHelper:getDontMoveData(think) }
@@ -49,7 +49,7 @@ function MyActorWant:wantStayForAWhile(second)
 end
 
 function MyActorWant:wantPatrol (think, positions, isNegDir, index, restTime)
-  MyAreaHelper:removeToArea(self.myActor)
+  AreaHelper:removeToArea(self.myActor)
   -- LogHelper:debug(self:getName() .. '想巡逻')
   self.myActor:closeAI()
   self.myActor.think = think
@@ -60,7 +60,7 @@ function MyActorWant:wantPatrol (think, positions, isNegDir, index, restTime)
 end
 
 function MyActorWant:wantFreeTime (think)
-  MyAreaHelper:removeToArea(self.myActor)
+  AreaHelper:removeToArea(self.myActor)
   think = think or 'free'
   self.myActor:openAI()
   self.myActor.think = think
@@ -71,7 +71,7 @@ end
 
 -- 自由移动并且警戒着
 function MyActorWant:wantFreeAndAlert (think, speed)
-  MyAreaHelper:removeToArea(self.myActor)
+  AreaHelper:removeToArea(self.myActor)
   think = think or 'alert'
   self.myActor:closeAI()
   self.myActor.think = think
@@ -81,7 +81,7 @@ function MyActorWant:wantFreeAndAlert (think, speed)
 end
 
 function MyActorWant:wantFreeInArea (think, posPairs)
-  MyAreaHelper:removeToArea(self.myActor)
+  AreaHelper:removeToArea(self.myActor)
   if (not(posPairs)) then
     posPairs = think
     think = 'free'
@@ -95,7 +95,7 @@ function MyActorWant:wantFreeInArea (think, posPairs)
 end
 
 function MyActorWant:wantDoNothing (think)
-  MyAreaHelper:removeToArea(self.myActor)
+  AreaHelper:removeToArea(self.myActor)
   think = think or 'doNothing'
   self.myActor:closeAI()
   self.myActor.think = think
@@ -122,13 +122,13 @@ function MyActorWant:wantLookAt (think, myPosition, restTime)
 end
 
 function MyActorWant:wantGoToSleep (bedData)
-  MyAreaHelper:removeToArea(self.myActor)
+  AreaHelper:removeToArea(self.myActor)
   self:wantMove('sleep', { bedData[1] })
   self:nextWantSleep('sleep', bedData[2])
 end
 
 function MyActorWant:wantBattle (think)
-  MyAreaHelper:removeToArea(self.myActor)
+  AreaHelper:removeToArea(self.myActor)
   think = think or 'battle'
   self.myActor.think = think
   self.myActor.wants = { MyActorActionHelper:getBattleData(think) }

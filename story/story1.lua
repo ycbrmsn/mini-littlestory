@@ -31,7 +31,7 @@ function Story1:playerBadHurt (objid)
   local pos
   for i, v in ipairs(miaolan.firstFloorBedPositions) do
     pos = v
-    if (MyAreaHelper:isAirArea(v)) then
+    if (AreaHelper:isAirArea(v)) then
       break
     end
   end

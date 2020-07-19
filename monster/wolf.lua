@@ -58,7 +58,7 @@ function Wolf:generateMonsters (num)
     local curNum = MonsterHelper:getMonsterNum(v, self.actorid)
     if (curNum < num) then
       for i = 1, num - curNum do
-        local pos = MyAreaHelper:getRandomAirPositionInArea(v)
+        local pos = AreaHelper:getRandomAirPositionInArea(v)
         self:newMonster(pos.x, pos.y, pos.z, 1)
       end
     end
@@ -128,7 +128,7 @@ function Ox:generateMonsters (num)
     local curNum = MonsterHelper:getMonsterNum(v, self.actorid)
     if (curNum < num) then
       for i = 1, num - curNum do
-        local pos = MyAreaHelper:getRandomAirPositionInArea(v)
+        local pos = AreaHelper:getRandomAirPositionInArea(v)
         self:newMonster(pos.x, pos.y, pos.z, 1)
       end
     end

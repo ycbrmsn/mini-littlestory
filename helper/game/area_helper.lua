@@ -7,11 +7,11 @@ AreaHelper = {
   allDoorAreas = {}
 }
 
-function MyAreaHelper:isAirArea (pos)
+function AreaHelper:isAirArea (pos)
   return BlockHelper:isAirBlock(pos.x, pos.y, pos.z) and BlockHelper:isAirBlock(pos.x, pos.y + 1, pos.z)
 end
 
-function MyAreaHelper:removeToArea (myActor)
+function AreaHelper:removeToArea (myActor)
   if (myActor and myActor.wants) then
     local want = myActor.wants[1]
     if (want.toAreaId) then
@@ -21,7 +21,7 @@ function MyAreaHelper:removeToArea (myActor)
   end
 end
 
-function MyAreaHelper:getRandomAirPositionInArea (areaid)
+function AreaHelper:getRandomAirPositionInArea (areaid)
   local pos = AreaHelper:getRandomPos(areaid)
   local times = 1
   while (not(self:isAirArea(pos)) and times < self.maxRandomTimes) do
@@ -32,7 +32,7 @@ function MyAreaHelper:getRandomAirPositionInArea (areaid)
 end
 
 -- 显示区域提示，如果需要生成怪物并生成怪物
-function MyAreaHelper:showToastArea (objid, areaid)
+function AreaHelper:showToastArea (objid, areaid)
   local player = PlayerHelper:getPlayer(objid)
   for k, v in pairs(self.showToastAreas) do
     if (k == areaid) then
