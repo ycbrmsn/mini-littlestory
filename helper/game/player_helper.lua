@@ -116,7 +116,7 @@ function PlayerHelper:playerClickBlock (objid, blockid, x, y, z)
 end
 
 function PlayerHelper:playerUseItem (objid, itemid)
-  MyItemHelper:useItem(objid, itemid)
+  ItemHelper:useItem(objid, itemid)
 end
 
 -- 玩家点击生物
@@ -138,7 +138,7 @@ end
 -- 玩家攻击命中
 function PlayerHelper:playerAttackHit (objid, toobjid)
   local itemid = PlayerHelper:getCurToolID(objid)
-  local item = MyItemHelper:getItem(itemid)
+  local item = ItemHelper:getItem(itemid)
   if (item) then
     item:attackHit(objid, toobjid)
     PlayerHelper:showActorHp(objid, toobjid)
@@ -195,7 +195,7 @@ end
 -- 玩家运动状态改变
 function PlayerHelper:playerMotionStateChange (objid, playermotion)
   if (playermotion == PLAYERMOTION.SNEAK) then -- 潜行
-    MyItemHelper:useItem2(objid)
+    ItemHelper:useItem2(objid)
   end
 end
 

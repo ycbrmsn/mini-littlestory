@@ -371,35 +371,52 @@ function ActorHelper:getAllOtherTeamActorsInAreaId (objid, areaid)
   return objids
 end
 
+-- 获取队伍及类型
+function ActorHelper:getTeam (objid)
+  local teamid
+  local objType = ActorHelper:getObjType(objid)
+  if (not(objType)) then -- 不存在
+    teamid = 0
+  elseif (objType == OBJ_TYPE.OBJTYPE_PLAYER) then -- 玩家
+    teamid = PlayerHelper:getTeam(objid)
+  elseif (objType == OBJ_TYPE.OBJTYPE_CREATURE) then -- 生物
+    teamid = CreatureHelper:getTeam(objid)
+  elseif (objType == OBJ_TYPE.OBJTYPE_MISSILE) then -- 投掷物
+    teamid = ItemHelper:getMissileTeam(objid)
+  else -- 掉落物
+    teamid = 0
+  end
+  return teamid, objType
+end
+
 -- 位置附近的所有玩家
 function ActorHelper:getAllPlayersArroundPos (pos, dim, objid, isTheSame)
   local posBeg, posEnd = MathHelper:getRectRange(pos, dim)
   local objids = AreaHelper:getAllPlayersInAreaRange(posBeg, posEnd)
-  return self:getTeamObjs(objids, objid, isTheSame, true)
+  return self:getTeamObjs(objids, objid, isTheSame)
 end
 
 -- 位置附近的所有生物
 function ActorHelper:getAllCreaturesArroundPos (pos, dim, objid, isTheSame)
   local posBeg, posEnd = MathHelper:getRectRange(pos, dim)
   local objids = AreaHelper:getAllCreaturesInAreaRange(posBeg, posEnd)
-  return self:getTeamObjs(objids, objid, isTheSame, false)
+  return self:getTeamObjs(objids, objid, isTheSame)
 end
 
-function ActorHelper:getTeamObjs (objids, objid, isTheSame, isPlayer)
+-- 获取附近的所有投掷物
+function ActorHelper:getAllMissilesArroundPos (pos, dim, objid, isTheSame)
+  local posBeg, posEnd = MathHelper:getRectRange(pos, dim)
+  local num, objids = WorldHelper:getActorsByBox(OBJ_TYPE.OBJTYPE_MISSILE, posBeg.x, 
+    posBeg.y, posBeg.z, posEnd.x, posEnd.y, posEnd.z)
+  return self:getTeamObjs(objids, objid, isTheSame)
+end
+
+function ActorHelper:getTeamObjs (objids, objid, isTheSame)
   if (objids and objid) then
     local arr, tid = {}
-    local teamid
-    if (ActorHelper:isPlayer(objid)) then
-      teamid = PlayerHelper:getTeam(objid)
-    else
-      teamid = CreatureHelper:getTeam(objid)
-    end
+    local teamid = self:getTeam(objid)
     for i, v in ipairs(objids) do
-      if (isPlayer) then
-        tid = PlayerHelper:getTeam(v)
-      else
-        tid = CreatureHelper:getTeam(v)
-      end
+      tid = self:getTeam(v)
       if ((isTheSame and teamid == tid) or -- 同队
         (not(isTheSame) and teamid ~= tid)) then -- 不同队
         table.insert(arr, v)
@@ -736,5 +753,14 @@ function ActorHelper:setImmuneType (objid, immunetype, isadd)
   local finillyFailMessage = StringHelper:concat('设置免疫伤害类型失败，参数：objid=', objid)
   return CommonHelper:callIsSuccessMethod(function (p)
     return Actor:setImmuneType(objid, immunetype, isadd)
+  end, nil, onceFailMessage, finillyFailMessage)
+end
+
+-- 获取对象类型（玩家、生物、投掷物、掉落物等^）
+function ActorHelper:getObjType (objid)
+  local onceFailMessage = '获取对象类型失败一次'
+  local finillyFailMessage = StringHelper:concat('获取对象类型失败，参数：objid=', objid)
+  return CommonHelper:callOneResultMethod(function (p)
+    return Actor:getObjType(objid)
   end, nil, onceFailMessage, finillyFailMessage)
 end

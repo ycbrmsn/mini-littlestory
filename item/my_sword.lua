@@ -26,7 +26,7 @@ TenThousandsSword = MyWeapon:new(MyWeaponAttr.tenThousandsSword)
 
 function TenThousandsSword:useItem1 (objid)
   SkillHelper:tenThousandsSwordcraft(objid)
-  MyItemHelper:recordUseSkill(objid, self.id, self.cd)
+  ItemHelper:recordUseSkill(objid, self.id, self.cd)
 end
 
 -- 投掷物命中

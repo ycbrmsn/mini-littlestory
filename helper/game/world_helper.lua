@@ -189,3 +189,13 @@ function WorldHelper:despawnActor (objid)
     return World:despawnActor(objid)
   end, nil, onceFailMessage, finillyFailMessage)
 end
+
+-- 获取范围内actor，返回数量和objid数组
+function WorldHelper:getActorsByBox (objtype, x1, y1, z1, x2, y2, z2)
+  local onceFailMessage = '获取范围内actor失败一次'
+  local finillyFailMessage = StringHelper:concat('获取范围内actor失败，参数：objtype=', objtype, 
+    ',x1=', x1, ',y1=', y1, ',z1=', z1, ',x2=', x2, ',y2=', y2, ',z2=', z2)
+  return CommonHelper:callTwoResultMethod(function (p)
+    return World:getActorsByBox(objtype, x1, y1, z1, x2, y2, z2)
+  end, nil, onceFailMessage, finillyFailMessage)
+end

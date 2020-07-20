@@ -59,7 +59,14 @@ local actorProjectileHit = function (event)
   local x, y, z = event.x, event.y, event.z
   LogHelper:call(function ()
     -- LogHelper:debug('投掷物命中')
-    MyItemHelper:projectileHit(projectileid, toobjid, blockid, MyPosition:new(x, y, z))
+    ItemHelper:projectileHit(projectileid, toobjid, blockid, MyPosition:new(x, y, z))
+  end)
+end
+
+-- eventobjid, toobjid, itemid, x, y, z
+local missileCreate = function (event)
+  LogHelper:call(function ()
+    ItemHelper:missileCreate(event.eventobjid, event.toobjid, event.itemid, event.x, event.y, event.z)
   end)
 end
 
@@ -79,8 +86,9 @@ ScriptSupportEvent:registerEvent([=[Actor.AreaIn]=], actorEnterArea) -- 生物�
 ScriptSupportEvent:registerEvent([=[Actor.AreaOut]=], actorLeaveArea) -- 生物离开区域
 ScriptSupportEvent:registerEvent([=[Actor.Collide]=], actorCollide) -- 生物发生碰撞
 ScriptSupportEvent:registerEvent([=[Actor.AttackHit]=], actorAttackHit) -- 生物攻击命中
+ScriptSupportEvent:registerEvent([=[Actor.ChangeMotion]=], actorChangeMotion) -- 生物行为状态变更
 ScriptSupportEvent:registerEvent([=[Actor.Die]=], actorDie) -- 生物死亡
 ScriptSupportEvent:registerEvent([=[Actor.Projectile.Hit]=], actorProjectileHit) -- 投掷物击中
+ScriptSupportEvent:registerEvent([=[Missile.Create]=], missileCreate) -- 投掷物被创建
 ScriptSupportEvent:registerEvent([=[Block.Dig.End]=], blockDigEnd) -- 完成方块挖掘
 ScriptSupportEvent:registerEvent([=[Block.Trigger]=], blockTrigger) -- 方块被触发
-ScriptSupportEvent:registerEvent([=[Actor.ChangeMotion]=], actorChangeMotion) -- 生物行为状态变更

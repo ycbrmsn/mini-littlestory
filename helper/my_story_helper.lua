@@ -136,7 +136,7 @@ function MyStoryHelper:playerBadHurt (objid)
   local mainIndex = self:getMainStoryIndex()
   local mainProgress = self:getMainStoryProgress()
   -- 检测技能是否正在释放
-  if (MyItemHelper:isDelaySkillUsing(objid, '坠星')) then -- 技能释放中
+  if (ItemHelper:isDelaySkillUsing(objid, '坠星')) then -- 技能释放中
     FallStarBow:cancelSkill(objid)
     return
   end

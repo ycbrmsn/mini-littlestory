@@ -6,7 +6,7 @@ function MyItem:new (o)
   setmetatable(o, self)
   self.__index = self
   if (o.id) then
-    MyItemHelper:register(o)
+    ItemHelper:register(o)
   end
   return o
 end
@@ -90,7 +90,7 @@ function MyWeapon:newLevel (id, level)
   setmetatable(o, self)
   self.__index = self
   if (o.id) then
-    MyItemHelper:register(o)
+    ItemHelper:register(o)
   end
   return o
 end
@@ -119,7 +119,7 @@ function MyWeapon:useItem (objid)
     end
   end
   if (self.cd) then
-    local ableUseSkill = MyItemHelper:ableUseSkill(objid, self.id, self.cd)
+    local ableUseSkill = ItemHelper:ableUseSkill(objid, self.id, self.cd)
     if (not(ableUseSkill)) then
       self.cdReason = self.cdReason or '技能冷却中'
       ChatHelper:sendSystemMsg(self.cdReason, objid)
@@ -147,7 +147,7 @@ function LogPaper:new ()
   }
   setmetatable(o, self)
   self.__index = self
-  MyItemHelper:register(o)
+  ItemHelper:register(o)
   return o
 end
 

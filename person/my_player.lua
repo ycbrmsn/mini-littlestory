@@ -196,12 +196,12 @@ function MyPlayer:holdItem ()
 end
 
 function MyPlayer:changeHold (itemid)
-  local foundItem = MyItemHelper:changeHold(self.objid, self.hold, itemid)
+  local foundItem = ItemHelper:changeHold(self.objid, self.hold, itemid)
   self.hold = itemid
   if (foundItem) then
     -- self:showAttr(true) -- 目前默认显示近程攻击
     -- 检测技能是否正在释放
-    if (MyItemHelper:isDelaySkillUsing(self.objid, '坠星')) then -- 技能释放中
+    if (ItemHelper:isDelaySkillUsing(self.objid, '坠星')) then -- 技能释放中
       FallStarBow:cancelSkill(self.objid)
       return
     end

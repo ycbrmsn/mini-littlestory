@@ -72,7 +72,8 @@ function SkillHelper:cancelSealActor (objid)
 end
 
 -- 万剑诀 起势
-function SkillHelper:tenThousandsSwordcraft (objid)
+function SkillHelper:tenThousandsSwordcraft (objid, size)
+  size = size or 3
   local pos = ActorHelper:getDistancePosition(objid, 2)
   pos.y = pos.y + 1
   local dstPos = ActorHelper:getDistancePosition(objid, 6)
@@ -94,7 +95,7 @@ function SkillHelper:tenThousandsSwordcraft (objid)
         MyTimeHelper:delFnContinueRuns(t)
         MyTimeHelper:callFnFastRuns(function ()
           WorldHelper:despawnActor(projectileid)
-          self:tenThousandsSwordcraft2(objid, dstPos)
+          SkillHelper:tenThousandsSwordcraft2(objid, dstPos, size)
         end, 1)
       else
         ActorHelper:turnFacePitch(projectileid, 45)
@@ -108,7 +109,6 @@ end
 
 -- 万剑诀 落势
 function SkillHelper:tenThousandsSwordcraft2 (objid, dstPos, size)
-  size = size or 3
   local y = dstPos.y + 20
   local arr, projectiles = {}, {}
   for i = dstPos.x - size, dstPos.x + size do
@@ -116,7 +116,7 @@ function SkillHelper:tenThousandsSwordcraft2 (objid, dstPos, size)
       table.insert(arr, MyPosition:new(i, y, ii))
     end
   end
-  self:tenThousandsSwordcraft3(objid, arr, projectiles)
+  SkillHelper:tenThousandsSwordcraft3(objid, arr, projectiles)
   local dim = MyPosition:new(5, 10, 5)
   MyTimeHelper:callFnContinueRuns(function ()
     for i, v in ipairs(projectiles) do
@@ -149,10 +149,18 @@ function SkillHelper:tenThousandsSwordcraft3 (objid, arr, projectiles)
       MyConstant.WEAPON.TEN_THOUSAND_SWORD_ID, arr[index], speedVector3, 100)
     table.insert(projectiles, { true, projectileid, speedVector3 })
     table.remove(arr, index)
-    MyItemHelper:recordProjectile(projectileid, objid, 
-      MyItemHelper:getItem(MyWeaponAttr.tenThousandsSword.levelIds[1]), {})
+    ItemHelper:recordProjectile(projectileid, objid, 
+      ItemHelper:getItem(MyWeaponAttr.tenThousandsSword.levelIds[1]), {})
     MyTimeHelper:callFnFastRuns(function ()
-      self:tenThousandsSwordcraft3(objid, arr, projectiles)
+      SkillHelper:tenThousandsSwordcraft3(objid, arr, projectiles)
     end, 0.1)
   end
+end
+
+-- 气甲术
+function SkillHelper:airArmour (objid, size)
+  size = size or 3
+  MyTimeHelper:callFnContinueRuns(function ()
+    
+  end, 2)
 end

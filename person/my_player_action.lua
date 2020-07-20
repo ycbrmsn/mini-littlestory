@@ -105,7 +105,7 @@ function MyPlayerAction:stopFly (isRegular)
     return
   end
   if (not(isRegular)) then -- 失控
-    MyItemHelper:recordUseSkill(self.myActor.objid, MyWeaponAttr.controlSword.levelIds[1], 
+    ItemHelper:recordUseSkill(self.myActor.objid, MyWeaponAttr.controlSword.levelIds[1], 
       MyWeaponAttr.controlSword.cd)
   end
   if (state == 1) then -- 静止
