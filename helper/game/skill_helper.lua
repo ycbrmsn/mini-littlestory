@@ -132,6 +132,7 @@ function SkillHelper:tenThousandsSwordcraft2 (objid, dstPos, size)
             ActorHelper:appendSpeed(v[2], -v[3].x, -v[3].y, -v[3].z)
             local speedVector3 = ActorHelper:appendFixedSpeed(v[2], 1, pos, ActorHelper:getMyPosition(objids[1]))
             v[3] = speedVector3
+            ItemHelper:recordMissileSpeed(v[2], speedVector3)
           end
         else
           v[1] = false
@@ -144,13 +145,15 @@ end
 function SkillHelper:tenThousandsSwordcraft3 (objid, arr, projectiles)
   if (#arr > 0) then
     local index = math.random(1, #arr)
-    local speedVector3 = MyVector3:new(0, -1, 0)
+    local speedVector3 = MyVector3:new(0, -0.8, 0)
     local projectileid = WorldHelper:spawnProjectileByDirPos(objid, 
-      MyConstant.WEAPON.TEN_THOUSAND_SWORD_ID, arr[index], speedVector3, 100)
+      MyConstant.WEAPON.TEN_THOUSAND_SWORD_ID, arr[index], speedVector3, 0)
+    ActorHelper:appendSpeed(projectileid, speedVector3.x, speedVector3.y, speedVector3.z)
     table.insert(projectiles, { true, projectileid, speedVector3 })
     table.remove(arr, index)
     ItemHelper:recordProjectile(projectileid, objid, 
       ItemHelper:getItem(MyWeaponAttr.tenThousandsSword.levelIds[1]), {})
+    ItemHelper:recordMissileSpeed(projectileid, speedVector3)
     MyTimeHelper:callFnFastRuns(function ()
       SkillHelper:tenThousandsSwordcraft3(objid, arr, projectiles)
     end, 0.1)
@@ -160,7 +163,45 @@ end
 -- 气甲术
 function SkillHelper:airArmour (objid, size)
   size = size or 3
+  local dim = { x = size + 1, y = size + 1, z = size + 1 }
+  local teamid = ActorHelper:getTeam(objid)
+  local bodyEffect = MyConstant.BODY_EFFECT.LIGHT64
+  ActorHelper:playBodyEffect(objid, bodyEffect)
+  -- local t = objid .. 'airArmour'
   MyTimeHelper:callFnContinueRuns(function ()
-    
-  end, 2)
+    local pos = ActorHelper:getMyPosition(objid)
+    pos.y = pos.y + 1
+    local missiles
+    if (teamid == 0) then
+      missiles = ActorHelper:getAllMissilesArroundPos(pos, dim)
+    else
+      missiles = ActorHelper:getAllMissilesArroundPos(pos, dim, objid, false)
+    end
+    if (missiles and #missiles > 0) then
+      for i, v in ipairs(missiles) do
+        local distance = MathHelper:getDistance(pos, v)
+        if (distance < size) then
+          local speedVector3 = ItemHelper:getMissileSpeed(v)
+          if (speedVector3 and not(speedVector3:isZero())) then
+            ActorHelper:appendSpeed(v, -speedVector3.x, -speedVector3.y, -speedVector3.z)
+            ItemHelper:recordMissileSpeed(v, MyVector3:new(0, 0, 0))
+          end
+        end
+      end
+    end
+  end, 10)
+  MyTimeHelper:callFnFastRuns(function ()
+    ActorHelper:stopBodyEffectById(objid, bodyEffect)
+  end, 10)
+
+  -- pos.x = pos.x + 2
+  -- local projectileid = WorldHelper:spawnProjectileByDirPos(objid, 
+  --     MyConstant.WEAPON.TEN_THOUSAND_SWORD_ID, pos, MyVector3:new(0, 1, 0), 0)
+  -- local speedVector3 = MyVector3:new(-1, 0, 0)
+  -- ActorHelper:appendSpeed(projectileid, speedVector3.x, speedVector3.y, speedVector3.z)
+  -- ItemHelper:recordMissileSpeed(projectileid, speedVector3)
+  -- MyTimeHelper:callFnFastRuns(function ()
+  --   local sv3 = ItemHelper:getMissileSpeed(projectileid)
+  --   ActorHelper:appendSpeed(projectileid, -sv3.x, -sv3.y, -sv3.z)
+  -- end, 0.1)
 end

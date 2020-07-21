@@ -1,7 +1,6 @@
 -- 道具工具类
 ItemHelper = {
-  MAX_RECORD_MISSILE_NUM = 300,
-  missiles = {}, -- 投掷物队伍数组 { { missileid, teamid } }
+  missiles = {}, -- 投掷物队伍数组 { missileid = { ['teamid'] = teamid, ['speedVector3'] = speedVector3 } }
   item = {}, -- 特殊自定义道具 itemid -> item
   projectiles = {}, -- 技能投掷物 projectileid -> info
   itemcds = {}, -- 道具cd objid -> { itemid -> time }
@@ -158,25 +157,45 @@ end
 -- 投掷物被创建
 function ItemHelper:missileCreate (objid, toobjid, itemid, x, y, z)
   local teamid = ActorHelper:getTeam(objid)
-  ItemHelper:recordMissile(objid, teamid)
+  ItemHelper:recordMissileTeam(objid, teamid)
 end
 
--- 记录投掷物所属队伍
-function ItemHelper:recordMissile (objid, teamid)
-  table.insert(self.missiles, { objid, teamid })
-  if (#self.missiles > self.MAX_RECORD_MISSILE_NUM) then -- 记录过多，则删除最早的记录
-    table.remove(self.missiles, 1)
+-- 记录投掷物属性
+function ItemHelper:recordMissile (objid, attr, val)
+  if (self.missiles[objid]) then -- 已存在
+    self.missiles[objid][attr] = val
+  else -- 不存在
+    self.missiles[objid] = { [attr] = val }
+    -- 保留的记录30秒后删除
+    MyTimeHelper:callFnAfterSecond(function ()
+      self.missiles[objid] = nil
+    end, 30)
   end
+end
+
+-- 记录投掷物队伍
+function ItemHelper:recordMissileTeam (objid, teamid)
+  self:recordMissile(objid, 'teamid', teamid)
+end
+
+-- 记录投掷物速度
+function ItemHelper:recordMissileSpeed (objid, speed)
+  self:recordMissile(objid, 'speed', speed)
+end
+
+-- 获取投掷物信息
+function ItemHelper:getMissile (objid)
+  return self.missiles[objid] or {}
 end
 
 -- 获取投掷物所属队伍
 function ItemHelper:getMissileTeam (objid)
-  for i, v in ipairs(self.missiles) do
-    if (v[1] == objid) then
-      return v[2]
-    end
-  end
-  return 0
+  return self:getMissile(objid).teamid or 0
+end
+
+-- 获取投掷物速度
+function ItemHelper:getMissileSpeed (objid)
+  return self:getMissile(objid).speed
 end
 
 -- 封装原始接口

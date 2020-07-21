@@ -160,6 +160,10 @@ function MyVector3:get ()
   return self.x, self.y, self.z
 end
 
+function MyVector3:isZero ()
+  return self.x == 0 and self.y == 0 and self.z == 0
+end
+
 -- 剧情类
 MyStory = {
   title = nil,

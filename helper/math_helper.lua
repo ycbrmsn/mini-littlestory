@@ -70,6 +70,12 @@ end
 
 -- 两点之间的距离
 function MathHelper:getDistance (pos1, pos2)
+  if (type(pos1) == 'number') then
+    pos1 = ActorHelper:getMyPosition(pos1)
+  end
+  if (type(pos2) == 'number') then
+    pos2 = ActorHelper:getMyPosition(pos2)
+  end
   return self:getVector3Length(pos1.x - pos2.x, pos1.y - pos2.y, pos1.z - pos2.z)
 end
 

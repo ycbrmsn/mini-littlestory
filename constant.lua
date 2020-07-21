@@ -36,6 +36,9 @@ MyConstant = {
     LIGHT24 = 1231, -- 黄色的无敌盾保护圈
     LIGHT26 = 1235, -- 红十字加血特效
     LIGHT47 = 1337, -- 接近一格大小的一团蓝色光雾周围一些小蓝点
+    LIGHT62 = 1495, -- 一个三格大小的蓝色护罩
+    LIGHT63 = 1497, -- 一个三格大小的红色护罩
+    LIGHT64 = 1498, -- 一个三格大小的白色护罩
 
     PARTICLE24 = 1341 -- 两格大小的一个黄色小光源
   },
@@ -59,7 +62,7 @@ MyWeaponAttr = {
   tenThousandsSword = { -- 万剑
     attack = 20,
     defense = 5,
-    cd = 30,
+    cd = 5,
     cdReason = '万剑诀技能冷却中',
     skillname = '万剑诀',
     hurt = 8,

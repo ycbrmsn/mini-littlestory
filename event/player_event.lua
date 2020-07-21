@@ -23,6 +23,7 @@ end
 -- eventobjid, blockid, x, y, z
 local playerClickBlock = function (event)
   LogHelper:call(function ()
+    SkillHelper:airArmour(event.eventobjid)
     MyPlayerHelper:playerClickBlock(event.eventobjid, event.blockid, event.x, event.y, event.z)
   end)
 end
