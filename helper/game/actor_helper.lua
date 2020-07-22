@@ -488,6 +488,24 @@ function ActorHelper:playAndStopSoundEffect (objid, soundId, isLoop, time)
   end, time)
 end
 
+-- 加上重力
+function ActorHelper:addGravity (objid)
+  local t = objid .. 'addGravity'
+  MyTimeHelper:callFnContinueRuns(function ()
+    if (ActorHelper:getMyPosition(objid)) then
+      ActorHelper:appendSpeed(objid, 0, -MyConstant.FLY_SPEED, 0)
+      local speedVector3 = ItemHelper:getMissileSpeed(objid)
+      if (speedVector3) then
+        speedVector3.y = speedVector3.y - MyConstant.FLY_SPEED
+      else
+        ItemHelper:recordMissileSpeed(objid, MyVector3:new(0, -MyConstant.FLY_SPEED, 0))
+      end
+    else
+      MyTimeHelper:delFnContinueRuns(t)
+    end
+  end, -1, t)
+end
+
 -- 设置生物可移动状态
 function ActorHelper:setEnableMoveState (objid, switch)
   return self:setActionAttrState(objid, CREATUREATTR.ENABLE_MOVE, switch)
