@@ -121,7 +121,7 @@ end
 
 -- 玩家点击生物
 function PlayerHelper:playerClickActor (objid, toobjid)
-  local myActor = self:getActor(toobjid)
+  local myActor = ActorHelper:getActor(toobjid)
   if (myActor) then
     self:recordClickActor(objid, myActor)
     if (myActor.wants and myActor.wants[1].style == 'sleeping') then

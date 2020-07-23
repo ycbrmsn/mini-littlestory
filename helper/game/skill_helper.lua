@@ -1,5 +1,7 @@
 -- 技能工具类
-SkillHelper = {}
+SkillHelper = {
+  huitianData = {} -- { objid -> projectiles }
+}
 
 -- 囚禁actor，用于慑魂枪效果
 function SkillHelper:imprisonActor (objid)
@@ -203,4 +205,77 @@ function SkillHelper:airArmour (objid, size, time)
   MyTimeHelper:callFnFastRuns(function ()
     ActorHelper:stopBodyEffectById(objid, bodyEffect)
   end, time)
+end
+
+-- 回天 对象、飞剑数量、有效范围、角度改变、飞剑距离
+function SkillHelper:huitian (objid, num, size, changeAngle, distance)
+  num = num or 4
+  size = size or 5
+  changeAngle = changeAngle or 3
+  distance = distance or 2
+  local dim = { x = size, y = size, z = size }
+  local projectiles = self:clearHuitian(objid)
+  for i = 1, num do
+    local angle = 360 / num * i
+    local pos = ActorHelper:getFixedDistancePosition(objid, distance, angle)
+    pos.y = pos.y + 1
+    local projectileid = WorldHelper:spawnProjectileByDirPos(objid, 
+      MyConstant.WEAPON.TEN_THOUSAND_SWORD_ID, pos, pos, 0)
+    table.insert(projectiles, { flag = 0, objid = projectileid, angle = angle })
+  end
+  local t = objid .. 'huitian'
+  MyTimeHelper:callFnContinueRuns(function ()
+    local num = 0
+    local objPos = ActorHelper:getMyPosition(objid)
+    for i, v in ipairs(projectiles) do
+      local p = ActorHelper:getMyPosition(v.objid)
+      if (not(p)) then
+        v.flag = 2
+      else
+        -- 查询生物周围是否有目标
+        local objids = ActorHelper:getAllCreaturesArroundPos(objPos, dim, objid)
+        if (not(objids) or #objids == 0) then
+          objids = ActorHelper:getAllPlayersArroundPos(objPos, dim, objid)
+        end
+        if (objids and #objids > 0) then -- 发现目标
+          if (v.flag == 0) then -- 环绕状态
+            v.flag = 1
+          else -- 追击状态
+            local speedVector3 = ItemHelper:getMissileSpeed(v.objid)
+            if (speedVector3) then
+              ActorHelper:appendSpeed(v.objid, -speedVector3.x, -speedVector3.y, -speedVector3.z)
+            end
+          end
+          local sv3 = ActorHelper:appendFixedSpeed(v.objid, 1, p, ActorHelper:getMyPosition(objids[1]))
+          ItemHelper:recordMissileSpeed(v.objid, sv3)
+        else -- 未发现目标，追击状态不处理
+          if (v.flag == 0) then -- 环绕状态
+            v.angle = v.angle + changeAngle
+            local dstPos = ActorHelper:getFixedDistancePosition(objid, distance, v.angle)
+            dstPos.y = dstPos.y + 1
+            ActorHelper:setMyPosition(v.objid, dstPos)
+            ActorHelper:setLookAtFaceYaw(v.objid, objid, -70)
+          end
+        end
+        num = num + 1
+      end
+    end
+    if (num == 0) then -- 飞剑皆毁
+      MyTimeHelper:delFnContinueRuns(t)
+    end
+  end, -1, t)
+end
+
+-- 清除环绕飞剑
+function SkillHelper:clearHuitian (objid)
+  local projectiles = self.huitianData[objid]
+  if (projectiles) then
+    for i, v in ipairs(projectiles) do
+      if (v.flag == 0) then
+        WorldHelper:despawnActor(v.objid)
+      end
+    end
+  end
+  self.huitianData[objid] = {}
+  return self.huitianData[objid]
 end
