@@ -25,21 +25,55 @@ end
 TenThousandsSword = MyWeapon:new(MyWeaponAttr.tenThousandsSword)
 
 function TenThousandsSword:useItem1 (objid)
-  SkillHelper:tenThousandsSwordcraft(objid)
+  SkillHelper:tenThousandsSwordcraft(objid, self)
   ItemHelper:recordUseSkill(objid, self.id, self.cd)
 end
 
 -- 投掷物命中
 function TenThousandsSword:projectileHit (projectileInfo, toobjid, blockid, pos)
   local objid = projectileInfo.objid
+  local item = projectileInfo.item
   local player = PlayerHelper:getPlayer(objid)
   if (toobjid > 0) then -- 命中生物（似乎命中同队生物不会进入这里）
     -- 判断是否是敌对生物
     if (not(ActorHelper:isTheSameTeamActor(objid, toobjid))) then -- 敌对生物，则造成伤害
       local key = PlayerHelper:generateDamageKey(objid, toobjid)
       local isHurt = MyTimeHelper:getFrameInfo(key)
-      if (not(isHurt)) then -- 造成伤害事件没有发生
-        player:damageActor(toobjid, self.hurt)
+      local hurt = item.hurt + item.level * item.addHurtPerLevel
+      if (isHurt) then -- 造成伤害事件发生了
+        hurt = hurt - MyConstant.PROJECTILE_HURT
+      end
+      if (hurt > 0) then
+        player:damageActor(toobjid, hurt)
+      end
+    end
+  end
+end
+
+-- 回天剑
+HuitianSword = MyWeapon:new(MyWeaponAttr.huitianSword)
+
+function HuitianSword:useItem1 (objid)
+  SkillHelper:huitian(objid, self)
+  ItemHelper:recordUseSkill(objid, self.id, self.cd)
+end
+
+-- 投掷物命中
+function HuitianSword:projectileHit (projectileInfo, toobjid, blockid, pos)
+  local objid = projectileInfo.objid
+  local item = projectileInfo.item
+  local player = PlayerHelper:getPlayer(objid)
+  if (toobjid > 0) then -- 命中生物（似乎命中同队生物不会进入这里）
+    -- 判断是否是敌对生物
+    if (not(ActorHelper:isTheSameTeamActor(objid, toobjid))) then -- 敌对生物，则造成伤害
+      local key = PlayerHelper:generateDamageKey(objid, toobjid)
+      local isHurt = MyTimeHelper:getFrameInfo(key)
+      local hurt = item.hurt + item.level * item.addHurtPerLevel
+      if (isHurt) then -- 造成伤害事件发生了
+        hurt = hurt - MyConstant.PROJECTILE_HURT
+      end
+      if (hurt > 0) then
+        player:damageActor(toobjid, hurt)
       end
     end
   end

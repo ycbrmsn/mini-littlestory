@@ -20,7 +20,7 @@ MyConstant = {
     GAME_DATA_EXP_ID = 4101 -- 人物经验数据
   },
   WEAPON = {
-    TEN_THOUSAND_SWORD_ID = 4107 -- 万剑诀飞剑
+    -- TEN_THOUSAND_SWORD_ID = 4107 -- 万剑诀飞剑
   },
   BODY_EFFECT = {
     SMOG1 = 1226, -- 一团小烟雾随即消失
@@ -67,10 +67,25 @@ MyWeaponAttr = {
     skillname = '万剑诀',
     hurt = 8,
     addAttPerLevel = 6,
-    addDefPerLevel = 6
+    addDefPerLevel = 6,
+    addHurtPerLevel = 2
+  },
+  huitianSword = { -- 回天剑
+    attack = 20,
+    defense = 5,
+    cd = 5,
+    cdReason = '回天技能冷却中',
+    skillname = '回天',
+    hurt = 20,
+    addAttPerLevel = 6,
+    addDefPerLevel = 6,
+    addHurtPerLevel = 5
   }
 }
 
 -- 武器id
 MyWeaponAttr.controlSword.levelIds = { 4105 } -- 御剑
 MyWeaponAttr.tenThousandsSword.levelIds = { 4106 } -- 万剑
+MyWeaponAttr.tenThousandsSword.projectileid = 4107 -- 飞行的万剑
+MyWeaponAttr.huitianSword.levelIds = { 4108 } -- 回天剑
+MyWeaponAttr.huitianSword.projectileid = 4103 -- 飞行的回天剑

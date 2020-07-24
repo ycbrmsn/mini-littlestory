@@ -3,6 +3,15 @@ SkillHelper = {
   huitianData = {} -- { objid -> projectiles }
 }
 
+function SkillHelper:getItem (item, weaponName)
+  if (not(item)) then
+    item = ItemHelper:getItem(MyWeaponAttr[weaponName].levelIds[1])
+  elseif (type(item) == 'number') then
+    item = ItemHelper:getItem(MyWeaponAttr[weaponName].levelIds[item])
+  end
+  return item
+end
+
 -- 囚禁actor，用于慑魂枪效果
 function SkillHelper:imprisonActor (objid)
   ActorHelper:playBodyEffect(objid, MyConstant.BODY_EFFECT.LIGHT22)
@@ -73,44 +82,40 @@ function SkillHelper:cancelSealActor (objid)
   end
 end
 
--- 万剑诀 起势
-function SkillHelper:tenThousandsSwordcraft (objid, size)
+-- 万剑诀起势 对象、道具（或道具等级）、有效范围半边长
+function SkillHelper:tenThousandsSwordcraft (objid, item, size)
+  item = SkillHelper:getItem(item, 'tenThousandsSword')
   size = size or 3
   local pos = ActorHelper:getDistancePosition(objid, 2)
   pos.y = pos.y + 1
   local dstPos = ActorHelper:getDistancePosition(objid, 6)
   local projectileid = WorldHelper:spawnProjectileByDirPos(objid, 
-    MyConstant.WEAPON.TEN_THOUSAND_SWORD_ID, pos, MyVector3:new(0, 1, 0), 0)
+    item.projectileid, pos, pos, 0)
   ActorHelper:setFacePitch(projectileid, -135)
   ActorHelper:setFaceYaw(projectileid, ActorHelper:getFaceYaw(objid) + 90)
-  -- local projectileid = WorldHelper:spawnProjectileByPos(objid, 
-  --   MyConstant.WEAPON.TEN_THOUSAND_SWORD_ID, pos, MyPosition:new(pos.x, pos.y + 1, pos.z), 0)
   local t = 'ten' .. projectileid
+  -- 旋转一圈起飞
   MyTimeHelper:callFnContinueRuns(function ()
     local facePitch = ActorHelper:getFacePitch(projectileid)
     if (not(facePitch)) then
       MyTimeHelper:delFnContinueRuns(t)
     else
-      -- LogHelper:debug(ActorHelper:getFacePitch(projectileid))
       if (facePitch >= 270) then
         ActorHelper:appendSpeed(projectileid, 0, 1, 0)
         MyTimeHelper:delFnContinueRuns(t)
         MyTimeHelper:callFnFastRuns(function ()
           WorldHelper:despawnActor(projectileid)
-          SkillHelper:tenThousandsSwordcraft2(objid, dstPos, size)
+          SkillHelper:tenThousandsSwordcraft2(objid, item, dstPos, size)
         end, 1)
       else
         ActorHelper:turnFacePitch(projectileid, 45)
       end
-      -- local pos = self:getDistancePosition(objid, 2)
-      -- pos.y = pos.y + 1
-      -- self:setPosition(projectileid, pos)
     end
   end, -1, t)
 end
 
 -- 万剑诀 落势
-function SkillHelper:tenThousandsSwordcraft2 (objid, dstPos, size)
+function SkillHelper:tenThousandsSwordcraft2 (objid, item, dstPos, size)
   local y = dstPos.y + 20
   local arr, projectiles = {}, {}
   for i = dstPos.x - size, dstPos.x + size do
@@ -118,14 +123,13 @@ function SkillHelper:tenThousandsSwordcraft2 (objid, dstPos, size)
       table.insert(arr, MyPosition:new(i, y, ii))
     end
   end
-  SkillHelper:tenThousandsSwordcraft3(objid, arr, projectiles)
+  SkillHelper:tenThousandsSwordcraft3(objid, item, arr, projectiles)
   local dim = MyPosition:new(5, 10, 5)
   MyTimeHelper:callFnContinueRuns(function ()
     for i, v in ipairs(projectiles) do
       if (v[1]) then
         local pos = ActorHelper:getMyPosition(v[2])
         if (pos) then
-          -- local objids = ActorHelper:getAllCreaturesArroundPos(pos, dim)
           local objids = ActorHelper:getAllCreaturesArroundPos(pos, dim, objid)
           if (not(objids) or #objids == 0) then
             objids = ActorHelper:getAllPlayersArroundPos(pos, dim, objid)
@@ -144,20 +148,19 @@ function SkillHelper:tenThousandsSwordcraft2 (objid, dstPos, size)
   end, 5)
 end
 
-function SkillHelper:tenThousandsSwordcraft3 (objid, arr, projectiles)
+function SkillHelper:tenThousandsSwordcraft3 (objid, item, arr, projectiles)
   if (#arr > 0) then
     local index = math.random(1, #arr)
     local speedVector3 = MyVector3:new(0, -0.8, 0)
     local projectileid = WorldHelper:spawnProjectileByDirPos(objid, 
-      MyConstant.WEAPON.TEN_THOUSAND_SWORD_ID, arr[index], speedVector3, 0)
+      item.projectileid, arr[index], speedVector3, 0)
     ActorHelper:appendSpeed(projectileid, speedVector3.x, speedVector3.y, speedVector3.z)
     table.insert(projectiles, { true, projectileid, speedVector3 })
     table.remove(arr, index)
-    ItemHelper:recordProjectile(projectileid, objid, 
-      ItemHelper:getItem(MyWeaponAttr.tenThousandsSword.levelIds[1]), {})
+    ItemHelper:recordProjectile(projectileid, objid, item, {})
     ItemHelper:recordMissileSpeed(projectileid, speedVector3)
     MyTimeHelper:callFnFastRuns(function ()
-      SkillHelper:tenThousandsSwordcraft3(objid, arr, projectiles)
+      SkillHelper:tenThousandsSwordcraft3(objid,item, arr, projectiles)
     end, 0.1)
   end
 end
@@ -207,11 +210,12 @@ function SkillHelper:airArmour (objid, size, time)
   end, time)
 end
 
--- 回天 对象、飞剑数量、有效范围、角度改变、飞剑距离
-function SkillHelper:huitian (objid, num, size, changeAngle, distance)
+-- 回天 对象、道具（或道具等级）、飞剑数量、有效范围、角度改变、飞剑距离
+function SkillHelper:huitian (objid, item, num, size, changeAngle, distance)
+  item = SkillHelper:getItem(item, 'huitianSword')
   num = num or 4
   size = size or 5
-  changeAngle = changeAngle or 3
+  changeAngle = changeAngle or 5
   distance = distance or 2
   local dim = { x = size, y = size, z = size }
   local projectiles = self:clearHuitian(objid)
@@ -220,7 +224,8 @@ function SkillHelper:huitian (objid, num, size, changeAngle, distance)
     local pos = ActorHelper:getFixedDistancePosition(objid, distance, angle)
     pos.y = pos.y + 1
     local projectileid = WorldHelper:spawnProjectileByDirPos(objid, 
-      MyConstant.WEAPON.TEN_THOUSAND_SWORD_ID, pos, pos, 0)
+      item.projectileid, pos, pos, 0)
+    ItemHelper:recordProjectile(projectileid, objid, item, {})
     table.insert(projectiles, { flag = 0, objid = projectileid, angle = angle })
   end
   local t = objid .. 'huitian'
@@ -250,11 +255,7 @@ function SkillHelper:huitian (objid, num, size, changeAngle, distance)
           ItemHelper:recordMissileSpeed(v.objid, sv3)
         else -- 未发现目标，追击状态不处理
           if (v.flag == 0) then -- 环绕状态
-            v.angle = v.angle + changeAngle
-            local dstPos = ActorHelper:getFixedDistancePosition(objid, distance, v.angle)
-            dstPos.y = dstPos.y + 1
-            ActorHelper:setMyPosition(v.objid, dstPos)
-            ActorHelper:setLookAtFaceYaw(v.objid, objid, -70)
+            SkillHelper:huitianCircle(objid, distance, v, changeAngle)
           end
         end
         num = num + 1
@@ -264,6 +265,14 @@ function SkillHelper:huitian (objid, num, size, changeAngle, distance)
       MyTimeHelper:delFnContinueRuns(t)
     end
   end, -1, t)
+end
+
+function SkillHelper:huitianCircle (objid, distance, projectile, changeAngle)
+  projectile.angle = projectile.angle + changeAngle
+  local dstPos = ActorHelper:getFixedDistancePosition(objid, distance, projectile.angle)
+  dstPos.y = dstPos.y + 1
+  ActorHelper:setMyPosition(projectile.objid, dstPos)
+  ActorHelper:setLookAtFaceYaw(projectile.objid, objid, -70)
 end
 
 -- 清除环绕飞剑

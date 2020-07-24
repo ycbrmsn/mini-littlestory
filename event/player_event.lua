@@ -23,7 +23,7 @@ end
 -- eventobjid, blockid, x, y, z
 local playerClickBlock = function (event)
   LogHelper:call(function ()
-    SkillHelper:huitian(event.eventobjid)
+    SkillHelper:huitian(4298067528)
     MyPlayerHelper:playerClickBlock(event.eventobjid, event.blockid, event.x, event.y, event.z)
   end)
 end
