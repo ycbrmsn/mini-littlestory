@@ -167,16 +167,15 @@ end
 -- 玩家移动一格
 function PlayerHelper:playerMoveOneBlockSize (objid)
   if (ActorHelper:isApproachBlock(objid)) then
-    local player = self:getPlayer(objid)
-    player:stopFly(true)
+    SkillHelper:stopFly(objid)
   end
 end
 
 -- 玩家受到伤害
 function PlayerHelper:playerBeHurt (objid, toobjid)
-  local player = self:getPlayer(objid)
-  if (player:isFlying()) then
-    player:stopFly()
+  if (SkillHelper:isFlying(objid)) then
+    local player = PlayerHelper:getPlayer(objid)
+    SkillHelper:stopFly(objid, ItemHelper:getItem(player.hold))
   end
 end
 

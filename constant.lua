@@ -6,7 +6,6 @@ MyConstant = {
   PROJECTILE_HURT = 6, -- 通用投掷物固定伤害
   
   -- 人物ID
-  FLY_SWORD_ID = 2, -- 御剑
 
   -- 怪物ID
 
@@ -85,6 +84,7 @@ MyWeaponAttr = {
 
 -- 武器id
 MyWeaponAttr.controlSword.levelIds = { 4105 } -- 御剑
+MyWeaponAttr.controlSword.projectileid = 4109 -- 飞行的御剑
 MyWeaponAttr.tenThousandsSword.levelIds = { 4106 } -- 万剑
 MyWeaponAttr.tenThousandsSword.projectileid = 4107 -- 飞行的万剑
 MyWeaponAttr.huitianSword.levelIds = { 4108 } -- 回天剑

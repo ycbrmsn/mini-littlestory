@@ -4,21 +4,19 @@
 ControlSword = MyWeapon:new(MyWeaponAttr.controlSword)
 
 function ControlSword:useItem1 (objid)
-  local player = PlayerHelper:getPlayer(objid)
-  local state = player:getState()
+  local state = SkillHelper:getFlyState(objid)
   if (state == 0) then -- 可御剑，则御剑
-    player:flyStatic()
+    SkillHelper:flyStatic(objid)
   elseif (state == 1) then -- 御剑静止，则前行
-    player:flyAdvance()
+    SkillHelper:flyAdvance(objid)
   elseif (state == 2) then -- 御剑前行，则静止
-    player:flyStatic()
+    SkillHelper:flyStatic(objid)
   end
 end
 
 -- 潜行
 function ControlSword:useItem2 (objid)
-  local player = PlayerHelper:getPlayer(objid)
-  player:stopFly(true)
+  SkillHelper:stopFly(objid)
 end
 
 -- 万剑

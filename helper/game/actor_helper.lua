@@ -801,3 +801,12 @@ function ActorHelper:getObjType (objid)
     return Actor:getObjType(objid)
   end, nil, onceFailMessage, finillyFailMessage)
 end
+
+-- 获取actor朝向
+function ActorHelper:getFaceDirection (objid)
+  local onceFailMessage = '获取actor朝向失败一次'
+  local finillyFailMessage = StringHelper:concat('获取actor朝向失败，参数：objid=', objid)
+  return CommonHelper:callThreeResultMethod(function (p)
+    return Actor:getFaceDirection(objid)
+  end, nil, onceFailMessage, finillyFailMessage)
+end

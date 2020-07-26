@@ -1,6 +1,7 @@
 -- 技能工具类
 SkillHelper = {
-  huitianData = {} -- { objid -> projectiles }
+  flyData = {}, -- { objid -> { state = state, flySwordId = flySwordId } }
+  huitianData = {} -- { objid -> {} }
 }
 
 function SkillHelper:getItem (item, weaponName)
@@ -80,6 +81,107 @@ function SkillHelper:cancelSealActor (objid)
   if (canCancel) then
     ActorHelper:stopBodyEffectById(objid, MyConstant.BODY_EFFECT.LIGHT47)
   end
+end
+
+-- 获取御剑状态（-1：御剑失控；0：可御剑；1：御剑静止；2：御剑前行）
+function SkillHelper:getFlyState (objid)
+  local flyData = self.flyData[objid]
+  if (not(flyData)) then
+    self.flyData[objid] = { state = 0 }
+  end
+  return self.flyData[objid].state
+end
+
+-- 设置御剑状态
+function SkillHelper:setFlyState (objid, state)
+  local flyData = self.flyData[objid]
+  if (not(flyData)) then
+    self.flyData[objid] = {}
+  end
+  self.flyData[objid].state = state
+end
+
+function SkillHelper:isFlying (objid)
+  local flyType = objid .. 'fly'
+  return MyTimeHelper:isFnContinueRuns(flyType), flyType
+end
+
+function SkillHelper:isFlyingAdvance (objid)
+  local flyAdvanceType = objid .. 'flyAdvance'
+  return MyTimeHelper:isFnContinueRuns(flyAdvanceType), flyAdvanceType
+end
+
+function SkillHelper:flyStatic (objid)
+  local pos = ActorHelper:getMyPosition(objid)
+  if (not(ActorHelper:isInAir(objid))) then -- 不在空中
+    pos.y = pos.y + 2
+    ActorHelper:setMyPosition(objid, pos)
+  end
+  ActorHelper:setFaceYaw(objid, ActorHelper:getFaceYaw(objid))
+  if (not(self.flyData[objid])) then
+    self.flyData[objid] = {}
+  end
+  local flySwordId
+  if (not(self.flyData[objid].flySwordId)) then
+    flySwordId = WorldHelper:spawnProjectileByDirPos(objid, MyWeaponAttr.controlSword.projectileid, pos, pos, 0)
+    self.flyData[objid].flySwordId = flySwordId
+  end
+  local isFlying, flyType = self:isFlying(objid)
+  local isFlyingAdvance, flyAdvanceType = self:isFlyingAdvance(objid)
+  if (not(isFlying)) then -- 如果没有飞，则飞起来
+    MyTimeHelper:callFnContinueRuns(function ()
+      ActorHelper:appendSpeed(objid, 0, MyConstant.FLY_SPEED, 0)
+      local p = ActorHelper:getMyPosition(objid)
+      ActorHelper:setMyPosition(flySwordId, p.x, p.y - 0.1, p.z)
+      ActorHelper:setFaceYaw(flySwordId, ActorHelper:getFaceYaw(objid))
+    end, -1, flyType)
+  end
+  if (isFlyingAdvance) then -- 如果在向前飞，则停止
+    MyTimeHelper:delFnContinueRuns(flyAdvanceType)
+  end
+  self:setFlyState(objid, 1)
+end
+
+function SkillHelper:flyAdvance (objid)
+  local isFlying, flyType = self:isFlying(objid)
+  local isFlyingAdvance, flyAdvanceType = self:isFlyingAdvance(objid)
+  if (not(isFlying)) then -- 如果没有飞，则飞起来
+    MyTimeHelper:callFnContinueRuns(function ()
+      ActorHelper:appendSpeed(objid, 0, MyConstant.FLY_SPEED, 0)
+    end, -1, flyType)
+  end
+  if (not(isFlyingAdvance)) then -- 如果没有向前飞，则向前飞
+    MyTimeHelper:callFnContinueRuns(function ()
+      local speedVector3 = MyVector3:new(ActorHelper:getFaceDirection(objid)):mul(0.1)
+      ActorHelper:appendSpeed(objid, speedVector3.x, speedVector3.y, speedVector3.z)
+    end, -1, flyAdvanceType)
+  end
+  self:setFlyState(objid, 2)
+end
+
+function SkillHelper:stopFly (objid, item)
+  local state = self:getFlyState(objid)
+  if (state == 0 or state == -1) then -- 未飞行或已失控
+    return
+  end
+  if (item) then -- 失控
+    item = SkillHelper:getItem(item, 'controlSword')
+    ItemHelper:recordUseSkill(objid, item.id, MyWeaponAttr.controlSword.cd)
+  end
+  if (state == 1) then -- 静止
+    MyTimeHelper:delFnContinueRuns(objid .. 'fly')
+  elseif (state == 2) then -- 前行
+    MyTimeHelper:delFnContinueRuns(objid .. 'fly')
+    MyTimeHelper:delFnContinueRuns(objid .. 'flyAdvance')
+  end
+  self:setFlyState(objid, 0)
+  WorldHelper:despawnActor(self.flyData[objid].flySwordId)
+  -- ActorHelper:killSelf(self.flyData[objid].flySwordId)
+  self.flyData[objid].flySwordId = nil
+  -- ActorHelper:setImmuneFall(self.myActor.objid, true) -- 免疫跌落
+  -- MyTimeHelper:callFnFastRuns(function ()
+  --   ActorHelper:setImmuneFall(self.myActor.objid, false) -- 取消免疫跌落
+  -- end, 1)
 end
 
 -- 万剑诀起势 对象、道具（或道具等级）、有效范围半边长
