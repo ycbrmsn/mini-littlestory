@@ -49,43 +49,53 @@ MyConstant = {
 -- 武器属性
 MyWeaponAttr = {
   -- 剑
-  controlSword = { -- 御剑
-    attack = 10,
-    defense = 5,
+  controlSword = { -- 御仙剑
+    attack = 70,
+    defense = 15,
     cd = 15,
-    cdReason = '御剑失控，短时间内无法再次御剑',
+    cdReason = '御仙剑失控，短时间内无法再次御剑飞行',
     skillname = '御剑飞行',
-    addAttPerLevel = 4,
-    addDefPerLevel = 4
+    addAttPerLevel = 30,
+    addDefPerLevel = 20
   },
-  tenThousandsSword = { -- 万剑
-    attack = 20,
-    defense = 5,
-    cd = 5,
+  tenThousandsSword = { -- 万仙剑
+    attack = 90,
+    defense = 0,
+    cd = 15,
     cdReason = '万剑诀技能冷却中',
     skillname = '万剑诀',
     hurt = 8,
-    addAttPerLevel = 6,
-    addDefPerLevel = 6,
+    addAttPerLevel = 40,
+    addDefPerLevel = 10,
     addHurtPerLevel = 2
   },
-  huitianSword = { -- 回天剑
-    attack = 20,
-    defense = 5,
-    cd = 5,
-    cdReason = '回天技能冷却中',
-    skillname = '回天',
+  huixianSword = { -- 回仙剑
+    attack = 80,
+    defense = 10,
+    cd = 15,
+    cdReason = '回天剑诀技能冷却中',
+    skillname = '回天剑诀',
     hurt = 20,
-    addAttPerLevel = 6,
-    addDefPerLevel = 6,
+    addAttPerLevel = 35,
+    addDefPerLevel = 15,
     addHurtPerLevel = 5
+  },
+  vitalqiSword = { -- 气仙剑
+    attack = 60,
+    defense = 20,
+    cd = 15,
+    cdReason = '气甲术技能冷却中',
+    skillname = '气甲术',
+    addAttPerLevel = 20,
+    addDefPerLevel = 30
   }
 }
 
 -- 武器id
-MyWeaponAttr.controlSword.levelIds = { 4105 } -- 御剑
-MyWeaponAttr.controlSword.projectileid = 4109 -- 飞行的御剑
+MyWeaponAttr.controlSword.levelIds = { 4105 } -- 御仙剑
+MyWeaponAttr.controlSword.projectileid = 4109 -- 飞行的御仙剑
 MyWeaponAttr.tenThousandsSword.levelIds = { 4106 } -- 万剑
 MyWeaponAttr.tenThousandsSword.projectileid = 4107 -- 飞行的万剑
-MyWeaponAttr.huitianSword.levelIds = { 4108 } -- 回天剑
-MyWeaponAttr.huitianSword.projectileid = 4103 -- 飞行的回天剑
+MyWeaponAttr.huixianSword.levelIds = { 4110 } -- 回仙剑
+MyWeaponAttr.huixianSword.projectileid = 4111 -- 飞行的回仙剑
+MyWeaponAttr.vitalqiSword.levelIds = { 4112 } -- 气仙剑

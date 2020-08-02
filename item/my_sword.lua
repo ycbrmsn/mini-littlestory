@@ -48,16 +48,16 @@ function TenThousandsSword:projectileHit (projectileInfo, toobjid, blockid, pos)
   end
 end
 
--- 回天剑
-HuitianSword = MyWeapon:new(MyWeaponAttr.huitianSword)
+-- 回仙剑
+HuixianSword = MyWeapon:new(MyWeaponAttr.huixianSword)
 
-function HuitianSword:useItem1 (objid)
+function HuixianSword:useItem1 (objid)
   SkillHelper:huitian(objid, self)
   ItemHelper:recordUseSkill(objid, self.id, self.cd)
 end
 
 -- 投掷物命中
-function HuitianSword:projectileHit (projectileInfo, toobjid, blockid, pos)
+function HuixianSword:projectileHit (projectileInfo, toobjid, blockid, pos)
   local objid = projectileInfo.objid
   local item = projectileInfo.item
   local player = PlayerHelper:getPlayer(objid)
@@ -75,4 +75,12 @@ function HuitianSword:projectileHit (projectileInfo, toobjid, blockid, pos)
       end
     end
   end
+end
+
+-- 气仙剑
+VitalqiSword = MyWeapon:new(MyWeaponAttr.vitalqiSword)
+
+function VitalqiSword:useItem1 (objid)
+  SkillHelper:airArmour(objid)
+  ItemHelper:recordUseSkill(objid, self.id, self.cd)
 end

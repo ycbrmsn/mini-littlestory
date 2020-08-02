@@ -287,7 +287,7 @@ function SkillHelper:airArmour (objid, size, time)
     else
       missiles = ActorHelper:getAllMissilesArroundPos(pos, dim, objid, false)
     end
-    LogHelper:debug('idx', idx, ': ', #missiles)
+    -- LogHelper:debug('idx', idx, ': ', #missiles)
     idx = idx + 1
     if (missiles and #missiles > 0) then
       for i, v in ipairs(missiles) do
