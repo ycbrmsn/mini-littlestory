@@ -117,7 +117,7 @@ function SkillHelper:flyStatic (objid)
     pos.y = pos.y + 2
     ActorHelper:setMyPosition(objid, pos)
   end
-  ActorHelper:setFaceYaw(objid, ActorHelper:getFaceYaw(objid))
+  -- ActorHelper:setFaceYaw(objid, ActorHelper:getFaceYaw(objid))
   if (not(self.flyData[objid])) then
     self.flyData[objid] = {}
   end
@@ -314,7 +314,7 @@ end
 
 -- 回天 对象、道具（或道具等级）、飞剑数量、有效范围、角度改变、飞剑距离
 function SkillHelper:huitian (objid, item, num, size, changeAngle, distance)
-  item = SkillHelper:getItem(item, 'huitianSword')
+  item = SkillHelper:getItem(item, 'huixianSword')
   num = num or 4
   size = size or 5
   changeAngle = changeAngle or 5

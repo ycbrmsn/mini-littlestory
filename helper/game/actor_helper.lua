@@ -525,6 +525,60 @@ function ActorHelper:addGravity (objid)
   end, -1, t)
 end
 
+-- 对角色造成伤害
+function ActorHelper:damageActor (objid, toobjid, val)
+  if (val <= 0) then -- 伤害值无效
+    return
+  end
+  local isPlayer = ActorHelper:isPlayer(objid) -- 攻击者是否是玩家
+  if (ActorHelper:isPlayer(toobjid)) then -- 伤害玩家
+    local hp = PlayerHelper:getHp(toobjid)
+    if (hp <= 0) then -- 生物已经死亡
+      return
+    end
+    if (hp > val) then -- 玩家不会死亡
+      hp = hp - val
+      PlayerHelper:setHp(toobjid, hp)
+    else -- 玩家可能会死亡，则检测玩家是否可被杀死
+      local ableBeKilled = PlayerHelper:getPlayerEnableBeKilled(toobjid)
+      if (ableBeKilled) then -- 能被杀死
+        ActorHelper:killSelf(toobjid)
+        if (isPlayer) then -- 攻击者是玩家
+          MyPlayerHelper:playerDefeatActor(objid, toobjid)
+        else -- 攻击者是生物，目前暂不处理
+        end
+      else -- 不能被杀死
+        hp = 1
+        PlayerHelper:setHp(toobjid, hp)
+      end
+    end
+  else -- 伤害了生物
+    local hp = CreatureHelper:getHp(toobjid)
+    if (not(hp) or hp <= 0) then -- 未找到生物或生物已经死亡
+      return
+    end
+    if (hp > val) then -- 生物不会死亡
+      hp = hp - val
+      CreatureHelper:setHp(toobjid, hp)
+    else -- 生物可能会死亡，则检测生物是否可被杀死
+      local ableBeKilled = ActorHelper:getEnableBeKilledState(toobjid)
+      if (ableBeKilled) then -- 能被杀死
+        ActorHelper:killSelf(toobjid)
+        if (isPlayer) then -- 攻击者是玩家
+          MyPlayerHelper:playerDefeatActor(objid, toobjid)
+        else -- 攻击者是生物，目前暂不处理
+        end
+      else -- 不能被杀死
+        hp = 1
+        CreatureHelper:setHp(toobjid, hp)
+      end
+    end
+  end
+  if (isPlayer) then
+    MyPlayerHelper:playerDamageActor(objid, toobjid)
+  end
+end
+
 -- 设置生物可移动状态
 function ActorHelper:setEnableMoveState (objid, switch)
   return self:setActionAttrState(objid, CREATUREATTR.ENABLE_MOVE, switch)
@@ -780,9 +834,9 @@ function ActorHelper:clearAllBadBuff (objid)
 end
 
 -- 是否在空中（无用）
-function ActorHelper:isInAir (objid)
-  return Actor:isInAir(objid) == ErrorCode.OK
-end
+-- function ActorHelper:isInAir (objid)
+--   return Actor:isInAir(objid) == ErrorCode.OK
+-- end
 
 -- 设置免疫伤害类型
 function ActorHelper:setImmuneType (objid, immunetype, isadd)

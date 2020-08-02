@@ -31,7 +31,6 @@ end
 function TenThousandsSword:projectileHit (projectileInfo, toobjid, blockid, pos)
   local objid = projectileInfo.objid
   local item = projectileInfo.item
-  local player = PlayerHelper:getPlayer(objid)
   if (toobjid > 0) then -- 命中生物（似乎命中同队生物不会进入这里）
     -- 判断是否是敌对生物
     if (not(ActorHelper:isTheSameTeamActor(objid, toobjid))) then -- 敌对生物，则造成伤害
@@ -42,7 +41,7 @@ function TenThousandsSword:projectileHit (projectileInfo, toobjid, blockid, pos)
         hurt = hurt - MyConstant.PROJECTILE_HURT
       end
       if (hurt > 0) then
-        player:damageActor(toobjid, hurt)
+        ActorHelper:damageActor(objid, toobjid, hurt)
       end
     end
   end
@@ -60,7 +59,6 @@ end
 function HuixianSword:projectileHit (projectileInfo, toobjid, blockid, pos)
   local objid = projectileInfo.objid
   local item = projectileInfo.item
-  local player = PlayerHelper:getPlayer(objid)
   if (toobjid > 0) then -- 命中生物（似乎命中同队生物不会进入这里）
     -- 判断是否是敌对生物
     if (not(ActorHelper:isTheSameTeamActor(objid, toobjid))) then -- 敌对生物，则造成伤害
@@ -71,7 +69,7 @@ function HuixianSword:projectileHit (projectileInfo, toobjid, blockid, pos)
         hurt = hurt - MyConstant.PROJECTILE_HURT
       end
       if (hurt > 0) then
-        player:damageActor(toobjid, hurt)
+        ActorHelper:damageActor(objid, toobjid, hurt)
       end
     end
   end
