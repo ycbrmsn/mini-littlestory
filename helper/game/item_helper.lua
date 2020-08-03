@@ -15,6 +15,7 @@ function ItemHelper:getItem (itemid)
   return self.item[itemid]
 end
 
+-- 手持物也许变化
 function ItemHelper:changeHold (objid, itemid1, itemid2)
   local item1 = self:getItem(itemid1)
   local item2 = self:getItem(itemid2)
@@ -56,14 +57,6 @@ function ItemHelper:recordProjectile (projectileid, objid, item, o)
   MyTimeHelper:callFnAfterSecond(function ()
     self.projectiles[projectileid] = nil
   end, 30)
-end
-
-function ItemHelper:projectileHit (projectileid, toobjid, blockid, pos)
-  local projectileInfo = self.projectiles[projectileid]
-  if (projectileInfo) then
-    local item = projectileInfo.item
-    item:projectileHit(projectileInfo, toobjid, blockid, pos)
-  end
 end
 
 -- 记录使用技能
@@ -154,12 +147,6 @@ function ItemHelper:removeCurTool (objid)
   BackpackHelper:removeGridItem(objid, gridid)
 end
 
--- 投掷物被创建
-function ItemHelper:missileCreate (objid, toobjid, itemid, x, y, z)
-  local teamid = ActorHelper:getTeam(objid)
-  ItemHelper:recordMissileTeam(objid, teamid)
-end
-
 -- 记录投掷物属性
 function ItemHelper:recordMissile (objid, attr, val)
   if (self.missiles[objid]) then -- 已存在
@@ -196,6 +183,24 @@ end
 -- 获取投掷物速度
 function ItemHelper:getMissileSpeed (objid)
   return self:getMissile(objid).speed
+end
+
+-- 事件
+
+-- 投掷物命中
+function ItemHelper:projectileHit (projectileid, toobjid, blockid, x, y, z)
+  local projectileInfo = self.projectiles[projectileid]
+  if (projectileInfo) then
+    local item = projectileInfo.item
+    local pos = MyPosition:new(x, y, z)
+    item:projectileHit(projectileInfo, toobjid, blockid, pos)
+  end
+end
+
+-- 投掷物被创建
+function ItemHelper:missileCreate (objid, toobjid, itemid, x, y, z)
+  local teamid = ActorHelper:getTeam(objid)
+  ItemHelper:recordMissileTeam(objid, teamid)
 end
 
 -- 封装原始接口

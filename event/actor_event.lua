@@ -48,8 +48,7 @@ local actorDie = function (event)
   local objid = event['eventobjid']
   local toobjid = event['toobjid']
   LogHelper:call(function ()
-    MonsterHelper:actorDie(objid, toobjid)
-    MyStoryHelper:actorDieEvent(objid)
+    MyActorHelper:actorDie(objid, toobjid)
   end)
 end
 
@@ -59,27 +58,32 @@ local actorProjectileHit = function (event)
   local x, y, z = event.x, event.y, event.z
   LogHelper:call(function ()
     -- LogHelper:debug('投掷物命中')
-    ItemHelper:projectileHit(projectileid, toobjid, blockid, MyPosition:new(x, y, z))
+    MyItemHelper:projectileHit(projectileid, toobjid, blockid, x, y, z)
   end)
 end
 
 -- eventobjid, toobjid, itemid, x, y, z
 local missileCreate = function (event)
+  local x, y, z = event.x, event.y, event.z
   LogHelper:call(function ()
-    ItemHelper:missileCreate(event.eventobjid, event.toobjid, event.itemid, event.x, event.y, event.z)
+    MyItemHelper:missileCreate(event.eventobjid, event.toobjid, event.itemid, x, y, z)
   end)
 end
 
 -- eventobjid, blockid, x, y, z
 local blockDigEnd = function (event)
+  local x, y, z = event.x, event.y, event.z
   LogHelper:call(function ()
-    MyBlockHelper:blockDigEnd(event.eventobjid, event.blockid, event.x, event.y, event.z)
+    MyBlockHelper:blockDigEnd(event.eventobjid, event.blockid, x, y, z)
   end)
 end
 
 -- eventobjid, blockid, x, y, z
 local blockTrigger = function (event)
-  MyBlockHelper:checkCityGates(event)
+  local x, y, z = event.x, event.y, event.z
+  LogHelper:call(function ()
+    MyBlockHelper:blockTrigger(event.eventobjid, event.blockid, x, y, z)
+  end)
 end
 
 ScriptSupportEvent:registerEvent([=[Actor.AreaIn]=], actorEnterArea) -- 生物进入区域

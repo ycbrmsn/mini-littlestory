@@ -142,54 +142,6 @@ function ActorHelper:setLookAtFaceYaw (objid, toobjid, angle)
   return ActorHelper:setFaceYaw(objid, MathHelper:getActorFaceYaw(myVector3) + angle)
 end
 
--- actor进入区域
-function ActorHelper:actorEnterArea (objid, areaid)
-  local myActor = self:getActor(objid)
-  local doorPos = AreaHelper.allDoorAreas[areaid]
-  if (doorPos) then -- 如果门位置存在，说明这是门区域，则打开这个门
-    BlockHelper:openDoor(doorPos)
-  end
-  if (myActor and myActor.wants) then -- 找到了一个actor，并且这个actor有想法
-    local want = myActor.wants[1]
-    if (want.toAreaId == areaid) then -- 如果是该actor的终点区域，则判断actor是仅仅前往还是巡逻
-      if (want.style == 'move' or want.style == 'approach') then -- 如果是仅仅前往，则变更想法，并且停下来
-        -- LogHelper:debug(myActor:getName() .. '进入了终点区域' .. areaid)
-        AreaHelper:destroyArea(want.toAreaId) -- 清除终点区域
-        local pos = MyActorActionHelper:getNextPos(want)
-        -- LogHelper:debug(myActor:getName(), pos)
-        if (pos) then -- 有下一个行动位置
-          want.toPos = pos
-          MyActorActionHelper:createMoveToPos(want)
-          myActor.action:execute()
-          -- LogHelper:debug(myActor:getName(), '向下一个位置出发')
-        elseif (myActor.wants[2]) then
-          self:handleNextWant(myActor)
-        else
-          myActor:defaultWant()
-          myActor:wantStayForAWhile()
-        end
-      elseif (want.style == 'patrol') then -- 如果是巡逻，则停下来并设定前往目的地
-        AreaHelper:destroyArea(want.toAreaId) -- 清除终点区域
-        want.currentRestTime = want.restTime
-        want.toPos = MyActorActionHelper:getNextPos(want)
-        -- LogHelper:debug('下一个位置' .. type(want.toPos))
-        MyActorActionHelper:createMoveToPos(want)
-      elseif (want.style == 'freeInArea') then -- 区域内自由移动
-        AreaHelper:destroyArea(want.toAreaId) -- 清除终点区域
-        want.currentRestTime = want.restTime
-        want.toPos = MyActorActionHelper:getFreeInAreaPos(myActor.freeInAreaIds)
-        MyActorActionHelper:createMoveToPos(want)
-      else -- 其他情况，不明
-        -- do nothing
-      end
-    else -- 不是该actor的终点区域，则和该actor没有关系
-      -- do nothing
-    end
-  else -- 没有找到actor，或者该actor没有想法，则不做什么
-    -- do nothing
-  end
-end
-
 function ActorHelper:handleNextWant (myActor)
   local want = myActor.wants[1]
   table.remove(myActor.wants, 1)
@@ -224,7 +176,7 @@ function ActorHelper:handleNextWant (myActor)
     end, 2, { pos = want.toPos, myActor = myActor })
     -- 3秒后蜡烛台变化，并执行下一个动作
     MyTimeHelper:callFnAfterSecond (function (p)
-      MyBlockHelper:handleCandle(p.pos, p.isLit)
+      BlockHelper:handleCandle(p.pos, p.isLit)
       if (p.myActor.wants[2]) then
         self:handleNextWant(p.myActor)
       end
@@ -255,52 +207,6 @@ function ActorHelper:resumeClickActor (objid)
       end
     end
     self.clickActors[objid] = nil
-  end
-end
-
--- 生物碰撞
-function ActorHelper:actorCollide (objid, toobjid)
-  local actor1 = ActorHelper:getActor(objid)
-  -- LogHelper:info('碰撞了', actor1:getName())
-  if (actor1) then -- 生物是特定生物
-    if (ActorHelper:isPlayer(toobjid)) then -- 是玩家
-      if (actor1.wants and actor1.wants[1].style == 'sleeping') then
-        actor1.wants[1].style = 'wake'
-      end
-      actor1:defaultCollidePlayerEvent(toobjid, PositionHelper:isTwoInFrontOfOne(objid, toobjid))
-    else
-      local actor2 = ActorHelper:getActor(toobjid)
-      if (actor2) then
-        -- 先简单处理为actorid小的停下来
-        if (actor1.actorid == actor2.actorid) then
-          if (objid < toobjid) then
-            actor1:wantStayForAWhile()
-          else
-            actor2:wantStayForAWhile()
-          end
-        elseif (actor1.actorid < actor2.actorid) then
-          actor1:wantStayForAWhile()
-        else
-          actor2:wantStayForAWhile()
-        end
-      end
-    end
-  end
-end
-
--- 生物攻击命中
-function ActorHelper:actorAttackHit (objid, toobjid)
-  local actor = ActorHelper:getActor(objid)
-  if (actor) then
-    actor:attackHit(toobjid)
-  end
-end
-
--- 生物行为改变（仅开启AI有效）
-function ActorHelper:actorChangeMotion (objid, actormotion)
-  local actor = ActorHelper:getActor(objid)
-  if (actor) then
-    actor:changeMotion(actormotion)
   end
 end
 
@@ -473,9 +379,9 @@ end
 -- 前后左右中下六个位置如果有一个位置不是空气方块，那么就是靠近了方块
 function ActorHelper:isApproachBlock (objid)
   local pos = self:getMyPosition(objid)
-  return (MyBlockHelper:isAirBlock(pos) and MyBlockHelper:isAirBlock(pos, -1)
-      and MyBlockHelper:isAirBlock(pos, 1) and MyBlockHelper:isAirBlock(pos, 0, -1)
-      and MyBlockHelper:isAirBlock(pos, 0, 0, -1) and MyBlockHelper:isAirBlock(pos, 0, 0, 1))
+  return (BlockHelper:isAirBlockOffset(pos) and BlockHelper:isAirBlockOffset(pos, -1)
+      and BlockHelper:isAirBlockOffset(pos, 1) and BlockHelper:isAirBlockOffset(pos, 0, -1)
+      and BlockHelper:isAirBlockOffset(pos, 0, 0, -1) and BlockHelper:isAirBlockOffset(pos, 0, 0, 1))
     == false
 end
 
@@ -607,6 +513,114 @@ end
 -- 设置免疫跌落伤害
 function ActorHelper:setImmuneFall (objid, isadd)
   return ActorHelper:setImmuneType(objid, HURTTYPE.FALL, isadd)
+end
+
+-- 事件
+
+-- actor进入区域
+function ActorHelper:actorEnterArea (objid, areaid)
+  local myActor = self:getActor(objid)
+  local doorPos = AreaHelper.allDoorAreas[areaid]
+  if (doorPos) then -- 如果门位置存在，说明这是门区域，则打开这个门
+    BlockHelper:openDoor(doorPos)
+  end
+  if (myActor and myActor.wants) then -- 找到了一个actor，并且这个actor有想法
+    local want = myActor.wants[1]
+    if (want.toAreaId == areaid) then -- 如果是该actor的终点区域，则判断actor是仅仅前往还是巡逻
+      if (want.style == 'move' or want.style == 'approach') then -- 如果是仅仅前往，则变更想法，并且停下来
+        -- LogHelper:debug(myActor:getName() .. '进入了终点区域' .. areaid)
+        AreaHelper:destroyArea(want.toAreaId) -- 清除终点区域
+        local pos = MyActorActionHelper:getNextPos(want)
+        -- LogHelper:debug(myActor:getName(), pos)
+        if (pos) then -- 有下一个行动位置
+          want.toPos = pos
+          MyActorActionHelper:createMoveToPos(want)
+          myActor.action:execute()
+          -- LogHelper:debug(myActor:getName(), '向下一个位置出发')
+        elseif (myActor.wants[2]) then
+          self:handleNextWant(myActor)
+        else
+          myActor:defaultWant()
+          myActor:wantStayForAWhile()
+        end
+      elseif (want.style == 'patrol') then -- 如果是巡逻，则停下来并设定前往目的地
+        AreaHelper:destroyArea(want.toAreaId) -- 清除终点区域
+        want.currentRestTime = want.restTime
+        want.toPos = MyActorActionHelper:getNextPos(want)
+        -- LogHelper:debug('下一个位置' .. type(want.toPos))
+        MyActorActionHelper:createMoveToPos(want)
+      elseif (want.style == 'freeInArea') then -- 区域内自由移动
+        AreaHelper:destroyArea(want.toAreaId) -- 清除终点区域
+        want.currentRestTime = want.restTime
+        want.toPos = MyActorActionHelper:getFreeInAreaPos(myActor.freeInAreaIds)
+        MyActorActionHelper:createMoveToPos(want)
+      else -- 其他情况，不明
+        -- do nothing
+      end
+    else -- 不是该actor的终点区域，则和该actor没有关系
+      -- do nothing
+    end
+  else -- 没有找到actor，或者该actor没有想法，则不做什么
+    -- do nothing
+  end
+end
+
+-- actor离开区域
+function ActorHelper:actorLeaveArea (objid, areaid)
+  CreatureHelper:closeDoor(objid, areaid)
+  MyStoryHelper:actorLeaveArea(objid, areaid)
+end
+
+-- 生物碰撞
+function ActorHelper:actorCollide (objid, toobjid)
+  local actor1 = ActorHelper:getActor(objid)
+  -- LogHelper:info('碰撞了', actor1:getName())
+  if (actor1) then -- 生物是特定生物
+    if (ActorHelper:isPlayer(toobjid)) then -- 是玩家
+      if (actor1.wants and actor1.wants[1].style == 'sleeping') then
+        actor1.wants[1].style = 'wake'
+      end
+      actor1:defaultCollidePlayerEvent(toobjid, PositionHelper:isTwoInFrontOfOne(objid, toobjid))
+    else
+      local actor2 = ActorHelper:getActor(toobjid)
+      if (actor2) then
+        -- 先简单处理为actorid小的停下来
+        if (actor1.actorid == actor2.actorid) then
+          if (objid < toobjid) then
+            actor1:wantStayForAWhile()
+          else
+            actor2:wantStayForAWhile()
+          end
+        elseif (actor1.actorid < actor2.actorid) then
+          actor1:wantStayForAWhile()
+        else
+          actor2:wantStayForAWhile()
+        end
+      end
+    end
+  end
+end
+
+-- 生物攻击命中
+function ActorHelper:actorAttackHit (objid, toobjid)
+  local actor = ActorHelper:getActor(objid)
+  if (actor) then
+    actor:attackHit(toobjid)
+  end
+end
+
+-- 生物行为改变（仅开启AI有效）
+function ActorHelper:actorChangeMotion (objid, actormotion)
+  local actor = ActorHelper:getActor(objid)
+  if (actor) then
+    actor:changeMotion(actormotion)
+  end
+end
+
+-- 生物死亡
+function ActorHelper:actorDie (objid, toobjid)
+  MonsterHelper:actorDie(objid, toobjid)
+  MyStoryHelper:actorDieEvent(objid)
 end
 
 -- 封装原始接口

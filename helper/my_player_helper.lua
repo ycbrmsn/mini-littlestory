@@ -1,6 +1,8 @@
 -- 我的玩家工具类
 MyPlayerHelper = {}
 
+-- 事件
+
 -- 玩家进入游戏
 function MyPlayerHelper:playerEnterGame (objid)
   PlayerHelper:playerEnterGame(objid)
@@ -103,10 +105,12 @@ end
 
 -- 骑乘
 function MyPlayerHelper:playerMountActor (objid, toobjid)
+  PlayerHelper:playerMountActor(objid, toobjid)
   LogHelper:debug('骑乘')
 end
 
 -- 取消骑乘
 function MyPlayerHelper:playerDismountActor (objid, toobjid)
+  PlayerHelper:playerDismountActor(objid, toobjid)
   LogHelper:debug('取消骑乘')
 end

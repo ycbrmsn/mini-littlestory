@@ -11,80 +11,46 @@ end
 -- eventobjid, toobjid
 local playerLeaveGame = function (event)
   LogHelper:call(function ()
-    MyPlayerHelper:playerLeaveGame (event.eventobjid)
+    MyPlayerHelper:playerLeaveGame(event.eventobjid)
   end)
 end
 
 -- 无参数
 local startGame = function ()
-  LogHelper:debug('开始游戏')
+  -- LogHelper:debug('开始游戏')
   LogHelper:call(function ()
-    MyBlockHelper:initBlocks()
-    -- initDoorAreas()
+    MyGameHelper:startGame()
   end)
 end
 
 -- 无参数
 local runGame = function ()
   LogHelper:call(function ()
-    MyTimeHelper:addFrame()
-    MyTimeHelper:runFnFastRuns()
-    MyTimeHelper:runFnContinueRuns()
-    MonsterHelper:runBosses()
+    MyGameHelper:runGame()
   end)
 end
 
 -- 无参数
 local endGame = function ()
-  LogHelper:debug('结束游戏')
-end
-
--- 参数 hour
-local atHour = function (event)
-  local hour = event['hour']
-  -- LogHelper:info('atHour: ', hour)
   LogHelper:call(function ()
-    MyTimeHelper:updateHour(hour)
-    MyStoryHelper:run(hour)
-    ActorHelper:atHour(hour)
+    MyGameHelper:endGame()
   end)
 end
 
-function initMyActors ()
-  PersonHelper:init()
-  MyBlockHelper:init()
+-- hour
+local atHour = function (event)
+  local hour = event['hour']
+  LogHelper:call(function ()
+    MyGameHelper:atHour(hour)
+  end)
 end
 
-function initDoorAreas ()
-  local doors = PositionHelper:getDoorPositions()
-  for i, v in ipairs(doors) do
-    local areaid = AreaHelper:getAreaByPos(v)
-    -- LogHelper:debug('初始化门区域：', areaid)
-    table.insert(AreaHelper.allDoorAreas, areaid, v)
-  end
-end
-
+-- second
 local atSecond = function (event)
   local second = event['second']
   LogHelper:call(function ()
-    MyTimeHelper:doPerSecond(second)
-    PlayerHelper:updateEveryPlayerPositions()
-    ActorHelper:runActors()
-    PlayerHelper:runPlayers()
-
-    -- if (second == 1) then
-    --   initMyActors()
-    --   MonsterHelper:init()
-    --   MyAreaHelper:initAreas()
-    -- end
-
-    -- if (second == 3) then
-    --   MyStoryHelper.mainIndex = 2
-    --   MyStoryHelper.mainProgress = 1
-    --   story2:goToCollege()
-    -- end
+    MyGameHelper:atSecond(second)
   end)
-  
 end
 
 ScriptSupportEvent:registerEvent([=[Game.AnyPlayer.EnterGame]=], playerEnterGame) -- 玩家进入游戏

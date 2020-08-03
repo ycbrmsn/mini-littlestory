@@ -1,4 +1,4 @@
--- 人物行为类
+-- actor行为类
 MyActorAction = {
   myActor = nil,
   maxCantMoveTime = 5
@@ -218,7 +218,7 @@ function MyActorAction:lightCandle (think, isNow, candlePositions)
   candlePositions = candlePositions or self.myActor.candlePositions
   local index = 1
   for i, v in ipairs(candlePositions) do
-    local candle = MyBlockHelper:getCandle(v)
+    local candle = BlockHelper:getCandle(v)
     if (not(candle) or not(candle.isLit)) then
       if (index == 1 and isNow) then
         self:toggleCandle(think, v, true, true)
@@ -235,7 +235,7 @@ function MyActorAction:putOutCandle (think, isNow, candlePositions)
   candlePositions = candlePositions or self.myActor.candlePositions
   local index = 1
   for i, v in ipairs(candlePositions) do
-    local candle = MyBlockHelper:getCandle(v)
+    local candle = BlockHelper:getCandle(v)
     if (not(candle) or candle.isLit) then
       if (index == 1 and isNow) then
         self:toggleCandle(think, v, false, true)

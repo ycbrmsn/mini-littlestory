@@ -1,6 +1,5 @@
 -- 我的方块工具类
 MyBlockHelper = {
-  candles = {}, -- 保存所有蜡烛台
   cityGateBlockIds = { 414, 122, 415 }, -- 竖纹、雪堆、电石块
   cityGates = { -- 开关、左电石、右电石、右区域
     { MyPosition:new(-41.5, 8.5, 484.5), MyPosition:new(-39.5, 5.5, 480.5), MyPosition:new(-32.5, 5.5, 480.5), MyPosition:new(-35.5, 12.5, 480.5) }, -- 南
@@ -16,109 +15,20 @@ function MyBlockHelper:init ()
   end
 end
 
--- 指定位置处的蜡烛台加入集合，参数为（myPosition, blockid）或者 如下
-function MyBlockHelper:addCandle (x, y, z, blockid)
-  local myPosition
-  if (type(x) == 'number') then
-    myPosition = MyPosition:new(x, y, z)
-  else
-    myPosition = x
-    blockid = y
-  end
-  -- local myPos = myPosition:floor()
-  local candle = MyCandle:new(myPosition, blockid)
-  self.candles[myPosition:toString()] = candle
-  return candle
-end
-
--- 查询指定位置处的蜡烛台
-function MyBlockHelper:getCandle (myPosition)
-  -- local myPos = myPosition:floor()
-  return self.candles[myPosition:toString()]
-end
-
--- 从集合中删除指定位置的蜡烛台
-function MyBlockHelper:removeCandle (myPosition)
-  -- local myPos = myPosition:floor()
-  self.candles[myPosition:toString()] = nil
-end
-
--- 检查指定位置处是否是蜡烛台
-function MyBlockHelper:checkIsCandle (myPosition)
-  local isCandle, blockid = MyCandle:isCandle(myPosition)
-  if (isCandle) then
-    local candle = self:getCandle(myPosition)
-    if (not(candle)) then
-      candle = self:addCandle(myPosition, blockid)
-    end
-    return true, candle
-  else
-    return false
-  end
-end
-
--- 检查被破坏/移除的方块是否是蜡烛台
-function MyBlockHelper:checkIfRemoveCandle (myPosition, blockid)
-  if (MyCandle:isBlockCandle(blockid)) then
-    self:removeCandle(myPosition)
-  end
-end
-
 function MyBlockHelper:check (pos, objid)
   local blockid = BlockHelper:getBlockID(pos.x, pos.y, pos.z)
-  if (MyCandle:isCandle(blockid)) then
-    -- 处理蜡烛台
-    local candle = self:handleCandle(pos)
-    if (candle) then
-      local myActor = self:getWhoseCandle(pos)
-      if (myActor) then
-        local player = PlayerHelper:getPlayer(objid)
-        myActor:candleEvent(player, candle)
-      end
-    end
+  if (BlockHelper:checkCandle(objid, blockid, pos)) then
   elseif (MyBed:isBed(blockid)) then
     -- 处理床
     PlayerHelper:showToast(objid, '你无法在别人的床上睡觉')
   end
 end
 
-function MyBlockHelper:getWhoseCandle (myPosition)
-  local index = 1
-  -- myPosition = myPosition:floor()
-  for k, v in pairs(ActorHelper:getAllActors()) do
-    if (v.candlePositions and #v.candlePositions > 0) then
-      for kk, vv in pairs(v.candlePositions) do
-        index = index + 1
-        if (vv:equals(myPosition)) then
-          return v
-        end
-      end
-    end
-  end
-  return nil
-end
-
-function MyBlockHelper:handleCandle (myPosition, isLit)
-  if (not(MyPosition:isPosition(myPosition))) then
-    myPosition = MyPosition:new(myPosition)
-  end
-  local isCandle, candle = self:checkIsCandle(myPosition)
-  if (isCandle) then
-    if (type(isLit) == 'nil') then
-      candle:toggle()
-    elseif (isLit) then
-      candle:light()
-    else
-      candle:putOut()
-    end
-  end
-  return candle
-end
-
-function MyBlockHelper:checkCityGates (args)
-  if (args.blockid == 724) then -- 开关
+-- 检查是否是控制城门的开关，如果是则打开城门或关闭城门
+function MyBlockHelper:checkCityGates (objid, blockid, pos)
+  if (blockid == 724) then -- 开关
     for i, v in ipairs(self.cityGates) do
-      if (v[1]:equals(args)) then -- 找到开关
+      if (v[1]:equals(pos)) then -- 找到开关
         if (BlockHelper:getBlockSwitchStatus(v[1])) then -- 打开
           if (BlockHelper:getBlockID(v[4].x, v[4].y, v[4].z) == self.cityGateBlockIds[1]) then
             AreaHelper:replaceAreaBlock(v[5], self.cityGateBlockIds[1], self.cityGateBlockIds[2], 5)
@@ -144,7 +54,11 @@ function MyBlockHelper:initBlocks ()
   BlockHelper:setBlockSettingAttState(BlockHelper.doorid, BLOCKATTR.ENABLE_DESTROYED, false) -- 门不可被破坏
 end
 
+-- 事件
+
+-- 完成方块挖掘
 function MyBlockHelper:blockDigEnd (objid, blockid, x, y, z)
+  BlockHelper:blockDigEnd(objid, blockid, x, y, z)
   local disableMsg = '不可被破坏'
   if (blockid == BlockHelper.switchid) then
     PlayerHelper:showToast(objid, '开关', disableMsg)
@@ -153,8 +67,9 @@ function MyBlockHelper:blockDigEnd (objid, blockid, x, y, z)
   end
 end
 
--- 是否是空气方块
-function MyBlockHelper:isAirBlock (pos, dx, dy, dz)
-  dx, dy, dz = dx or 0, dy or 0, dz or 0
-  return BlockHelper:isAirBlock(pos.x + dx, pos.y + dy, pos.z + dz)
+-- 方块被触发
+function MyBlockHelper:blockTrigger (objid, blockid, x, y, z)
+  BlockHelper:blockTrigger(objid, blockid, x, y, z)
+  local pos = MyPosition:new(x, y, z)
+  MyBlockHelper:checkCityGates(objid, blockid, pos)
 end

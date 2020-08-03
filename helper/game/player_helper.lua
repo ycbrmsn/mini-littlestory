@@ -92,6 +92,162 @@ function PlayerHelper:showActorHp (objid, toobjid)
   end, 0.1, t)
 end
 
+-- actor行动
+function PlayerHelper:runPlayers ()
+  for k, v in pairs(self.players) do
+    LogHelper:call(function ()
+      v.action:execute()
+    end)
+  end
+end
+
+function PlayerHelper:generateDamageKey (objid, toobjid)
+  return objid .. 'damage' .. toobjid
+end
+
+function PlayerHelper:everyPlayerDoSomeThing (f, afterSeconds)
+  if (not(f)) then
+    return
+  end
+  if (afterSeconds) then
+    MyTimeHelper:callFnAfterSecond (function ()
+      for i, v in ipairs(self:getAllPlayers()) do
+        f(v)
+      end
+    end, afterSeconds)
+  else
+    for i, v in ipairs(self:getAllPlayers()) do
+      f(v)
+    end
+  end
+end
+
+function PlayerHelper:updateEveryPlayerPositions ()
+  self:everyPlayerDoSomeThing(function (player)
+    player:updatePositions()
+  end)
+end
+
+function PlayerHelper:setEveryPlayerPosition (x, y, z, afterSeconds)
+  self:everyPlayerDoSomeThing(function (player)
+    player:setPosition(x, y, z)
+  end, afterSeconds)
+end
+
+function PlayerHelper:everyPlayerSpeakAfterSecond (second, ...)
+  for i, v in ipairs(self:getAllPlayers()) do
+    v.action:speakAfterSecond(v.objid, second, ...)
+  end
+end
+
+function PlayerHelper:everyPlayerSpeakToAllAfterSecond (second, ...)
+  for i, v in ipairs(self:getAllPlayers()) do
+    v.action:speakToAllAfterSecond(second, ...)
+  end
+end
+
+function PlayerHelper:everyPlayerSpeakInHeartAfterSecond (second, ...)
+  for i, v in ipairs(self:getAllPlayers()) do
+    v.action:speakInHeartAfterSecond(v.objid, second, ...)
+  end
+end
+
+function PlayerHelper:everyPlayerNotify (info, afterSeconds)
+  self:everyPlayerDoSomeThing(function (player)
+    PlayerHelper:notifyGameInfo2Self(player.objid, info)
+  end, afterSeconds)
+end
+
+function PlayerHelper:everyPlayerEnableMove (enable, afterSeconds)
+  self:everyPlayerDoSomeThing(function (player)
+    player:enableMove(enable, true)
+  end, afterSeconds)
+end
+
+function PlayerHelper:everyPlayerRunTo (positions, callback, param, afterSeconds)
+  self:everyPlayerDoSomeThing(function (player)
+    player.action:runTo(positions, callback, param)
+  end, afterSeconds)
+end
+
+function PlayerHelper:everyPlayerAddBuff (buffid, bufflv, customticks, afterSeconds)
+  self:everyPlayerDoSomeThing(function (player)
+    ActorHelper:addBuff(player.objid, buffid, bufflv, customticks)
+  end, afterSeconds)
+end
+
+-- 改变玩家视角模式
+function PlayerHelper:changeVMode (objid, viewmode, islock)
+  viewmode = viewmode or VIEWPORTTYPE.BACKVIEW
+  if (not(objid)) then
+    self:everyPlayerDoSomeThing(function (p)
+      PlayerHelper:changeViewMode(p.objid, viewmode, islock)
+    end)
+  elseif (type(objid) == 'number') then
+    PlayerHelper:changeViewMode(objid, viewmode, islock)
+  else
+    for i, v in ipairs(objid) do
+      PlayerHelper:changeViewMode(v, viewmode, islock)
+    end
+  end
+end
+
+-- 设置道具不可丢弃
+function PlayerHelper:setItemDisableThrow (objid, itemid)
+  return self:setItemAttAction(objid, itemid, PLAYERATTR.ITEM_DISABLE_THROW, true)
+end
+
+-- 设置玩家是否可以移动
+function PlayerHelper:setPlayerEnableMove (objid, enable)
+  return self:setActionAttrState(objid, PLAYERATTR.ENABLE_MOVE, enable)
+end
+
+-- 查询玩家是否可被杀死
+function PlayerHelper:getPlayerEnableBeKilled (objid)
+  return self:checkActionAttrState(objid, PLAYERATTR.ENABLE_BEKILLED)
+end
+
+-- 设置玩家是否可被杀死
+function PlayerHelper:setPlayerEnableBeKilled (objid, enable)
+  return self:setActionAttrState(objid, PLAYERATTR.ENABLE_BEKILLED, enable)
+end
+
+-- 设置玩家是否可被攻击
+function PlayerHelper:setPlayerEnableBeAttacked (objid, enable)
+  return self:setActionAttrState(objid, PLAYERATTR.ENABLE_BEATTACKED, enable)
+end
+
+function PlayerHelper:getHp (objid)
+  return self:getAttr(objid, PLAYERATTR.CUR_HP)
+end
+
+function PlayerHelper:getMaxHp (objid)
+  return self:getAttr(objid, PLAYERATTR.MAX_HP)
+end
+
+function PlayerHelper:getLevel (objid)
+  return self:getAttr(objid, PLAYERATTR.LEVEL)
+end
+
+function PlayerHelper:setHp (objid, hp)
+  return self:setAttr(objid, PLAYERATTR.CUR_HP, hp)
+end
+
+function PlayerHelper:setMaxHp (objid, hp)
+  return self:setAttr(objid, PLAYERATTR.MAX_HP, hp)
+end
+
+function PlayerHelper:addAttr (objid, attrtype, addVal)
+  local curVal = self:getAttr(objid, attrtype)
+  self:setAttr(objid, attrtype, curVal + addVal)
+end
+
+function PlayerHelper:recoverAttr (objid, attrtype)
+  return self:setAttr(objid, attrtype + 1, self:getAttr(objid, attrtype))
+end
+
+-- 事件
+
 -- 玩家进入游戏
 function PlayerHelper:playerEnterGame (objid)
   self:addPlayer(objid)
@@ -198,157 +354,14 @@ function PlayerHelper:playerMotionStateChange (objid, playermotion)
   end
 end
 
--- actor行动
-function PlayerHelper:runPlayers ()
-  for k, v in pairs(self.players) do
-    LogHelper:call(function ()
-      v.action:execute()
-    end)
-  end
+-- 骑乘
+function PlayerHelper:playerMountActor (objid, toobjid)
+  -- body
 end
 
-function PlayerHelper:generateDamageKey (objid, toobjid)
-  return objid .. 'damage' .. toobjid
-end
-
-function PlayerHelper:everyPlayerDoSomeThing (f, afterSeconds)
-  if (not(f)) then
-    return
-  end
-  if (afterSeconds) then
-    MyTimeHelper:callFnAfterSecond (function ()
-      for i, v in ipairs(self:getAllPlayers()) do
-        f(v)
-      end
-    end, afterSeconds)
-  else
-    for i, v in ipairs(self:getAllPlayers()) do
-      f(v)
-    end
-  end
-end
-
-function PlayerHelper:updateEveryPlayerPositions ()
-  self:everyPlayerDoSomeThing(function (player)
-    player:updatePositions()
-  end)
-end
-
-function PlayerHelper:setEveryPlayerPosition (x, y, z, afterSeconds)
-  self:everyPlayerDoSomeThing(function (player)
-    player:setPosition(x, y, z)
-  end, afterSeconds)
-end
-
-function PlayerHelper:everyPlayerSpeakAfterSecond (second, ...)
-  for i, v in ipairs(self:getAllPlayers()) do
-    v.action:speakAfterSecond(v.objid, second, ...)
-  end
-end
-
-function PlayerHelper:everyPlayerSpeakToAllAfterSecond (second, ...)
-  for i, v in ipairs(self:getAllPlayers()) do
-    v.action:speakToAllAfterSecond(second, ...)
-  end
-end
-
-function PlayerHelper:everyPlayerSpeakInHeartAfterSecond (second, ...)
-  for i, v in ipairs(self:getAllPlayers()) do
-    v.action:speakInHeartAfterSecond(v.objid, second, ...)
-  end
-end
-
-function PlayerHelper:everyPlayerNotify (info, afterSeconds)
-  self:everyPlayerDoSomeThing(function (player)
-    PlayerHelper:notifyGameInfo2Self(player.objid, info)
-  end, afterSeconds)
-end
-
-function PlayerHelper:everyPlayerEnableMove (enable, afterSeconds)
-  self:everyPlayerDoSomeThing(function (player)
-    player:enableMove(enable, true)
-  end, afterSeconds)
-end
-
-function PlayerHelper:everyPlayerRunTo (positions, callback, param, afterSeconds)
-  self:everyPlayerDoSomeThing(function (player)
-    player.action:runTo(positions, callback, param)
-  end, afterSeconds)
-end
-
-function PlayerHelper:everyPlayerAddBuff (buffid, bufflv, customticks, afterSeconds)
-  self:everyPlayerDoSomeThing(function (player)
-    ActorHelper:addBuff(player.objid, buffid, bufflv, customticks)
-  end, afterSeconds)
-end
-
-function PlayerHelper:changeVMode (objid, viewmode, islock)
-  viewmode = viewmode or VIEWPORTTYPE.BACKVIEW
-  if (not(objid)) then
-    self:everyPlayerDoSomeThing(function (p)
-      PlayerHelper:changeViewMode(p.objid, viewmode, islock)
-    end)
-  elseif (type(objid) == 'number') then
-    PlayerHelper:changeViewMode(objid, viewmode, islock)
-  else
-    for i, v in ipairs(objid) do
-      PlayerHelper:changeViewMode(v, viewmode, islock)
-    end
-  end
-end
-
--- 设置道具不可丢弃
-function PlayerHelper:setItemDisableThrow (objid, itemid)
-  return self:setItemAttAction(objid, itemid, PLAYERATTR.ITEM_DISABLE_THROW, true)
-end
-
--- 设置玩家是否可以移动
-function PlayerHelper:setPlayerEnableMove (objid, enable)
-  return self:setActionAttrState(objid, PLAYERATTR.ENABLE_MOVE, enable)
-end
-
--- 查询玩家是否可被杀死
-function PlayerHelper:getPlayerEnableBeKilled (objid)
-  return self:checkActionAttrState(objid, PLAYERATTR.ENABLE_BEKILLED)
-end
-
--- 设置玩家是否可被杀死
-function PlayerHelper:setPlayerEnableBeKilled (objid, enable)
-  return self:setActionAttrState(objid, PLAYERATTR.ENABLE_BEKILLED, enable)
-end
-
--- 设置玩家是否可被攻击
-function PlayerHelper:setPlayerEnableBeAttacked (objid, enable)
-  return self:setActionAttrState(objid, PLAYERATTR.ENABLE_BEATTACKED, enable)
-end
-
-function PlayerHelper:getHp (objid)
-  return self:getAttr(objid, PLAYERATTR.CUR_HP)
-end
-
-function PlayerHelper:getMaxHp (objid)
-  return self:getAttr(objid, PLAYERATTR.MAX_HP)
-end
-
-function PlayerHelper:getLevel (objid)
-  return self:getAttr(objid, PLAYERATTR.LEVEL)
-end
-
-function PlayerHelper:setHp (objid, hp)
-  return self:setAttr(objid, PLAYERATTR.CUR_HP, hp)
-end
-
-function PlayerHelper:setMaxHp (objid, hp)
-  return self:setAttr(objid, PLAYERATTR.MAX_HP, hp)
-end
-
-function PlayerHelper:addAttr (objid, attrtype, addVal)
-  local curVal = self:getAttr(objid, attrtype)
-  self:setAttr(objid, attrtype, curVal + addVal)
-end
-
-function PlayerHelper:recoverAttr (objid, attrtype)
-  return self:setAttr(objid, attrtype + 1, self:getAttr(objid, attrtype))
+-- 取消骑乘
+function PlayerHelper:playerDismountActor (objid, toobjid)
+  -- body
 end
 
 -- 封装原始接口

@@ -1,4 +1,4 @@
--- 人物基类
+-- actor基类
 MyActor = {
   objid = nil,
   actorid = nil,
@@ -359,7 +359,7 @@ function MyActor:initActor (initPosition)
     -- 加入蜡烛台数据
     if (self.candlePositions and #self.candlePositions > 0) then
       for i, v in ipairs(self.candlePositions) do
-        MyBlockHelper:addCandle(v)
+        BlockHelper:addCandle(v)
       end
     end
     -- 清除木围栏
