@@ -8,36 +8,23 @@ MonsterHelper = {
   sealedMonsters = {} -- objid -> times
 }
 
-function MonsterHelper:init ()
-  qiangdaoXiaotoumu = QiangdaoXiaotoumu:new()
-  qiangdaoLouluo = QiangdaoLouluo:new()
-  wolf = Wolf:new()
-  ox = Ox:new()
-  self.monsterModels = { qiangdaoXiaotoumu, qiangdaoLouluo, wolf, ox }
-  for i, v in ipairs(self.monsterModels) do
-    MyTimeHelper:initActor(v)
-    v:timerGenerate()
-    -- LogHelper:debug('初始化', v:getName(), '完成')
-  end
-end
-
--- 玩家获得杀怪经验
-function MonsterHelper:getExp (playerid, objid)
-  local actorid = CreatureHelper:getActorID(objid)
+-- 击杀获得经验
+function MonsterHelper:getExp (objid, toobjid)
+  local actorid = CreatureHelper:getActorID(toobjid)
   if (not(actorid)) then
     return 0
   end
   for i, v in ipairs(self.monsterModels) do
     if (v.actorid == actorid) then
-      return self:calExp(playerid, v.expData)
+      return self:calExp(objid, v.expData)
     end
   end
   return 0
 end
 
--- 计算玩家杀怪获得的经验
-function MonsterHelper:calExp (playerid, expData)
-  local player = PlayerHelper:getPlayer(playerid)
+-- 计算击杀获得的经验
+function MonsterHelper:calExp (objid, expData)
+  local player = PlayerHelper:getPlayer(objid)
   local levelDiffer = player:getLevel() - expData.level
   if (levelDiffer <= -6) then -- 相差6级双倍经验
     return expData.exp * 2
@@ -74,6 +61,7 @@ function MonsterHelper:lookAt (objid, toobjid)
   end
 end
 
+-- 持续看向
 function MonsterHelper:wantLookAt (objid, toobjid, seconds)
   local t = nil
   if (type(objid) == 'number') then
@@ -92,18 +80,6 @@ function MonsterHelper:playAct (objid, act, afterSeconds)
     end, afterSeconds)
   else
     ActorHelper:playAct(objid, act)
-  end
-end
-
--- 怪物死亡
-function MonsterHelper:actorDie (objid, toobjid)
-  local actorid = CreatureHelper:getActorID(objid)
-  local pos = MyPosition:new(ActorHelper:getPosition(objid))
-  for i, v in ipairs(self.monsterModels) do
-    if (v.actorid == actorid) then
-      self:createFallOff(v, pos)
-      break
-    end
   end
 end
 
@@ -248,6 +224,20 @@ function MonsterHelper:runBosses ()
       self.bosses[k].isBossStyle = false
       self.bosses[k] = nil
       self.delBosses[k] = nil
+    end
+  end
+end
+
+-- 事件
+
+-- 怪物死亡
+function MonsterHelper:actorDie (objid, toobjid)
+  local actorid = CreatureHelper:getActorID(objid)
+  local pos = MyPosition:new(ActorHelper:getPosition(objid))
+  for i, v in ipairs(self.monsterModels) do
+    if (v.actorid == actorid) then
+      self:createFallOff(v, pos)
+      break
     end
   end
 end

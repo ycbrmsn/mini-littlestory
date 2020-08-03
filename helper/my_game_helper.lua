@@ -1,13 +1,8 @@
 -- 我的游戏工具类
 MyGameHelper = {}
 
-function initMyActors ()
-  PersonHelper:init()
-  MyBlockHelper:init()
-end
-
 function initDoorAreas ()
-  local doors = PositionHelper:getDoorPositions()
+  local doors = MyAreaHelper:getDoorPositions()
   for i, v in ipairs(doors) do
     local areaid = AreaHelper:getAreaByPos(v)
     -- LogHelper:debug('初始化门区域：', areaid)
@@ -20,7 +15,9 @@ end
 -- 开始游戏
 function MyGameHelper:startGame ()
   GameHelper:startGame()
-  MyBlockHelper:initBlocks()
+  MyAreaHelper:init()
+  MyBlockHelper:init()
+  MyActorHelper:init()
 end
 
 -- 游戏运行时
@@ -42,9 +39,8 @@ end
 function MyGameHelper:atSecond (second)
   GameHelper:atSecond(second)
   -- if (second == 1) then
-  --   initMyActors()
-  --   MonsterHelper:init()
-  --   MyAreaHelper:initAreas()
+  --   MyMonsterHelper:init()
+  --   MyAreaHelper:init()
   -- end
 
   -- if (second == 3) then

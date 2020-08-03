@@ -25,7 +25,7 @@ end
 function GameHelper:atHour (hour)
   MyTimeHelper:updateHour(hour)
   ActorHelper:atHour(hour)
-  MyStoryHelper:run(hour)
+  StoryHelper:atHour(hour)
 end
 
 -- 世界时间到[n]秒

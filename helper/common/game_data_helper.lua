@@ -11,8 +11,8 @@ function GameDataHelper:updateStoryData ()
     self:updateMainProgress()
     return false
   else -- 再次回到游戏
-    MyStoryHelper.mainIndex = mainIndex
-    MyStoryHelper.mainProgress = mainProgress
+    StoryHelper:setMainStoryIndex(mainIndex)
+    StoryHelper:setMainStoryProgress(mainProgress)
     return true
   end
 end
@@ -38,7 +38,7 @@ function GameDataHelper:updateMainIndex ()
   local player = PlayerHelper:getHostPlayer()
   local itemid = MyConstant.ITEM.GAME_DATA_MAIN_INDEX_ID
   local gridid = 26
-  local num = MyStoryHelper.mainIndex
+  local num = StoryHelper:getMainStoryIndex()
   self:updateDataItem(player.objid, itemid, gridid, num)
 end
 
@@ -47,7 +47,7 @@ function GameDataHelper:updateMainProgress ()
   local player = PlayerHelper:getHostPlayer()
   local itemid = MyConstant.ITEM.GAME_DATA_MAIN_PROGRESS_ID
   local gridid = 27
-  local num = MyStoryHelper.mainProgress
+  local num = StoryHelper:getMainStoryProgress()
   self:updateDataItem(player.objid, itemid, gridid, num)
 end
 

@@ -1,6 +1,8 @@
 -- 我的道具工具类
 MyItemHelper = {}
 
+-- 事件
+
 -- 投掷物命中
 function MyItemHelper:projectileHit (projectileid, toobjid, blockid, x, y, z)
   ItemHelper:projectileHit(projectileid, toobjid, blockid, x, y, z)

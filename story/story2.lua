@@ -5,7 +5,7 @@ function Story2:new ()
   local data = Story2Helper:getData()
   self:checkData(data)
 
-  -- if (MyStoryHelper:getMainStoryIndex() <= 2) then -- 剧情2
+  -- if (StoryHelper:getMainStoryIndex() <= 2) then -- 剧情2
   --   local areaid = AreaHelper:getAreaByPos(data.eventPositions[1])
   --   data.areaid = areaid
   -- end
@@ -94,7 +94,7 @@ function Story2Helper:getData ()
 end
 
 function Story2Helper:recover (player)
-  local mainProgress = MyStoryHelper:getMainStoryProgress()
+  local mainProgress = StoryHelper:getMainStoryProgress()
   local hostPlayer = PlayerHelper:getHostPlayer()
   if (mainProgress == 1) then -- 村口集合
     if (player == hostPlayer) then

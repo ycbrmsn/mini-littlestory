@@ -6,7 +6,7 @@ PlayerHelper = {
     MAX_HUNGER = 5,
     CUR_HUNGER = 6
   },
-  players = {},
+  players = {}, -- { objid -> MyPlayer }
   defeatActors = {} -- 击败的生物
 }
 
@@ -250,29 +250,36 @@ end
 
 -- 玩家进入游戏
 function PlayerHelper:playerEnterGame (objid)
-  self:addPlayer(objid)
+  PlayerHelper:addPlayer(objid)
 end
 
 -- 玩家离开游戏
 function PlayerHelper:playerLeaveGame (objid)
-  self:removePlayer(objid)
+  -- PlayerHelper:removePlayer(objid)
 end
 
+-- 玩家进入区域
 function PlayerHelper:playerEnterArea (objid, areaid)
-  -- body
+  local player = PlayerHelper:getPlayer(objid)
+  if (areaid == player.toAreaId) then -- 玩家自动前往地点
+    AreaHelper:destroyArea(areaid)
+    -- player.action:runAction()
+    player.action:doNext()
+  elseif (AreaHelper:showToastArea(objid, areaid)) then -- 显示提示区域检测
+  end
 end
 
+-- 玩家离开区域
 function PlayerHelper:playerLeaveArea (objid, areaid)
   -- body
 end
 
+-- 玩家点击方块
 function PlayerHelper:playerClickBlock (objid, blockid, x, y, z)
-  local myPosition = MyPosition:new(x, y, z)
-  MyBlockHelper:check(myPosition, objid)
-end
-
-function PlayerHelper:playerUseItem (objid, itemid)
-  ItemHelper:useItem(objid, itemid)
+  local pos = MyPosition:new(x, y, z)
+  local blockid = BlockHelper:getBlockID(pos.x, pos.y, pos.z)
+  if (BlockHelper:checkCandle(objid, blockid, pos)) then
+  end
 end
 
 -- 玩家点击生物
@@ -287,8 +294,14 @@ function PlayerHelper:playerClickActor (objid, toobjid)
   end
 end
 
+-- 玩家获得道具
 function PlayerHelper:playerAddItem (objid, itemid, itemnum)
   -- body
+end
+
+-- 玩家使用道具
+function PlayerHelper:playerUseItem (objid, itemid)
+  ItemHelper:useItem(objid, itemid)
 end
 
 -- 玩家攻击命中
@@ -320,18 +333,15 @@ function PlayerHelper:playerDefeatActor (playerid, objid)
   player:gainExp(exp)
 end
 
--- 玩家移动一格
-function PlayerHelper:playerMoveOneBlockSize (objid)
-  if (ActorHelper:isApproachBlock(objid)) then
-    SkillHelper:stopFly(objid)
-  end
-end
-
 -- 玩家受到伤害
 function PlayerHelper:playerBeHurt (objid, toobjid)
-  if (SkillHelper:isFlying(objid)) then
+  if (SkillHelper:isFlying(objid)) then -- 玩家在御剑飞行，则飞行失控
     local player = PlayerHelper:getPlayer(objid)
     SkillHelper:stopFly(objid, ItemHelper:getItem(player.hold))
+  end
+  -- 检测技能是否正在释放
+  if (ItemHelper:isDelaySkillUsing(objid, '坠星')) then -- 技能释放中
+    FallStarBow:cancelSkill(objid)
   end
 end
 
@@ -351,6 +361,14 @@ end
 function PlayerHelper:playerMotionStateChange (objid, playermotion)
   if (playermotion == PLAYERMOTION.SNEAK) then -- 潜行
     ItemHelper:useItem2(objid)
+  end
+end
+
+-- 玩家移动一格
+function PlayerHelper:playerMoveOneBlockSize (objid)
+  ActorHelper:resumeClickActor(objid)
+  if (ActorHelper:isApproachBlock(objid)) then
+    SkillHelper:stopFly(objid)
   end
 end
 

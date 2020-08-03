@@ -43,7 +43,7 @@ function Story1:playerBadHurt (objid)
 end
 
 function Story1:recover (player)
-  local mainProgress = MyStoryHelper:getMainStoryProgress()
+  local mainProgress = StoryHelper:getMainStoryProgress()
   if (mainProgress >= 5) then
     player:enableMove(true)
   end

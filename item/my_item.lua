@@ -153,7 +153,7 @@ end
 
 -- 更新日志 self.title .. 
 function LogPaper:updateLogs ()
-  local title, content = MyStoryHelper:getMainStoryTitleAndTip()
+  local title, content = StoryHelper:getMainStoryTitleAndTip()
   self.content = title .. '\n\t\t' .. content
   self.isChange = false
 end

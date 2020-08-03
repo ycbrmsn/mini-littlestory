@@ -485,6 +485,25 @@ function ActorHelper:damageActor (objid, toobjid, val)
   end
 end
 
+-- 第二人是不是在第一人前面
+function ActorHelper:isTwoInFrontOfOne (objid1, objid2)
+  local curPlaceDir = ActorHelper:getCurPlaceDir(objid1)
+  local x1, y1, z1 = ActorHelper:getPosition(objid1)
+  local x2, y2, z2 = ActorHelper:getPosition(objid2)
+  -- 获取的方向是反的，不知道是不是bug
+  if (curPlaceDir == FACE_DIRECTION.DIR_NEG_X) then -- 东
+    return x2 > x1
+  elseif (curPlaceDir == FACE_DIRECTION.DIR_POS_X) then -- 西
+    return x2 < x1
+  elseif (curPlaceDir == FACE_DIRECTION.DIR_NEG_Z) then -- 北
+    return z2 > z1
+  elseif (curPlaceDir == FACE_DIRECTION.DIR_POS_Z) then -- 南
+    return z2 < z1
+  else
+    return false
+  end
+end
+
 -- 设置生物可移动状态
 function ActorHelper:setEnableMoveState (objid, switch)
   return self:setActionAttrState(objid, CREATUREATTR.ENABLE_MOVE, switch)
@@ -568,7 +587,6 @@ end
 -- actor离开区域
 function ActorHelper:actorLeaveArea (objid, areaid)
   CreatureHelper:closeDoor(objid, areaid)
-  MyStoryHelper:actorLeaveArea(objid, areaid)
 end
 
 -- 生物碰撞
@@ -580,7 +598,7 @@ function ActorHelper:actorCollide (objid, toobjid)
       if (actor1.wants and actor1.wants[1].style == 'sleeping') then
         actor1.wants[1].style = 'wake'
       end
-      actor1:defaultCollidePlayerEvent(toobjid, PositionHelper:isTwoInFrontOfOne(objid, toobjid))
+      actor1:defaultCollidePlayerEvent(toobjid, ActorHelper:isTwoInFrontOfOne(objid, toobjid))
     else
       local actor2 = ActorHelper:getActor(toobjid)
       if (actor2) then
@@ -620,7 +638,6 @@ end
 -- 生物死亡
 function ActorHelper:actorDie (objid, toobjid)
   MonsterHelper:actorDie(objid, toobjid)
-  MyStoryHelper:actorDieEvent(objid)
 end
 
 -- 封装原始接口

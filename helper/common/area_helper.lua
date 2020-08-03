@@ -4,7 +4,9 @@ AreaHelper = {
   approachPosDim = { x = 1, y = 0, z = 1 }, -- 靠近地点尺寸
   nineCubicDim = { x = 1, y = 1, z = 1 }, -- 扩大1格
   freeTimeDim = { x = 8, y = 8, z = 8 }, -- 自由移动区域尺寸
-  allDoorAreas = {}
+  allDoorAreas = {}, -- 所有门的区域
+  maxRandomTimes = 10, -- 查询空位置的最大循环次数
+  showToastAreas = {} -- { areaid1 = { areaid2, name }, ... }
 }
 
 function AreaHelper:isAirArea (pos)
