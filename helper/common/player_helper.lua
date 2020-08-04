@@ -6,12 +6,12 @@ PlayerHelper = {
     MAX_HUNGER = 5,
     CUR_HUNGER = 6
   },
-  players = {}, -- { objid -> MyPlayer }
+  players = {}, -- { objid -> BasePlayer }
   defeatActors = {} -- 击败的生物
 }
 
 function PlayerHelper:addPlayer (objid)
-  local player = MyPlayer:new(objid)
+  local player = BasePlayer:new(objid)
   table.insert(self:getAllPlayers(), player)
   return player
 end

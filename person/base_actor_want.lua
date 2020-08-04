@@ -1,7 +1,7 @@
 -- 人物想法类
-MyActorWant = {}
+BaseActorWant = {}
 
-function MyActorWant:new (myActor)
+function BaseActorWant:new (myActor)
   local o = {
     myActor = myActor
   }
@@ -10,36 +10,36 @@ function MyActorWant:new (myActor)
   return o
 end
 
-function MyActorWant:wantMove (think, positions, isNegDir, index, restTime, speed)
+function BaseActorWant:wantMove (think, positions, isNegDir, index, restTime, speed)
   AreaHelper:removeToArea(self.myActor)
   self.myActor:closeAI()
   self.myActor.think = think
-  local want = MyActorActionHelper:getMoveData(think, positions, isNegDir, index, restTime, speed)
+  local want = BaseActorActionHelper:getMoveData(think, positions, isNegDir, index, restTime, speed)
   self.myActor.wants = { want }
   -- 创建当前前往区域
-  MyActorActionHelper:createMoveToPos(want)
+  BaseActorActionHelper:createMoveToPos(want)
   self.myActor.action:runTo(want.toPos)
 end
 
-function MyActorWant:wantApproach (think, positions, isNegDir, index, restTime)
+function BaseActorWant:wantApproach (think, positions, isNegDir, index, restTime)
   AreaHelper:removeToArea(self.myActor)
   self.myActor:closeAI()
   self.myActor.think = think
-  local want = MyActorActionHelper:getApproachData(think, positions, isNegDir, index, restTime)
+  local want = BaseActorActionHelper:getApproachData(think, positions, isNegDir, index, restTime)
   self.myActor.wants = { want }
   -- 创建当前前往区域
-  MyActorActionHelper:createApproachToPos(want)
+  BaseActorActionHelper:createApproachToPos(want)
 end
 
-function MyActorWant:wantDontMove (think)
+function BaseActorWant:wantDontMove (think)
   AreaHelper:removeToArea(self.myActor)
   think = think or 'dontMove'
   self.myActor.think = think
-  self.myActor.wants = { MyActorActionHelper:getDontMoveData(think) }
+  self.myActor.wants = { BaseActorActionHelper:getDontMoveData(think) }
   self.myActor:stopRun()
 end
 
-function MyActorWant:wantStayForAWhile(second)
+function BaseActorWant:wantStayForAWhile(second)
   second = second or 5 -- 默认休息5秒
   if (not(self.myActor.wants)) then -- 如果生物没有想法，则给他一个原始的想法
     self.myActor:defaultWant()
@@ -48,39 +48,39 @@ function MyActorWant:wantStayForAWhile(second)
   self.myActor.action:stopRun()
 end
 
-function MyActorWant:wantPatrol (think, positions, isNegDir, index, restTime)
+function BaseActorWant:wantPatrol (think, positions, isNegDir, index, restTime)
   AreaHelper:removeToArea(self.myActor)
   -- LogHelper:debug(self:getName() .. '想巡逻')
   self.myActor:closeAI()
   self.myActor.think = think
-  local want = MyActorActionHelper:getPatrolData(think, positions, isNegDir, index, restTime)
+  local want = BaseActorActionHelper:getPatrolData(think, positions, isNegDir, index, restTime)
   self.myActor.wants = { want }
   -- 创建当前前往区域
-  MyActorActionHelper:createMoveToPos(want)
+  BaseActorActionHelper:createMoveToPos(want)
 end
 
-function MyActorWant:wantFreeTime (think)
+function BaseActorWant:wantFreeTime (think)
   AreaHelper:removeToArea(self.myActor)
   think = think or 'free'
   self.myActor:openAI()
   self.myActor.think = think
-  local want = MyActorActionHelper:getFreeTimeData(think)
+  local want = BaseActorActionHelper:getFreeTimeData(think)
   self.myActor.wants = { want }
   self.myActor.action:freeTime(want)
 end
 
 -- 自由移动并且警戒着
-function MyActorWant:wantFreeAndAlert (think, speed)
+function BaseActorWant:wantFreeAndAlert (think, speed)
   AreaHelper:removeToArea(self.myActor)
   think = think or 'alert'
   self.myActor:closeAI()
   self.myActor.think = think
-  local want = MyActorActionHelper:getFreeAndAlertData(think, speed)
+  local want = BaseActorActionHelper:getFreeAndAlertData(think, speed)
   self.myActor.wants = { want }
   self.myActor.action:freeAndAlert(want)
 end
 
-function MyActorWant:wantFreeInArea (think, posPairs)
+function BaseActorWant:wantFreeInArea (think, posPairs)
   AreaHelper:removeToArea(self.myActor)
   if (not(posPairs)) then
     posPairs = think
@@ -88,26 +88,26 @@ function MyActorWant:wantFreeInArea (think, posPairs)
   end
   self.myActor:closeAI()
   self.myActor.think = think
-  local want = MyActorActionHelper:setFreeInArea(think, self.myActor, posPairs)
-  want.toPos = MyActorActionHelper:getFreeInAreaPos(self.myActor.freeInAreaIds)
+  local want = BaseActorActionHelper:setFreeInArea(think, self.myActor, posPairs)
+  want.toPos = BaseActorActionHelper:getFreeInAreaPos(self.myActor.freeInAreaIds)
   -- 创建当前前往区域
-  MyActorActionHelper:createMoveToPos(want)
+  BaseActorActionHelper:createMoveToPos(want)
 end
 
-function MyActorWant:wantDoNothing (think)
+function BaseActorWant:wantDoNothing (think)
   AreaHelper:removeToArea(self.myActor)
   think = think or 'doNothing'
   self.myActor:closeAI()
   self.myActor.think = think
-  self.myActor.wants = { MyActorActionHelper:getDoNothingData(think) }
+  self.myActor.wants = { BaseActorActionHelper:getDoNothingData(think) }
 end
 
-function MyActorWant:wantLookAt (think, myPosition, restTime)
+function BaseActorWant:wantLookAt (think, myPosition, restTime)
   restTime = restTime or 5
   self.myActor:closeAI()
   if (self.myActor:isWantsExist()) then
     think = think or self.myActor.think
-    local want = MyActorActionHelper:getLookAtData(think, myPosition, restTime)
+    local want = BaseActorActionHelper:getLookAtData(think, myPosition, restTime)
     if (self.myActor.wants[1].style == 'lookAt' or self.myActor.wants[1].style == 'lookingAt') then
       self.myActor.wants[1] = want
     else
@@ -115,93 +115,93 @@ function MyActorWant:wantLookAt (think, myPosition, restTime)
     end
   else
     think = think or 'lookAt'
-    local want = MyActorActionHelper:getLookAtData(think, myPosition, restTime)
+    local want = BaseActorActionHelper:getLookAtData(think, myPosition, restTime)
     self.myActor.wants = { want }
   end
   self.myActor.think = think
 end
 
-function MyActorWant:wantGoToSleep (bedData)
+function BaseActorWant:wantGoToSleep (bedData)
   AreaHelper:removeToArea(self.myActor)
   self:wantMove('sleep', { bedData[1] })
   self:nextWantSleep('sleep', bedData[2])
 end
 
-function MyActorWant:wantBattle (think)
+function BaseActorWant:wantBattle (think)
   AreaHelper:removeToArea(self.myActor)
   think = think or 'battle'
   self.myActor.think = think
-  self.myActor.wants = { MyActorActionHelper:getBattleData(think) }
+  self.myActor.wants = { BaseActorActionHelper:getBattleData(think) }
 end
 
-function MyActorWant:nextWantMove (think, positions, isNegDir, index, restTime, speed)
+function BaseActorWant:nextWantMove (think, positions, isNegDir, index, restTime, speed)
   if (self.myActor:isWantsExist()) then
-    local want = MyActorActionHelper:getMoveData(think, positions, isNegDir, index, restTime, speed)
+    local want = BaseActorActionHelper:getMoveData(think, positions, isNegDir, index, restTime, speed)
     table.insert(self.myActor.wants, want)
   else
     self:wantMove(think, positions, isNegDir, index, restTime, speed)
   end
 end
 
-function MyActorWant:nextWantApproach (think, positions, isNegDir, index, restTime)
+function BaseActorWant:nextWantApproach (think, positions, isNegDir, index, restTime)
   if (self.myActor:isWantsExist()) then
-    local want = MyActorActionHelper:getApproachData(think, positions, isNegDir, index, restTime)
+    local want = BaseActorActionHelper:getApproachData(think, positions, isNegDir, index, restTime)
     table.insert(self.myActor.wants, want)
   else
     self:wantApproach(think, positions, isNegDir, index, restTime)
   end
 end
 
-function MyActorWant:nextWantPatrol (think, positions, isNegDir, index, restTime)
+function BaseActorWant:nextWantPatrol (think, positions, isNegDir, index, restTime)
   if (self.myActor:isWantsExist()) then
-    local want = MyActorActionHelper:getPatrolData(think, positions, isNegDir, index, restTime)
+    local want = BaseActorActionHelper:getPatrolData(think, positions, isNegDir, index, restTime)
     table.insert(self.myActor.wants, want)
   else
     self:wantPatrol(think, positions, isNegDir, index, restTime)
   end
 end
 
-function MyActorWant:nextWantFreeInArea (think, posPairs)
+function BaseActorWant:nextWantFreeInArea (think, posPairs)
   if (self.myActor:isWantsExist()) then
     if (not(posPairs)) then
       posPairs = think
       think = 'free'
     end
-    MyActorActionHelper:setFreeInArea(think, self.myActor, posPairs, true)
+    BaseActorActionHelper:setFreeInArea(think, self.myActor, posPairs, true)
   else
     self:wantFreeInArea(think, posPairs)
   end
 end
 
-function MyActorWant:nextWantDoNothing (think)
+function BaseActorWant:nextWantDoNothing (think)
   if (self.myActor:isWantsExist()) then
     think = think or 'doNothing'
-    table.insert(self.myActor.wants, MyActorActionHelper:getDoNothingData(think))
+    table.insert(self.myActor.wants, BaseActorActionHelper:getDoNothingData(think))
   else
     self:wantDoNothing(think)
   end
 end
 
-function MyActorWant:nextWantLookAt (think, pos, restTime)
+function BaseActorWant:nextWantLookAt (think, pos, restTime)
   restTime = restTime or 5
   if (self.myActor:isWantsExist()) then
     think = think or self.myActor.wants[#self.myActor.wants].think or 'lookAt'
-    table.insert(self.myActor.wants, MyActorActionHelper:getLookAtData(think, pos, restTime))
+    table.insert(self.myActor.wants, BaseActorActionHelper:getLookAtData(think, pos, restTime))
   else
     self:wantLookAt(think, pos, restTime)
   end
 end
 
-function MyActorWant:nextWantSleep (think, faceYaw)
+function BaseActorWant:nextWantSleep (think, faceYaw)
   self:nextWantWait(think, 2)
-  table.insert(self.myActor.wants, MyActorActionHelper:getSleepData(think, faceYaw))
+  table.insert(self.myActor.wants, BaseActorActionHelper:getSleepData(think, faceYaw))
 end
 
-function MyActorWant:nextWantWait (think, second)
-  table.insert(self.myActor.wants, MyActorActionHelper:getWaitData(think, second))
+function BaseActorWant:nextWantWait (think, second)
+  table.insert(self.myActor.wants, BaseActorActionHelper:getWaitData(think, second))
 end
 
-function MyActorWant:nextWantGoToSleep (bedData)
+function BaseActorWant:nextWantGoToSleep (bedData)
   if (self.myActor:isWantsExist()) then
     self:nextWantMove('sleep', { bedData[1] })
     self:nextWantSleep('sleep', bedData[2])
@@ -210,23 +210,23 @@ function MyActorWant:nextWantGoToSleep (bedData)
   end
 end
 
-function MyActorWant:nextWantToggleCandle (think, isLitCandle)
-  table.insert(self.myActor.wants, MyActorActionHelper:getToggleCandleData(think, isLitCandle))
+function BaseActorWant:nextWantToggleCandle (think, isLitCandle)
+  table.insert(self.myActor.wants, BaseActorActionHelper:getToggleCandleData(think, isLitCandle))
 end
 
-function MyActorWant:forceDoNothing (think)
+function BaseActorWant:forceDoNothing (think)
   self.myActor:closeAI()
   if (self.myActor:isWantsExist()) then
     if (self.myActor.wants[1].style == 'forceDoNothing') then -- 如果已经存在，则次数叠加
       self.myActor.wants[1].times = self.myActor.wants[1].times + 1
     else
       think = think or self.myActor.think
-      local want = MyActorActionHelper:getForceDoNothing(think)
+      local want = BaseActorActionHelper:getForceDoNothing(think)
       table.insert(self.myActor.wants, 1, want)
     end
   else
     think = think or 'forceDoNothing'
-    local want = MyActorActionHelper:getForceDoNothing(think)
+    local want = BaseActorActionHelper:getForceDoNothing(think)
     self.myActor.wants = { want }
   end
   self.myActor.think = think

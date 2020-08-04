@@ -1,5 +1,5 @@
--- 我的玩家类
-MyPlayer = {
+-- 玩家基类
+BasePlayer = {
   objid = nil,
   nickname = nil,
   action = nil,
@@ -9,18 +9,18 @@ MyPlayer = {
   hold = nil -- 手持物品
 }
 
-function MyPlayer:new (objid)
+function BasePlayer:new (objid)
   local o = { 
     objid = objid
   }
-  o.action = MyPlayerAction:new(o)
-  o.attr = MyPlayerAttr:new(o)
+  o.action = BasePlayerAction:new(o)
+  o.attr = BasePlayerAttr:new(o)
   setmetatable(o, self)
   self.__index = self
   return o
 end
 
-function MyPlayer:speak (afterSeconds, ...)
+function BasePlayer:speak (afterSeconds, ...)
   if (afterSeconds > 0) then
     self.action:speakToAllAfterSecond(afterSeconds, ...)
   else
@@ -28,7 +28,7 @@ function MyPlayer:speak (afterSeconds, ...)
   end
 end
 
-function MyPlayer:speakTo (playerids, afterSeconds, ...)
+function BasePlayer:speakTo (playerids, afterSeconds, ...)
   if (type(playerids) == 'number') then
     if (afterSeconds > 0) then
       self.action:speakAfterSecond(playerids, afterSeconds, ...)
@@ -42,7 +42,7 @@ function MyPlayer:speakTo (playerids, afterSeconds, ...)
   end
 end
 
-function MyPlayer:thinks (afterSeconds, ...)
+function BasePlayer:thinks (afterSeconds, ...)
   if (afterSeconds > 0) then
     self.action:speakInHeartToAllAfterSecond(afterSeconds, ...)
   else
@@ -50,7 +50,7 @@ function MyPlayer:thinks (afterSeconds, ...)
   end
 end
 
-function MyPlayer:thinkTo (playerids, afterSeconds, ...)
+function BasePlayer:thinkTo (playerids, afterSeconds, ...)
   if (type(playerids) == 'number') then
     if (afterSeconds > 0) then
       self.action:speakInHeartAfterSecond(playerids, afterSeconds, ...)
@@ -64,87 +64,87 @@ function MyPlayer:thinkTo (playerids, afterSeconds, ...)
   end
 end
 
-function MyPlayer:updatePositions ()
+function BasePlayer:updatePositions ()
   self.attr:updatePositions()
 end
 
-function MyPlayer:getName ()
+function BasePlayer:getName ()
   if (not(self.nickname)) then
     self.nickname = PlayerHelper:getNickname(self.objid)
   end
   return self.nickname
 end
 
-function MyPlayer:getLevel ()
+function BasePlayer:getLevel ()
   return self.attr.totalLevel
 end
 
-function MyPlayer:setLevel (level)
+function BasePlayer:setLevel (level)
   self.attr.totalLevel = level
 end
 
-function MyPlayer:getExp ()
+function BasePlayer:getExp ()
   return self.attr.exp
 end
 
-function MyPlayer:setExp (exp)
+function BasePlayer:setExp (exp)
   self.attr.exp = exp
 end
 
-function MyPlayer:enableMove (enable, showMsg)
+function BasePlayer:enableMove (enable, showMsg)
   self.attr:enableMove(enable, showMsg)
 end
 
-function MyPlayer:enableBeAttacked (enable)
+function BasePlayer:enableBeAttacked (enable)
   return PlayerHelper:setPlayerEnableBeAttacked(self.objid, enable)
 end
 
-function MyPlayer:getPosition ()
+function BasePlayer:getPosition ()
   return ActorHelper:getPosition(self.objid)
 end
 
-function MyPlayer:getMyPosition ()
+function BasePlayer:getMyPosition ()
   return MyPosition:new(self:getPosition())
 end
 
-function MyPlayer:setPosition (x, y, z)
+function BasePlayer:setPosition (x, y, z)
   return ActorHelper:setMyPosition(self.objid, x, y, z)
 end
 
-function MyPlayer:setMyPosition (pos)
+function BasePlayer:setMyPosition (pos)
   return ActorHelper:setMyPosition(self.objid, pos.x, pos.y, pos.z)
 end
 
-function MyPlayer:getDistancePosition (distance, angle)
+function BasePlayer:getDistancePosition (distance, angle)
   return ActorHelper:getDistancePosition(self.objid, distance, angle)
 end
 
-function MyPlayer:setDistancePosition (objid, distance, angle)
+function BasePlayer:setDistancePosition (objid, distance, angle)
   self:setPosition(ActorHelper:getDistancePosition(objid, distance, angle))
 end
 
-function MyPlayer:getFaceYaw ()
+function BasePlayer:getFaceYaw ()
   return ActorHelper:getFaceYaw(self.objid)
 end
 
-function MyPlayer:getFacePitch ()
+function BasePlayer:getFacePitch ()
   return ActorHelper:getFacePitch(self.objid)
 end
 
 -- 获取准星位置
-function MyPlayer:getAimPos ()
+function BasePlayer:getAimPos ()
   return MyPosition:new(PlayerHelper:getAimPos(self.objid))
 end
 
-function MyPlayer:gainExp (exp)
+function BasePlayer:gainExp (exp)
   self.attr:gainExp(exp)
 end
 
-function MyPlayer:upgrade (addLevel)
+function BasePlayer:upgrade (addLevel)
   return self.attr:upgrade(addLevel)
 end
 
-function MyPlayer:lookAt (objid)
+function BasePlayer:lookAt (objid)
   local x, y, z
   if (type(objid) == 'table') then
     x, y, z = objid.x, objid.y, objid.z
@@ -160,19 +160,19 @@ function MyPlayer:lookAt (objid)
   PlayerHelper:rotateCamera(self.objid, faceYaw, facePitch)
 end
 
-function MyPlayer:wantLookAt (objid, seconds)
+function BasePlayer:wantLookAt (objid, seconds)
   TimeHelper:callFnContinueRuns(function ()
     self:lookAt(objid)
   end, seconds)
 end
 
 -- 背包数量及背包格数组
-function MyPlayer:getItemNum (itemid, containEquip)
+function BasePlayer:getItemNum (itemid, containEquip)
   return BackpackHelper:getItemNum(self.objid, itemid, containEquip)
 end
 
 -- 拿出道具
-function MyPlayer:takeOutItem (itemid, containEquip)
+function BasePlayer:takeOutItem (itemid, containEquip)
   local num, arr = self:getItemNum(itemid, containEquip)
   if (num == 0) then
     return false
@@ -182,7 +182,7 @@ function MyPlayer:takeOutItem (itemid, containEquip)
   end
 end
 
-function MyPlayer:holdItem ()
+function BasePlayer:holdItem ()
   local itemid = PlayerHelper:getCurToolID(self.objid)
   if (not(self.hold) and not(itemid)) then  -- 变化前后都没有拿东西
     -- do nothing
@@ -195,7 +195,7 @@ function MyPlayer:holdItem ()
   end -- else是没有换东西，略去
 end
 
-function MyPlayer:changeHold (itemid)
+function BasePlayer:changeHold (itemid)
   local foundItem = ItemHelper:changeHold(self.objid, self.hold, itemid)
   self.hold = itemid
   if (foundItem) then
@@ -211,45 +211,45 @@ function MyPlayer:changeHold (itemid)
   end
 end
 
-function MyPlayer:changeAttr (attack, defense, dodge)
+function BasePlayer:changeAttr (attack, defense, dodge)
   self.attr:changeAttr(attack, defense, dodge)
 end
 
-function MyPlayer:showAttr (isMelee)
+function BasePlayer:showAttr (isMelee)
   self.attr:showAttr(isMelee)
 end
 
 -- 恢复血量（加/减血）
-function MyPlayer:recoverHp (hp)
+function BasePlayer:recoverHp (hp)
   self.attr:recoverHp(hp)
 end
 
 -- 恢复饱食度（加/减饱食度）
-function MyPlayer:recoverFoodLevel(foodLevel)
+function BasePlayer:recoverFoodLevel(foodLevel)
   self.attr:recoverFoodLevel(foodLevel)
 end
 
 -- 减体力
-function MyPlayer:reduceStrength (strength)
+function BasePlayer:reduceStrength (strength)
   self.attr:reduceStrength(strength)
 end
 
 -- 伤害生物
-function MyPlayer:damageActor (toobjid, val)
+function BasePlayer:damageActor (toobjid, val)
   self.attr:damageActor(toobjid, val)
 end
 
 -- 设置囚禁状态
-function MyPlayer:setImprisoned (active)
+function BasePlayer:setImprisoned (active)
   return self.attr:setImprisoned(active)
 end
 
 -- 设置封魔状态
-function MyPlayer:setSeal (active)
+function BasePlayer:setSeal (active)
   return self.attr:setSeal(active)
 end
 
 -- 是否能够使用技能
-function MyPlayer:ableUseSkill (skillname)
+function BasePlayer:ableUseSkill (skillname)
   return self.attr:ableUseSkill(skillname)
 end

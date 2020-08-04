@@ -1,5 +1,5 @@
 -- 恶狼
-Wolf = MyActor:new(MyConstant.WOLF_ACTOR_ID)
+Wolf = BaseActor:new(MyConstant.WOLF_ACTOR_ID)
 
 function Wolf:new ()
   local o = {
@@ -75,7 +75,7 @@ function Wolf:timerGenerate (num)
 end
 
 -- 狂牛
-Ox = MyActor:new(MyConstant.OX_ACTOR_ID)
+Ox = BaseActor:new(MyConstant.OX_ACTOR_ID)
 
 function Ox:new ()
   local o = {

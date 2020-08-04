@@ -1,5 +1,5 @@
 -- 人物行为工具类
-MyActorActionHelper = {}
+BaseActorActionHelper = {}
 
 --[[  移动行为数据，参数:
       think想法,
@@ -9,7 +9,7 @@ MyActorActionHelper = {}
       restTime巡逻到达一个位置后停留时间，默认是0
       speed奔跑速度（倍速）
 --]] 
-function MyActorActionHelper:getMoveData (think, positions, isNegDir, index, restTime, speed)
+function BaseActorActionHelper:getMoveData (think, positions, isNegDir, index, restTime, speed)
   index = index or 1
   restTime = restTime or 0
   local data = { style = 'move', restTime = restTime, currentRestTime = 0, positions = positions, 
@@ -22,18 +22,20 @@ function MyActorActionHelper:getMoveData (think, positions, isNegDir, index, res
   return data
 end
 
-function MyActorActionHelper:getApproachData (think, positions, isNegDir, index, restTime)
+-- 靠近行为数据
+function BaseActorActionHelper:getApproachData (think, positions, isNegDir, index, restTime)
   local data = self:getMoveData(think, positions, isNegDir, index, restTime)
   data.style = 'approach'
   return data
 end
 
 -- 不移动行为数据
-function MyActorActionHelper:getDontMoveData (think)
+function BaseActorActionHelper:getDontMoveData (think)
   return { style = 'dontMove', restTime = 0, currentRestTime = 0, think = think }
 end
 
-function MyActorActionHelper:getPatrolData (think, positions, isNegDir, index, restTime)
+-- 巡逻行为数据
+function BaseActorActionHelper:getPatrolData (think, positions, isNegDir, index, restTime)
   index = index or 1
   restTime = restTime or 5
   local data = { style = 'patrol', restTime = restTime, currentRestTime = 0, positions = positions, 
@@ -44,12 +46,12 @@ function MyActorActionHelper:getPatrolData (think, positions, isNegDir, index, r
 end
 
 -- 自由活动数据
-function MyActorActionHelper:getFreeTimeData (think)
+function BaseActorActionHelper:getFreeTimeData (think)
   return { style = 'freeTime', restTime = 0, currentRestTime = 0, think = think }
 end
 
 -- 自由活动并警戒数据
-function MyActorActionHelper:getFreeAndAlertData (think, speed)
+function BaseActorActionHelper:getFreeAndAlertData (think, speed)
   local data = { style = 'freeAndAlert', restTime = 0, currentRestTime = 0, think = think }
   if (speed) then
     data.speed = speed
@@ -58,26 +60,29 @@ function MyActorActionHelper:getFreeAndAlertData (think, speed)
 end
 
 -- 在区域内自由活动数据
-function MyActorActionHelper:getFreeInAreaData (think, restTime)
+function BaseActorActionHelper:getFreeInAreaData (think, restTime)
   restTime = restTime or 5
   return { style = 'freeInArea', restTime = restTime, currentRestTime = 0, think = think }
 end
 
 -- 生物想不做事数据
-function MyActorActionHelper:getDoNothingData (think)
+function BaseActorActionHelper:getDoNothingData (think)
   return { style = 'doNothing', restTime = 0, currentRestTime = 0, think = think }
 end
 
-function MyActorActionHelper:getSleepData (think, faceYaw)
+-- 生物睡觉数据
+function BaseActorActionHelper:getSleepData (think, faceYaw)
   return { style = 'sleep', restTime = 0, currentRestTime = 0, faceYaw = faceYaw, think = think }
 end
 
-function MyActorActionHelper:getWaitData (think, restTime)
+-- 生物等待数据
+function BaseActorActionHelper:getWaitData (think, restTime)
   restTime = restTime or 5
   return { style = 'wait', restTime = restTime, currentRestTime = 0, think = think }
 end
 
-function MyActorActionHelper:getToggleCandleData (think, isLitCandle)
+-- 生物处理蜡烛数据
+function BaseActorActionHelper:getToggleCandleData (think, isLitCandle)
   local style
   if (isLitCandle) then
     style = 'lightCandle'
@@ -87,21 +92,24 @@ function MyActorActionHelper:getToggleCandleData (think, isLitCandle)
   return { style = style, restTime = 0, currentRestTime = 0, think = think }
 end
 
-function MyActorActionHelper:getLookAtData (think, myPosition, restTime)
+-- 生物看向某人/某物数据
+function BaseActorActionHelper:getLookAtData (think, myPosition, restTime)
   restTime = restTime or 5
   return { style = 'lookAt', restTime = restTime, currentRestTime = restTime, dst = myPosition, think = think }
 end
 
-function MyActorActionHelper:getForceDoNothing (think)
+-- 强制生物不做事数据
+function BaseActorActionHelper:getForceDoNothing (think)
   return { style = 'forceDoNothing', restTime = 1, currentRestTime = 1, think = think, times = 1 }
 end
 
-function MyActorActionHelper:getBattleData (think)
+-- 生物战斗数据
+function BaseActorActionHelper:getBattleData (think)
   return { style = 'battle', restTime = 0, currentRestTime = 0, think = think }
 end
 
 -- 获取前往位置
-function MyActorActionHelper:getToPos (positions, isNegDir, index)
+function BaseActorActionHelper:getToPos (positions, isNegDir, index)
   if (isNegDir) then 
     return positions[#positions - index + 1]
   else
@@ -110,18 +118,19 @@ function MyActorActionHelper:getToPos (positions, isNegDir, index)
 end
 
 -- 创建前往位置
-function MyActorActionHelper:createMoveToPos (want)
+function BaseActorActionHelper:createMoveToPos (want)
   local areaid = AreaHelper:createMovePosArea(want.toPos)
   want.toAreaId = areaid
 end
 
-function MyActorActionHelper:createApproachToPos (want)
+-- 创建靠近位置
+function BaseActorActionHelper:createApproachToPos (want)
   local areaid = AreaHelper:createApproachPosArea(want.toPos)
   want.toAreaId = areaid
 end
 
 -- 获取下一个位置，并修改want.index
-function MyActorActionHelper:getNextPos (want)
+function BaseActorActionHelper:getNextPos (want)
   local style, positions, index, isNegDir = want.style, want.positions, want.index, want.isNegDir
   if (style == 'move') then
     index = index + 1
@@ -146,7 +155,7 @@ function MyActorActionHelper:getNextPos (want)
 end
 
 -- 设置区域自由活动
-function MyActorActionHelper:setFreeInArea (think, myActor, posPairs, isAppend)
+function BaseActorActionHelper:setFreeInArea (think, myActor, posPairs, isAppend)
   if (myActor.freeInAreaIds and #myActor.freeInAreaIds > 0) then -- 如果自由活动区域已经存在，则销毁
     for i, v in ipairs(myActor.freeInAreaIds) do
       AreaHelper:destroyArea(v)
@@ -163,7 +172,7 @@ function MyActorActionHelper:setFreeInArea (think, myActor, posPairs, isAppend)
 end
 
 -- 获得区域ids，参数为二维数组{{posBeg, posEnd},{posBeg, posEnd}}
-function MyActorActionHelper:getFreeInAreaIds (posPairs)
+function BaseActorActionHelper:getFreeInAreaIds (posPairs)
   local areaids = {}
   for i, v in ipairs(posPairs) do
     table.insert(areaids, AreaHelper:createAreaRectByRange(v[1], v[2]))
@@ -172,7 +181,7 @@ function MyActorActionHelper:getFreeInAreaIds (posPairs)
 end
 
 -- 获得区域中的一个位置
-function MyActorActionHelper:getFreeInAreaPos (freeInAreaIds)
+function BaseActorActionHelper:getFreeInAreaPos (freeInAreaIds)
   local num, areaid = #freeInAreaIds
   if (num > 1) then -- 多个位置，则随机一个
     local index = math.random(1, num)
@@ -186,7 +195,7 @@ function MyActorActionHelper:getFreeInAreaPos (freeInAreaIds)
 end
 
 -- 更新生物行为状态
-function MyActorActionHelper:updateActionState (myActor)
+function BaseActorActionHelper:updateActionState (myActor)
   if (myActor.wants) then
     local style = myActor.wants[1].style
     if (style == 'move' or style == 'patrol' or style == 'freeInArea' or style == 'doNothing' or style == 'sleep') then
@@ -196,8 +205,4 @@ function MyActorActionHelper:updateActionState (myActor)
       -- myActor:enableMove(false)
     end
   end
-end
-
-function MyActorActionHelper:getFreeTimePos ()
-  -- body
 end

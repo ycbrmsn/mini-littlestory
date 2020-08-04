@@ -1,5 +1,5 @@
 -- 卫兵
-Guard = MyActor:new(MyConstant.GUARD_ACTOR_ID)
+Guard = BaseActor:new(MyConstant.GUARD_ACTOR_ID)
 
 function Guard:new ()
   local o = {
@@ -63,7 +63,7 @@ function Guard:init ()
   for i, v in ipairs(self.initPositions2) do
     table.insert(self.initAreas2, AreaHelper:getAreaByPos(v))
   end
-  self.action = MyActorAction:new(self)
+  self.action = BaseActorAction:new(self)
   TimeHelper:repeatUtilSuccess(self.actorid, 'initGuard', function ()
     local isAllOk = true
     for i, v in ipairs(self.initAreas) do
@@ -102,7 +102,7 @@ function Guard:initCityGuard (index, o, objids)
         ActorHelper:lookToward(v, 'W')
       else
         ActorHelper:setMyPosition(v, self.lordHousePatrolPositions[i - 2])
-        local g = MyActor:new(MyConstant.GUARD_ACTOR_ID, v)
+        local g = BaseActor:new(MyConstant.GUARD_ACTOR_ID, v)
         g:wantPatrol('patrol', self.lordHousePatrolPositions, false, i - 2)
         table.insert(self.patrolGuards, g)
       end

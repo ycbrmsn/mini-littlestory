@@ -1,10 +1,10 @@
 -- actor行为类
-MyActorAction = {
+BaseActorAction = {
   myActor = nil,
   maxCantMoveTime = 5
 }
 
-function MyActorAction:new (myActor)
+function BaseActorAction:new (myActor)
   local o = {
     myActor = myActor
   }
@@ -14,7 +14,7 @@ function MyActorAction:new (myActor)
 end
 
 -- 生物是否是强制移动，强制移动即用脚本让他移动
-function MyActorAction:isForceMove ()
+function BaseActorAction:isForceMove ()
   if (not(self.myActor.wants) or not(self.myActor.wants[1])) then -- 没有想法，则不是
     return false
   end
@@ -26,75 +26,75 @@ function MyActorAction:isForceMove ()
 end
 
 -- 跑到指定地点
-function MyActorAction:runTo (pos, speed)
+function BaseActorAction:runTo (pos, speed)
   speed = speed or self.myActor.defaultSpeed
   local x, y, z = math.floor(pos.x) + 0.5, math.floor(pos.y) + 0.5, math.floor(pos.z) + 0.5
   return ActorHelper:tryMoveToPos(self.myActor.objid, x, y, z, speed)
 end
 
 -- 传送到指定地点
-function MyActorAction:transmitTo (pos)
+function BaseActorAction:transmitTo (pos)
   return self.myActor:setPosition(pos.x, pos.y, pos.z)
 end
 
-function MyActorAction:stopRun ()
+function BaseActorAction:stopRun ()
   self.myActor:closeAI()
   self:runTo(MyPosition:new(self.myActor:getPosition()))
 end
 
-function MyActorAction:playHi (afterSeconds)
+function BaseActorAction:playHi (afterSeconds)
   self:playAct(ActorHelper.ACT.HI, afterSeconds)
 end
 
-function MyActorAction:playDown (afterSeconds)
+function BaseActorAction:playDown (afterSeconds)
   self:playAct(ActorHelper.ACT.DOWN, afterSeconds)
 end
 
-function MyActorAction:playSleep (afterSeconds)
+function BaseActorAction:playSleep (afterSeconds)
   self:playAct(ActorHelper.ACT.SLEEP, afterSeconds)
 end
 
-function MyActorAction:playSit (afterSeconds)
+function BaseActorAction:playSit (afterSeconds)
   self:playAct(ActorHelper.ACT.SIT, afterSeconds)
 end
 
-function MyActorAction:playAttack (afterSeconds)
+function BaseActorAction:playAttack (afterSeconds)
   self:playAct(ActorHelper.ACT.ATTACK, afterSeconds)
 end
 
-function MyActorAction:playFree (afterSeconds)
+function BaseActorAction:playFree (afterSeconds)
   self:playAct(ActorHelper.ACT.FREE, afterSeconds)
 end
 
-function MyActorAction:playFree2 (afterSeconds)
+function BaseActorAction:playFree2 (afterSeconds)
   self:playAct(ActorHelper.ACT.FREE2, afterSeconds)
 end
 
-function MyActorAction:playPoss (afterSeconds)
+function BaseActorAction:playPoss (afterSeconds)
   self:playAct(ActorHelper.ACT.POSE, afterSeconds)
 end
 
-function MyActorAction:playAngry (afterSeconds)
+function BaseActorAction:playAngry (afterSeconds)
   self:playAct(ActorHelper.ACT.ANGRY, afterSeconds)
 end
 
-function MyActorAction:playThink (afterSeconds)
+function BaseActorAction:playThink (afterSeconds)
   self:playAct(ActorHelper.ACT.THINK, afterSeconds)
 end
 
-function MyActorAction:playDie (afterSeconds)
+function BaseActorAction:playDie (afterSeconds)
   self:playAct(ActorHelper.ACT.DIE, afterSeconds)
 end
 
-function MyActorAction:playStand (afterSeconds)
+function BaseActorAction:playStand (afterSeconds)
   self:playAct(ActorHelper.ACT.STAND, afterSeconds)
 end
 
-function MyActorAction:playHappy (afterSeconds)
+function BaseActorAction:playHappy (afterSeconds)
   self:playAct(ActorHelper.ACT.HAPPY, afterSeconds)
 end
 
-function MyActorAction:playAct (act, afterSeconds)
+function BaseActorAction:playAct (act, afterSeconds)
   if (afterSeconds) then
     TimeHelper:callFnAfterSecond (function (p)
       ActorHelper:playAct(self.myActor.objid, act)
@@ -105,7 +105,7 @@ function MyActorAction:playAct (act, afterSeconds)
 end
 
 -- 生物行动
-function MyActorAction:execute ()
+function BaseActorAction:execute ()
   local want
   if (not(self.myActor.wants) or not(self.myActor.wants[1])) then -- 如果生物没有想法，则给他一个原始的想法，然后再行动
     self.myActor:defaultWant()
@@ -163,32 +163,32 @@ function MyActorAction:execute ()
 end
 
 -- 生物表达
-function MyActorAction:express (targetuin, startStr, finishStr, ...)
+function BaseActorAction:express (targetuin, startStr, finishStr, ...)
   local content = StringHelper:concat(...)
   local message = StringHelper:concat(self.myActor:getName(), startStr, content, finishStr)
   ChatHelper:sendSystemMsg(message, targetuin)
 end
 
 -- 生物说话
-function MyActorAction:speak (targetuin, ...)
+function BaseActorAction:speak (targetuin, ...)
   self:express(targetuin, '：#W', '', ...)
 end
 
-function MyActorAction:speakToAll (...)
+function BaseActorAction:speakToAll (...)
   self:speak(nil, ...)
 end
 
 -- 生物心想
-function MyActorAction:speakInHeart (targetuin, ...)
+function BaseActorAction:speakInHeart (targetuin, ...)
   self:express(targetuin, '：#W（', '#W）', ...)
 end
 
-function MyActorAction:speakInHeartToAll (...)
+function BaseActorAction:speakInHeartToAll (...)
   self:speakInHeart(nil, ...)
 end
 
 -- 生物几秒后表达
-function MyActorAction:expressAfterSecond (targetuin, startStr, finishStr, second, ...)
+function BaseActorAction:expressAfterSecond (targetuin, startStr, finishStr, second, ...)
   local content = StringHelper:concat(...)
   local message = StringHelper:concat(self.myActor:getName(), startStr, content, finishStr)
   TimeHelper:callFnAfterSecond (function (p)
@@ -197,24 +197,24 @@ function MyActorAction:expressAfterSecond (targetuin, startStr, finishStr, secon
 end
 
 -- 生物几秒后说话
-function MyActorAction:speakAfterSecond (targetuin, second, ...)
+function BaseActorAction:speakAfterSecond (targetuin, second, ...)
   self:expressAfterSecond(targetuin, '：#W', '', second, ...)
 end
 
-function MyActorAction:speakToAllAfterSecond (second, ...)
+function BaseActorAction:speakToAllAfterSecond (second, ...)
   self:speakAfterSecond(nil, second, ...)
 end
 
 -- 生物几秒后心想
-function MyActorAction:speakInHeartAfterSecond (targetuin, second, ...)
+function BaseActorAction:speakInHeartAfterSecond (targetuin, second, ...)
   self:expressAfterSecond(targetuin, '：#W（', '#W）', second, ...)
 end
 
-function MyActorAction:speakInHeartToAllAfterSecond (second, ...)
+function BaseActorAction:speakInHeartToAllAfterSecond (second, ...)
   self:speakInHeartAfterSecond(nil, second, ...)
 end
 
-function MyActorAction:lightCandle (think, isNow, candlePositions)
+function BaseActorAction:lightCandle (think, isNow, candlePositions)
   candlePositions = candlePositions or self.myActor.candlePositions
   local index = 1
   for i, v in ipairs(candlePositions) do
@@ -231,7 +231,7 @@ function MyActorAction:lightCandle (think, isNow, candlePositions)
   return index
 end
 
-function MyActorAction:putOutCandle (think, isNow, candlePositions)
+function BaseActorAction:putOutCandle (think, isNow, candlePositions)
   candlePositions = candlePositions or self.myActor.candlePositions
   local index = 1
   for i, v in ipairs(candlePositions) do
@@ -248,12 +248,12 @@ function MyActorAction:putOutCandle (think, isNow, candlePositions)
   return index
 end
 
-function MyActorAction:putOutCandleAndGoToBed (candlePositions)
+function BaseActorAction:putOutCandleAndGoToBed (candlePositions)
   local index = self:putOutCandle('putOutCandle', true, candlePositions)
   self:goToBed(index == 1)
 end
 
-function MyActorAction:toggleCandle (think, myPosition, isLitCandle, isNow)
+function BaseActorAction:toggleCandle (think, myPosition, isLitCandle, isNow)
   if (not(think)) then
     if (isLitCandle) then
       think = 'lightCandle'
@@ -269,7 +269,7 @@ function MyActorAction:toggleCandle (think, myPosition, isLitCandle, isNow)
   self.myActor:nextWantToggleCandle(think, isLitCandle)
 end
 
-function MyActorAction:goToBed (isNow)
+function BaseActorAction:goToBed (isNow)
   if (isNow) then
     self.myActor:wantGoToSleep(self.myActor.bedData)
   else
@@ -277,7 +277,7 @@ function MyActorAction:goToBed (isNow)
   end
 end
 
-function MyActorAction:lookAt (objid)
+function BaseActorAction:lookAt (objid)
   local x, y, z
   if (type(objid) == 'table') then
     x, y, z = objid.x, objid.y, objid.z
@@ -298,7 +298,7 @@ function MyActorAction:lookAt (objid)
   end
 end
 
-function MyActorAction:freeTime (want)
+function BaseActorAction:freeTime (want)
   self.myActor:openAI()
   want.currentRestTime = math.random(10, 20)
   local pos = self.myActor:getMyPosition()
@@ -311,7 +311,7 @@ function MyActorAction:freeTime (want)
   self:runTo(pos)
 end
 
-function MyActorAction:freeAndAlert (want)
+function BaseActorAction:freeAndAlert (want)
   self.myActor:closeAI()
   want.currentRestTime = math.random(10, 20)
   local pos = self.myActor:getMyPosition()

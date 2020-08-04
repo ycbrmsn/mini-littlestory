@@ -1,5 +1,5 @@
--- 我的玩家属性类
-MyPlayerAttr = {
+-- 玩家属性类
+BasePlayerAttr = {
   level = 1, -- 当前等级，已废弃
   totalLevel = 1, -- 总等级
   exp = 0,  -- 当前经验
@@ -11,7 +11,7 @@ MyPlayerAttr = {
   strength = 100 -- 体力，用于使枪消耗
 }
 
-function MyPlayerAttr:new (player)
+function BasePlayerAttr:new (player)
   local o = {
     myActor = player,
     cantUseSkillReasons = {
@@ -24,7 +24,7 @@ function MyPlayerAttr:new (player)
   return o
 end
 
-function MyPlayerAttr:enableMove (enable, showMsg)
+function BasePlayerAttr:enableMove (enable, showMsg)
   local objid = self.myActor.objid
   if (enable) then
     if (showMsg) then
@@ -47,7 +47,7 @@ function MyPlayerAttr:enableMove (enable, showMsg)
   end
 end
 
-function MyPlayerAttr:updatePositions ()
+function BasePlayerAttr:updatePositions ()
   if (not(self.positions)) then
     self.positions = {}
   end
@@ -60,7 +60,7 @@ function MyPlayerAttr:updatePositions ()
   end
 end
 
-function MyPlayerAttr:gainExp (exp)
+function BasePlayerAttr:gainExp (exp)
   self.exp = self.exp + exp
   local msg = '获得'.. exp .. '点经验。'
   ChatHelper:sendSystemMsg(msg, self.myActor.objid)
@@ -78,7 +78,7 @@ function MyPlayerAttr:gainExp (exp)
   GameDataHelper:updateGameData(self.myActor)
 end
 
-function MyPlayerAttr:upgrade (addLevel)
+function BasePlayerAttr:upgrade (addLevel)
   if (addLevel > 0) then
     self.totalLevel = self.totalLevel + addLevel
     self:changeAttr(2 * addLevel, 2 * addLevel)
@@ -96,7 +96,7 @@ function MyPlayerAttr:upgrade (addLevel)
   return ''
 end
 
-function MyPlayerAttr:changeAttr (attack, defense, dodge)
+function BasePlayerAttr:changeAttr (attack, defense, dodge)
   local attrMap = {}
   if (attack and attack ~= 0) then
     attrMap[PLAYERATTR.ATK_MELEE] = attack
@@ -114,7 +114,7 @@ function MyPlayerAttr:changeAttr (attack, defense, dodge)
   end
 end
 
-function MyPlayerAttr:showAttr (isMelee)
+function BasePlayerAttr:showAttr (isMelee)
   local objid, attack = self.myActor.objid
   if (isMelee) then
     attack = PlayerHelper:getAttr(objid, PLAYERATTR.ATK_MELEE)
@@ -135,7 +135,7 @@ function MyPlayerAttr:showAttr (isMelee)
   self.defense = defense
 end
 
-function MyPlayerAttr:recoverHp (hp)
+function BasePlayerAttr:recoverHp (hp)
   if (hp == 0) then
     return
   end
@@ -163,7 +163,7 @@ function MyPlayerAttr:recoverHp (hp)
   PlayerHelper:setHp(objid, curHp)
 end
 
-function MyPlayerAttr:recoverFoodLevel(foodLevel)
+function BasePlayerAttr:recoverFoodLevel(foodLevel)
   if (foodLevel == 0) then
     return
   end
@@ -190,7 +190,7 @@ function MyPlayerAttr:recoverFoodLevel(foodLevel)
   PlayerHelper:setFoodLevel(self.myActor.objid, curFoodLevel)
 end
 
-function MyPlayerAttr:reduceStrength (strength)
+function BasePlayerAttr:reduceStrength (strength)
   self.strength = self.strength - strength
   if (self.strength <= 0) then
     self.strength = 100
@@ -198,11 +198,11 @@ function MyPlayerAttr:reduceStrength (strength)
   end
 end
 
-function MyPlayerAttr:damageActor (toobjid, val)
+function BasePlayerAttr:damageActor (toobjid, val)
   ActorHelper:damageActor(self.myActor.objid, toobjid, val)
 end
 
-function MyPlayerAttr:setImprisoned (active)
+function BasePlayerAttr:setImprisoned (active)
   self:enableMove(not(active)) -- 可移动设置
   PlayerHelper:setActionAttrState(self.myActor.objid, PLAYERATTR.ENABLE_ATTACK, not(active)) -- 可攻击设置
   if (active) then
@@ -216,7 +216,7 @@ function MyPlayerAttr:setImprisoned (active)
   end
 end
 
-function MyPlayerAttr:setSeal (active)
+function BasePlayerAttr:setSeal (active)
   if (active) then
     self.cantUseSkillReasons.seal = self.cantUseSkillReasons.seal + 1
     ChatHelper:sendSystemMsg('你被封魔了，当前无法使用技能', self.myActor.objid)
@@ -227,7 +227,7 @@ function MyPlayerAttr:setSeal (active)
   end
 end
 
-function MyPlayerAttr:ableUseSkill (skillname)
+function BasePlayerAttr:ableUseSkill (skillname)
   skillname = skillname or ''
   if (self.cantUseSkillReasons.seal > 0) then
     ChatHelper:sendSystemMsg('你处于封魔状态，当前无法使用' .. skillname .. '技能', self.myActor.objid)

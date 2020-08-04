@@ -1,5 +1,5 @@
 -- 强盗喽罗
-QiangdaoLouluo = MyActor:new(MyConstant.QIANGDAO_LOULUO_ACTOR_ID)
+QiangdaoLouluo = BaseActor:new(MyConstant.QIANGDAO_LOULUO_ACTOR_ID)
 
 function QiangdaoLouluo:new ()
   local o = {
@@ -53,7 +53,7 @@ function QiangdaoLouluo:initStoryMonsters ()
   local areaid = AreaHelper:getAreaByPos(self.initPosition)
   local objids = AreaHelper:getAllCreaturesInAreaId(areaid)
   if (objids and #objids > 0) then
-    self.action = MyActorAction:new(self)
+    self.action = BaseActorAction:new(self)
     for i, v in ipairs(objids) do
       table.insert(self.monsters, v)
     end

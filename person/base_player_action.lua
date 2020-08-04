@@ -1,7 +1,7 @@
--- 我的玩家行为类
-MyPlayerAction = MyActorAction:new()
+-- 玩家行为类
+BasePlayerAction = BaseActorAction:new()
 
-function MyPlayerAction:new (player)
+function BasePlayerAction:new (player)
   local o = {
     myActor = player
   }
@@ -10,7 +10,7 @@ function MyPlayerAction:new (player)
   return o
 end
 
-function MyPlayerAction:playAct (act, afterSeconds)
+function BasePlayerAction:playAct (act, afterSeconds)
   if (afterSeconds) then
     TimeHelper:callFnAfterSecond (function (p)
       PlayerHelper:playAct(self.myActor.objid, act)
@@ -20,7 +20,7 @@ function MyPlayerAction:playAct (act, afterSeconds)
   end
 end
 
-function MyPlayerAction:runTo (positions, callback)
+function BasePlayerAction:runTo (positions, callback)
   if (positions and #positions > 0) then
     if (self.myActor.toPos) then -- 之前的行动没有结束又来一个行动
       AreaHelper:destroyArea(self.myActor.toAreaId)
@@ -30,7 +30,7 @@ function MyPlayerAction:runTo (positions, callback)
   end
 end
 
-function MyPlayerAction:doNext ()
+function BasePlayerAction:doNext ()
   if (not(self.myActor.wants)) then
     return
   end
@@ -47,7 +47,7 @@ function MyPlayerAction:doNext ()
   end
 end
 
-function MyPlayerAction:execute ()
+function BasePlayerAction:execute ()
   local pos = self.myActor.toPos
   if (pos) then
     ActorHelper:tryNavigationToPos(self.myActor.objid, pos.x, pos.y, pos.z, false)

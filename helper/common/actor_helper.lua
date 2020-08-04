@@ -45,8 +45,8 @@ end
 
 -- 新增person
 function ActorHelper:addActor (o)
-  o.action = MyActorAction:new(o)
-  o.want = MyActorWant:new(o)
+  o.action = BaseActorAction:new(o)
+  o.want = BaseActorWant:new(o)
   self.actors[o['objid']] = o
 end
 
@@ -149,15 +149,15 @@ function ActorHelper:handleNextWant (myActor)
   -- LogHelper:debug('下一个行为：', nextWant.style)
   myActor.think = nextWant.think
   if (nextWant.style == 'move' or nextWant.style == 'patrol') then
-    MyActorActionHelper:createMoveToPos(nextWant)
+    BaseActorActionHelper:createMoveToPos(nextWant)
     myActor.action:execute()
     -- LogHelper:debug('开始移动')
   elseif (nextWant.style == 'approach') then
-    MyActorActionHelper:createApproachToPos(nextWant)
+    BaseActorActionHelper:createApproachToPos(nextWant)
     myActor.action:execute()
   elseif (nextWant.style == 'freeInArea') then
-    nextWant.toPos = MyActorActionHelper:getFreeInAreaPos(myActor.freeInAreaIds)
-    MyActorActionHelper:createMoveToPos(nextWant)
+    nextWant.toPos = BaseActorActionHelper:getFreeInAreaPos(myActor.freeInAreaIds)
+    BaseActorActionHelper:createMoveToPos(nextWant)
     -- LogHelper:debug(myActor:getName() .. '开始闲逛')
   elseif (nextWant.style == 'freeTime') then
     myActor:openAI()
@@ -549,11 +549,11 @@ function ActorHelper:actorEnterArea (objid, areaid)
       if (want.style == 'move' or want.style == 'approach') then -- 如果是仅仅前往，则变更想法，并且停下来
         -- LogHelper:debug(myActor:getName() .. '进入了终点区域' .. areaid)
         AreaHelper:destroyArea(want.toAreaId) -- 清除终点区域
-        local pos = MyActorActionHelper:getNextPos(want)
+        local pos = BaseActorActionHelper:getNextPos(want)
         -- LogHelper:debug(myActor:getName(), pos)
         if (pos) then -- 有下一个行动位置
           want.toPos = pos
-          MyActorActionHelper:createMoveToPos(want)
+          BaseActorActionHelper:createMoveToPos(want)
           myActor.action:execute()
           -- LogHelper:debug(myActor:getName(), '向下一个位置出发')
         elseif (myActor.wants[2]) then
@@ -565,14 +565,14 @@ function ActorHelper:actorEnterArea (objid, areaid)
       elseif (want.style == 'patrol') then -- 如果是巡逻，则停下来并设定前往目的地
         AreaHelper:destroyArea(want.toAreaId) -- 清除终点区域
         want.currentRestTime = want.restTime
-        want.toPos = MyActorActionHelper:getNextPos(want)
+        want.toPos = BaseActorActionHelper:getNextPos(want)
         -- LogHelper:debug('下一个位置' .. type(want.toPos))
-        MyActorActionHelper:createMoveToPos(want)
+        BaseActorActionHelper:createMoveToPos(want)
       elseif (want.style == 'freeInArea') then -- 区域内自由移动
         AreaHelper:destroyArea(want.toAreaId) -- 清除终点区域
         want.currentRestTime = want.restTime
-        want.toPos = MyActorActionHelper:getFreeInAreaPos(myActor.freeInAreaIds)
-        MyActorActionHelper:createMoveToPos(want)
+        want.toPos = BaseActorActionHelper:getFreeInAreaPos(myActor.freeInAreaIds)
+        BaseActorActionHelper:createMoveToPos(want)
       else -- 其他情况，不明
         -- do nothing
       end

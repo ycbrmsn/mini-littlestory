@@ -1,5 +1,5 @@
 -- 橘一刀
-Juyidao = MyActor:new(MyConstant.JUYIDAO_ACTOR_ID)
+Juyidao = BaseActor:new(MyConstant.JUYIDAO_ACTOR_ID)
 
 function Juyidao:new ()
   local o = {
