@@ -9,12 +9,8 @@ BasePlayer = {
   hold = nil -- 手持物品
 }
 
-function BasePlayer:new (objid)
-  local o = { 
-    objid = objid
-  }
-  o.action = BasePlayerAction:new(o)
-  o.attr = BasePlayerAttr:new(o)
+function BasePlayer:new (o)
+  o = o or {}
   setmetatable(o, self)
   self.__index = self
   return o
