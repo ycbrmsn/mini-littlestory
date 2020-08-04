@@ -120,7 +120,7 @@ end
 -- 定时生成怪物
 function QiangdaoXiaotoumu:timerGenerate (num)
   num = num or 5
-  MyTimeHelper:repeatUtilSuccess(self.actorid, 'generate', function ()
+  TimeHelper:repeatUtilSuccess(self.actorid, 'generate', function ()
     self:generateMonsters(num)
     return false
   end, 60)

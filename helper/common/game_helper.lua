@@ -10,9 +10,9 @@ end
 
 -- 游戏运行时
 function GameHelper:runGame ()
-  MyTimeHelper:addFrame()
-  MyTimeHelper:runFnFastRuns()
-  MyTimeHelper:runFnContinueRuns()
+  TimeHelper:addFrame()
+  TimeHelper:runFnFastRuns()
+  TimeHelper:runFnContinueRuns()
   MonsterHelper:runBosses()
 end
 
@@ -23,14 +23,14 @@ end
 
 -- 世界时间到[n]点
 function GameHelper:atHour (hour)
-  MyTimeHelper:updateHour(hour)
+  TimeHelper:updateHour(hour)
   ActorHelper:atHour(hour)
   StoryHelper:atHour(hour)
 end
 
 -- 世界时间到[n]秒
 function GameHelper:atSecond (second)
-  MyTimeHelper:doPerSecond(second)
+  TimeHelper:doPerSecond(second)
   PlayerHelper:updateEveryPlayerPositions()
   ActorHelper:runActors()
   PlayerHelper:runPlayers()

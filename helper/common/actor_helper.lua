@@ -170,12 +170,12 @@ function ActorHelper:handleNextWant (myActor)
   elseif (nextWant.style == 'lightCandle' or nextWant.style == 'putOutCandle') then
     nextWant.toPos = want.toPos
     -- 2秒后看，攻击，移除想法
-    MyTimeHelper:callFnAfterSecond (function (p)
+    TimeHelper:callFnAfterSecond (function (p)
       p.myActor:lookAt(p.pos)
       p.myActor.action:playAttack()
     end, 2, { pos = want.toPos, myActor = myActor })
     -- 3秒后蜡烛台变化，并执行下一个动作
-    MyTimeHelper:callFnAfterSecond (function (p)
+    TimeHelper:callFnAfterSecond (function (p)
       BlockHelper:handleCandle(p.pos, p.isLit)
       if (p.myActor.wants[2]) then
         self:handleNextWant(p.myActor)
@@ -203,7 +203,7 @@ function ActorHelper:resumeClickActor (objid)
       local want = myActor.wants[1]
       if (want.style == 'lookingAt') then
         want.currentRestTime = 5
-        MyTimeHelper:delFnContinueRuns(myActor.objid .. 'lookat')
+        TimeHelper:delFnContinueRuns(myActor.objid .. 'lookat')
       end
     end
     self.clickActors[objid] = nil
@@ -223,7 +223,7 @@ end
 
 -- 时间到了
 function ActorHelper:atHour (hour)
-  hour = hour or MyTimeHelper:getHour()
+  hour = hour or TimeHelper:getHour()
   for k, v in pairs(self.actors) do
     v:wantAtHour(hour)
   end
@@ -394,7 +394,7 @@ end
 function ActorHelper:playAndStopBodyEffect (objid, particleId, scale, time)
   time = time or 3
   self:playBodyEffect(objid, particleId, scale)
-  MyTimeHelper:callFnLastRun(objid, objid .. 'stopBodyEffect' .. particleId, function ()
+  TimeHelper:callFnLastRun(objid, objid .. 'stopBodyEffect' .. particleId, function ()
     ActorHelper:stopBodyEffectById(objid, particleId)
   end, time)
 end
@@ -408,7 +408,7 @@ end
 function ActorHelper:playAndStopSoundEffect (objid, soundId, isLoop, time)
   time = time or 3
   self:playSoundEffect(objid, soundId, isLoop)
-  MyTimeHelper:callFnLastRun(objid, objid .. 'stopSoundEffect' .. soundId, function ()
+  TimeHelper:callFnLastRun(objid, objid .. 'stopSoundEffect' .. soundId, function ()
     ActorHelper:stopSoundEffectById(objid, soundId)
   end, time)
 end
@@ -416,7 +416,7 @@ end
 -- 加上重力
 function ActorHelper:addGravity (objid)
   local t = objid .. 'addGravity'
-  MyTimeHelper:callFnContinueRuns(function ()
+  TimeHelper:callFnContinueRuns(function ()
     if (ActorHelper:getMyPosition(objid)) then
       ActorHelper:appendSpeed(objid, 0, -MyConstant.FLY_SPEED, 0)
       local speedVector3 = ItemHelper:getMissileSpeed(objid)
@@ -426,7 +426,7 @@ function ActorHelper:addGravity (objid)
         ItemHelper:recordMissileSpeed(objid, MyVector3:new(0, -MyConstant.FLY_SPEED, 0))
       end
     else
-      MyTimeHelper:delFnContinueRuns(t)
+      TimeHelper:delFnContinueRuns(t)
     end
   end, -1, t)
 end

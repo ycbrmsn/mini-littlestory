@@ -67,7 +67,7 @@ function MonsterHelper:wantLookAt (objid, toobjid, seconds)
   if (type(objid) == 'number') then
     t = objid .. 'lookat'
   end
-  MyTimeHelper:callFnContinueRuns(function ()
+  TimeHelper:callFnContinueRuns(function ()
     self:lookAt(objid, toobjid)
   end, seconds, t)
 end
@@ -75,7 +75,7 @@ end
 -- 怪物做表情
 function MonsterHelper:playAct (objid, act, afterSeconds)
   if (afterSeconds) then
-    MyTimeHelper:callFnAfterSecond (function (p)
+    TimeHelper:callFnAfterSecond (function (p)
       ActorHelper:playAct(objid, act)
     end, afterSeconds)
   else

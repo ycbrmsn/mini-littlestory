@@ -44,7 +44,7 @@ end
 function Juyidao:init ()
   local initSuc = self:initActor(self.initPosition)
   if (initSuc) then
-    MyTimeHelper:repeatUtilSuccess(self.actorid, 'alert', function ()
+    TimeHelper:repeatUtilSuccess(self.actorid, 'alert', function ()
       self:checkAreaPlayer()
       return false
     end, 1)
@@ -112,7 +112,7 @@ function Juyidao:alertTo (objid)
     -- 停止移动
     self:wantDontMove('alert')
     -- 看向玩家
-    MyTimeHelper:callFnFastRuns(function ()
+    TimeHelper:callFnFastRuns(function ()
       self:lookAt(objid)
     end, 1)
   end
@@ -214,7 +214,7 @@ function Juyidao:runAndAttack (distance, pos)
     MonsterHelper:runTo(self.objid, dstPos, self.speed[3])
     if (self.dontDo) then
       self.dontDo = false
-      MyTimeHelper:callFnFastRuns(function ()
+      TimeHelper:callFnFastRuns(function ()
         self.dontDo = true
         self:chooseBattleType()
       end, 2)
@@ -242,7 +242,7 @@ function Juyidao:runCircleAndAttack ()
       local selfPos = self:getMyPosition()
       pos.y = selfPos.y
       ActorHelper:appendFixedSpeed(self.objid, 2, pos)
-      MyTimeHelper:callFnFastRuns(function ()
+      TimeHelper:callFnFastRuns(function ()
         self:chooseBattleType()
         self.dontDo = true
       end, 1)
@@ -255,7 +255,7 @@ function Juyidao:jumpAndAttack ()
   if (self.battleProgress == 1) then
     if (self.dontDo) then
       self.dontDo = false
-      MyTimeHelper:callFnFastRuns(function ()
+      TimeHelper:callFnFastRuns(function ()
         self.dontDo = true
         self.battleProgress = 2
       end, 1)
@@ -275,7 +275,7 @@ function Juyidao:jumpAndAttack ()
   elseif (self.battleProgress == 3) then
     if (self.dontDo) then
       self.dontDo = false
-      MyTimeHelper:callFnFastRuns(function ()
+      TimeHelper:callFnFastRuns(function ()
         self.dontDo = true
         self:chooseBattleType()
       end, 2)

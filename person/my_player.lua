@@ -161,7 +161,7 @@ function MyPlayer:lookAt (objid)
 end
 
 function MyPlayer:wantLookAt (objid, seconds)
-  MyTimeHelper:callFnContinueRuns(function ()
+  TimeHelper:callFnContinueRuns(function ()
     self:lookAt(objid)
   end, seconds)
 end

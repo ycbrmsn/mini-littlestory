@@ -104,7 +104,9 @@ function StoryHelper:recover (player)
     MyStoryHelper:init()
   end
   local story = self:getStory()
-  story:recover(player)
+  if (story) then -- 如果存在剧情
+    story:recover(player)
+  end
 end
 
 -- 事件

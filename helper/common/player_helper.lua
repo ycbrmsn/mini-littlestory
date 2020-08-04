@@ -53,7 +53,7 @@ end
 -- 记录死亡生物，5秒后清除数据
 function PlayerHelper:recordDefeatActor (objid)
   self.defeatActors[objid] = true
-  MyTimeHelper:callFnAfterSecond(function ()
+  TimeHelper:callFnAfterSecond(function ()
     self.defeatActors[objid] = nil
   end, 5)
 end
@@ -65,7 +65,7 @@ end
 -- 显示飘窗信息
 function PlayerHelper:showToast (objid, ...)
   local info = StringHelper:concat(...)
-  MyTimeHelper:callFnInterval(objid, 'toast', function (p)
+  TimeHelper:callFnInterval(objid, 'toast', function (p)
     PlayerHelper:notifyGameInfo2Self(objid, info)
   end, 2)
 end
@@ -81,8 +81,8 @@ function PlayerHelper:showActorHp (objid, toobjid)
     hp = CreatureHelper:getHp(toobjid)
   end
   local t = 'showActorHp' .. toobjid
-  MyTimeHelper:delFnFastRuns(t)
-  MyTimeHelper:callFnFastRuns(function ()
+  TimeHelper:delFnFastRuns(t)
+  TimeHelper:callFnFastRuns(function ()
     if (hp and hp <= 0) then
       self:showToast(objid, StringHelper:concat(actorname, '已死亡'))
     else
@@ -110,7 +110,7 @@ function PlayerHelper:everyPlayerDoSomeThing (f, afterSeconds)
     return
   end
   if (afterSeconds) then
-    MyTimeHelper:callFnAfterSecond (function ()
+    TimeHelper:callFnAfterSecond (function ()
       for i, v in ipairs(self:getAllPlayers()) do
         f(v)
       end
@@ -317,7 +317,7 @@ end
 -- 玩家造成伤害
 function PlayerHelper:playerDamageActor (objid, toobjid)
   local key = PlayerHelper:generateDamageKey(objid, toobjid)
-  MyTimeHelper:setFrameInfo(key, true)
+  TimeHelper:setFrameInfo(key, true)
   PlayerHelper:showActorHp(objid, toobjid)
 end
 

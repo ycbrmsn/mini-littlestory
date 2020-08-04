@@ -60,7 +60,7 @@ function WorldHelper:playAndStopBodyEffectById (pos, particleId, scale, time)
   time = time or 3
   local posString = pos:toString()
   self:playParticalEffect(pos.x, pos.y, pos.z, particleId, scale)
-  MyTimeHelper:callFnLastRun(posString, posString .. 'stopPosEffect' .. particleId, function ()
+  TimeHelper:callFnLastRun(posString, posString .. 'stopPosEffect' .. particleId, function ()
     self:stopEffectOnPosition(pos.x, pos.y, pos.z, particleId)
   end, time)
 end

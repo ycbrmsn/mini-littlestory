@@ -9,7 +9,7 @@ function MyMonsterHelper:init ()
   -- ox = Ox:new()
   -- self.monsterModels = { qiangdaoXiaotoumu, qiangdaoLouluo, wolf, ox }
   -- for i, v in ipairs(self.monsterModels) do
-  --   MyTimeHelper:initActor(v)
+  --   TimeHelper:initActor(v)
   --   v:timerGenerate()
   --   -- LogHelper:debug('初始化', v:getName(), '完成')
   -- end

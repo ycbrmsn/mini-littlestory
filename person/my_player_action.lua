@@ -12,7 +12,7 @@ end
 
 function MyPlayerAction:playAct (act, afterSeconds)
   if (afterSeconds) then
-    MyTimeHelper:callFnAfterSecond (function (p)
+    TimeHelper:callFnAfterSecond (function (p)
       PlayerHelper:playAct(self.myActor.objid, act)
     end, afterSeconds)
   else

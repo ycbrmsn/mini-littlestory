@@ -64,7 +64,7 @@ function Guard:init ()
     table.insert(self.initAreas2, AreaHelper:getAreaByPos(v))
   end
   self.action = MyActorAction:new(self)
-  MyTimeHelper:repeatUtilSuccess(self.actorid, 'initGuard', function ()
+  TimeHelper:repeatUtilSuccess(self.actorid, 'initGuard', function ()
     local isAllOk = true
     for i, v in ipairs(self.initAreas) do
       if (not(v.isOk)) then
@@ -137,7 +137,7 @@ function Guard:checkTokenArea (objid, areaid)
       local player = PlayerHelper:getPlayer(objid)
       if (not(player:takeOutItem(MyConstant.ITEM.TOKEN_ID))) then
         self:speakTo(objid, 0, '出示令牌。强闯者，捕。')
-        MyTimeHelper:callFnCanRun(objid, 'checkToken', function ()
+        TimeHelper:callFnCanRun(objid, 'checkToken', function ()
           MonsterHelper:wantLookAt (v.objids, objid, 5)
         end, 5)
         local xt, yt, zt = 0, 0, 0

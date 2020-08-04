@@ -13,33 +13,13 @@ function Story1:new ()
       '村长说学院的先生在客栈，不知道我能不能入先生的法眼呢。客栈我知道，就在喷泉旁边，有竹栅栏围着的。',
       '我得到了先生的认可。明日巳时，我就要跟着先生向着学院出发了。今天我还可以四处逛逛，或者回家睡一觉。',
       '今日巳时，就要出发了。想想还真有点迫不及待。'
-    },
-    posBeg = { x = 31, y = 8, z = 1 },
-    posEnd = { x = 31, y = 9, z = 1 },
-    createPos = { x = 28, y = 7, z = -28 },
-    movePos = { x = 31, y = 8, z = 1 }
+    }
   }
   self:checkData(data)
 
   setmetatable(data, self)
   self.__index = self
   return data
-end
-
-function Story1:playerBadHurt (objid)
-  local player = PlayerHelper:getPlayer(objid)
-  local pos
-  for i, v in ipairs(miaolan.firstFloorBedPositions) do
-    pos = v
-    if (AreaHelper:isAirArea(v)) then
-      break
-    end
-  end
-  player:setPosition(pos)
-  PlayerHelper:rotateCamera(objid, ActorHelper.FACE_YAW.SOUTH, 0)
-  player.action:playDown(1)
-  PlayerHelper:changeVMode(objid)
-  player:thinkTo(objid, 0, '没想到我又受重伤了。')
 end
 
 function Story1:recover (player)

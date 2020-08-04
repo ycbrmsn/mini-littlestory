@@ -103,12 +103,12 @@ end
 
 function SkillHelper:isFlying (objid)
   local flyType = objid .. 'fly'
-  return MyTimeHelper:isFnContinueRuns(flyType), flyType
+  return TimeHelper:isFnContinueRuns(flyType), flyType
 end
 
 function SkillHelper:isFlyingAdvance (objid)
   local flyAdvanceType = objid .. 'flyAdvance'
-  return MyTimeHelper:isFnContinueRuns(flyAdvanceType), flyAdvanceType
+  return TimeHelper:isFnContinueRuns(flyAdvanceType), flyAdvanceType
 end
 
 function SkillHelper:flyStatic (objid)
@@ -129,7 +129,7 @@ function SkillHelper:flyStatic (objid)
   local isFlying, flyType = self:isFlying(objid)
   local isFlyingAdvance, flyAdvanceType = self:isFlyingAdvance(objid)
   if (not(isFlying)) then -- 如果没有飞，则飞起来
-    MyTimeHelper:callFnContinueRuns(function ()
+    TimeHelper:callFnContinueRuns(function ()
       ActorHelper:appendSpeed(objid, 0, MyConstant.FLY_SPEED, 0)
       local p = ActorHelper:getMyPosition(objid)
       ActorHelper:setMyPosition(flySwordId, p.x, p.y - 0.1, p.z)
@@ -137,7 +137,7 @@ function SkillHelper:flyStatic (objid)
     end, -1, flyType)
   end
   if (isFlyingAdvance) then -- 如果在向前飞，则停止
-    MyTimeHelper:delFnContinueRuns(flyAdvanceType)
+    TimeHelper:delFnContinueRuns(flyAdvanceType)
   end
   self:setFlyState(objid, 1)
 end
@@ -146,12 +146,12 @@ function SkillHelper:flyAdvance (objid)
   local isFlying, flyType = self:isFlying(objid)
   local isFlyingAdvance, flyAdvanceType = self:isFlyingAdvance(objid)
   if (not(isFlying)) then -- 如果没有飞，则飞起来
-    MyTimeHelper:callFnContinueRuns(function ()
+    TimeHelper:callFnContinueRuns(function ()
       ActorHelper:appendSpeed(objid, 0, MyConstant.FLY_SPEED, 0)
     end, -1, flyType)
   end
   if (not(isFlyingAdvance)) then -- 如果没有向前飞，则向前飞
-    MyTimeHelper:callFnContinueRuns(function ()
+    TimeHelper:callFnContinueRuns(function ()
       local speedVector3 = MyVector3:new(ActorHelper:getFaceDirection(objid)):mul(0.1)
       ActorHelper:appendSpeed(objid, speedVector3.x, speedVector3.y, speedVector3.z)
     end, -1, flyAdvanceType)
@@ -169,17 +169,17 @@ function SkillHelper:stopFly (objid, item)
     ItemHelper:recordUseSkill(objid, item.id, MyWeaponAttr.controlSword.cd)
   end
   if (state == 1) then -- 静止
-    MyTimeHelper:delFnContinueRuns(objid .. 'fly')
+    TimeHelper:delFnContinueRuns(objid .. 'fly')
   elseif (state == 2) then -- 前行
-    MyTimeHelper:delFnContinueRuns(objid .. 'fly')
-    MyTimeHelper:delFnContinueRuns(objid .. 'flyAdvance')
+    TimeHelper:delFnContinueRuns(objid .. 'fly')
+    TimeHelper:delFnContinueRuns(objid .. 'flyAdvance')
   end
   self:setFlyState(objid, 0)
   WorldHelper:despawnActor(self.flyData[objid].flySwordId)
   -- ActorHelper:killSelf(self.flyData[objid].flySwordId)
   self.flyData[objid].flySwordId = nil
   -- ActorHelper:setImmuneFall(self.myActor.objid, true) -- 免疫跌落
-  -- MyTimeHelper:callFnFastRuns(function ()
+  -- TimeHelper:callFnFastRuns(function ()
   --   ActorHelper:setImmuneFall(self.myActor.objid, false) -- 取消免疫跌落
   -- end, 1)
 end
@@ -197,15 +197,15 @@ function SkillHelper:tenThousandsSwordcraft (objid, item, size)
   ActorHelper:setFaceYaw(projectileid, ActorHelper:getFaceYaw(objid) + 90)
   local t = 'ten' .. projectileid
   -- 旋转一圈起飞
-  MyTimeHelper:callFnContinueRuns(function ()
+  TimeHelper:callFnContinueRuns(function ()
     local facePitch = ActorHelper:getFacePitch(projectileid)
     if (not(facePitch)) then
-      MyTimeHelper:delFnContinueRuns(t)
+      TimeHelper:delFnContinueRuns(t)
     else
       if (facePitch >= 270) then
         ActorHelper:appendSpeed(projectileid, 0, 1, 0)
-        MyTimeHelper:delFnContinueRuns(t)
-        MyTimeHelper:callFnFastRuns(function ()
+        TimeHelper:delFnContinueRuns(t)
+        TimeHelper:callFnFastRuns(function ()
           WorldHelper:despawnActor(projectileid)
           SkillHelper:tenThousandsSwordcraft2(objid, item, dstPos, size)
         end, 1)
@@ -227,7 +227,7 @@ function SkillHelper:tenThousandsSwordcraft2 (objid, item, dstPos, size)
   end
   SkillHelper:tenThousandsSwordcraft3(objid, item, arr, projectiles)
   local dim = MyPosition:new(5, 10, 5)
-  MyTimeHelper:callFnContinueRuns(function ()
+  TimeHelper:callFnContinueRuns(function ()
     for i, v in ipairs(projectiles) do
       if (v[1]) then
         local pos = ActorHelper:getMyPosition(v[2])
@@ -261,7 +261,7 @@ function SkillHelper:tenThousandsSwordcraft3 (objid, item, arr, projectiles)
     table.remove(arr, index)
     ItemHelper:recordProjectile(projectileid, objid, item, {})
     ItemHelper:recordMissileSpeed(projectileid, speedVector3)
-    MyTimeHelper:callFnFastRuns(function ()
+    TimeHelper:callFnFastRuns(function ()
       SkillHelper:tenThousandsSwordcraft3(objid,item, arr, projectiles)
     end, 0.1)
   end
@@ -278,7 +278,7 @@ function SkillHelper:airArmour (objid, size, time)
   local idx = 1
   ActorHelper:playBodyEffect(objid, bodyEffect)
   local t = objid .. 'airArmour'
-  MyTimeHelper:callFnContinueRuns(function ()
+  TimeHelper:callFnContinueRuns(function ()
     local pos = ActorHelper:getMyPosition(objid)
     pos.y = pos.y + 1
     local missiles
@@ -307,7 +307,7 @@ function SkillHelper:airArmour (objid, size, time)
       end
     end
   end, time, t)
-  MyTimeHelper:callFnFastRuns(function ()
+  TimeHelper:callFnFastRuns(function ()
     ActorHelper:stopBodyEffectById(objid, bodyEffect)
   end, time)
 end
@@ -331,7 +331,7 @@ function SkillHelper:huitian (objid, item, num, size, changeAngle, distance)
     table.insert(projectiles, { flag = 0, objid = projectileid, angle = angle })
   end
   local t = objid .. 'huitian'
-  MyTimeHelper:callFnContinueRuns(function ()
+  TimeHelper:callFnContinueRuns(function ()
     local num = 0
     local objPos = ActorHelper:getMyPosition(objid)
     for i, v in ipairs(projectiles) do
@@ -364,7 +364,7 @@ function SkillHelper:huitian (objid, item, num, size, changeAngle, distance)
       end
     end
     if (num == 0) then -- 飞剑皆毁
-      MyTimeHelper:delFnContinueRuns(t)
+      TimeHelper:delFnContinueRuns(t)
     end
   end, -1, t)
 end

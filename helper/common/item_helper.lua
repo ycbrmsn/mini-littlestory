@@ -54,7 +54,7 @@ function ItemHelper:recordProjectile (projectileid, objid, item, o)
   o.item = item
   self.projectiles[projectileid] = o
   -- 一定时间后清除数据
-  MyTimeHelper:callFnAfterSecond(function ()
+  TimeHelper:callFnAfterSecond(function ()
     self.projectiles[projectileid] = nil
   end, 30)
 end
@@ -135,7 +135,7 @@ end
 function ItemHelper:cancelDelaySkill (objid)
   local delaySkillInfo = self.delaySkills[objid]
   if (delaySkillInfo and delaySkillInfo.index) then
-    MyTimeHelper:delFn(delaySkillInfo.time, delaySkillInfo.index)
+    TimeHelper:delFn(delaySkillInfo.time, delaySkillInfo.index)
     self:delDelaySkillRecord(objid)
     ChatHelper:sendSystemMsg('取消' .. delaySkillInfo.name .. '技能', objid)
   end
@@ -154,7 +154,7 @@ function ItemHelper:recordMissile (objid, attr, val)
   else -- 不存在
     self.missiles[objid] = { [attr] = val }
     -- 保留的记录30秒后删除
-    MyTimeHelper:callFnAfterSecond(function ()
+    TimeHelper:callFnAfterSecond(function ()
       self.missiles[objid] = nil
     end, 30)
   end

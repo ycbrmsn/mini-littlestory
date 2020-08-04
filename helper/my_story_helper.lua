@@ -21,7 +21,7 @@ function MyStoryHelper:playerEnterGame (objid)
   local hostPlayer = PlayerHelper:getHostPlayer()
   if (player == hostPlayer) then
     if (not(GameDataHelper:updateStoryData())) then -- 刚开始游戏
-      MyTimeHelper:setHour(MyConstant.INIT_HOUR)
+      TimeHelper:setHour(MyConstant.INIT_HOUR)
       player:setPosition(-24, 34.5, 6)
       PlayerHelper:rotateCamera(objid, ActorHelper.FACE_YAW.EAST, 0)
       BackpackHelper:addItem(objid, MyWeaponAttr.controlSword.levelIds[1], 1)

@@ -96,7 +96,7 @@ end
 
 function MyActorAction:playAct (act, afterSeconds)
   if (afterSeconds) then
-    MyTimeHelper:callFnAfterSecond (function (p)
+    TimeHelper:callFnAfterSecond (function (p)
       ActorHelper:playAct(self.myActor.objid, act)
     end, afterSeconds)
   else
@@ -117,7 +117,7 @@ function MyActorAction:execute ()
       self.myActor:setFaceYaw(want.faceYaw)
     elseif (want.style == 'lookAt') then
       want.style = 'lookingAt'
-      MyTimeHelper:callFnContinueRuns(function ()
+      TimeHelper:callFnContinueRuns(function ()
         self.myActor:lookAt(want.dst)
       end, want.restTime, self.myActor.objid .. 'lookat')
     elseif (want.style == 'forceDoNothing') then
@@ -191,7 +191,7 @@ end
 function MyActorAction:expressAfterSecond (targetuin, startStr, finishStr, second, ...)
   local content = StringHelper:concat(...)
   local message = StringHelper:concat(self.myActor:getName(), startStr, content, finishStr)
-  MyTimeHelper:callFnAfterSecond (function (p)
+  TimeHelper:callFnAfterSecond (function (p)
     ChatHelper:sendSystemMsg(p.message, p.targetuin)
   end, second, { targetuin = targetuin, message = message })
 end

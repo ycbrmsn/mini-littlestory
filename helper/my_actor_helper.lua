@@ -23,7 +23,7 @@ function MyActorHelper:init ()
   -- local myActors = { jiangfeng, jiangyu, wangdali, miaolan, wenyu, yangwanli, huaxiaolou, yexiaolong, daniu, 
   --     erniu, qianbingwei, ludaofeng, sunkongwu, limiaoshou, qianduo, juyidao }
   -- for i, v in ipairs(myActors) do
-  --   MyTimeHelper:initActor(v)
+  --   TimeHelper:initActor(v)
   --   -- LogHelper:debug('创建', v:getName(), '完成')
   -- end
   -- guard = Guard:new()
